@@ -1,0 +1,136 @@
+[
+  {
+    "id": "BENCH-096",
+    "title": "Empty project zero-state handling",
+    "category": "integration",
+    "difficulty": "medium",
+    "description": "Run solver on an empty project (no requirements, no formal, no tests) — graceful zero-state",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "config-change",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": [],
+      "description": "Clear all requirements to simulate empty project"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should handle empty project gracefully with zero residual",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 300
+    },
+    "tags": ["integration", "zero-state"]
+  },
+  {
+    "id": "BENCH-097",
+    "title": "Large requirements file performance",
+    "category": "integration",
+    "difficulty": "hard",
+    "description": "Create a requirements file with 1000+ entries — performance at scale",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": "GENERATE_1000_ENTRIES",
+      "description": "Pad requirements array to 1000+ entries"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should handle large file without timeout or OOM",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 600
+    },
+    "tags": ["integration", "performance", "scale"]
+  },
+  {
+    "id": "BENCH-098",
+    "title": "UTF-8 encoding issue in filename",
+    "category": "integration",
+    "difficulty": "hard",
+    "description": "Introduce a UTF-8 encoding issue in a formal model filename",
+    "target_layers": ["f_to_g"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models",
+      "value": "ADD_UTF8_FILENAME_ENTRY",
+      "description": "Add registry entry with unicode filename"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should handle unicode filenames without crash",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 300
+    },
+    "tags": ["integration", "unicode"]
+  },
+  {
+    "id": "BENCH-099",
+    "title": "Crash recovery with --resume",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Simulate a crash mid-convergence — --resume should pick up correctly",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/solve-session.json",
+      "json_path": "$",
+      "value": {
+        "status": "in_progress",
+        "session_id": "bench-crash-test",
+        "last_iteration": 2,
+        "baseline_residual": { "total": 5, "automatable": 3 },
+        "last_residual": { "total": 3, "automatable": 2 },
+        "open_debt": [],
+        "created_at": "2026-04-13T00:00:00Z",
+        "updated_at": "2026-04-13T00:01:00Z"
+      },
+      "description": "Create solve session in in_progress state simulating crash"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve --resume should restore from saved iteration",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 600
+    },
+    "tags": ["integration", "resume", "crash-recovery"]
+  },
+  {
+    "id": "BENCH-100",
+    "title": "Full pipeline stress test (all 19 layers)",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Create defects spanning ALL 19 layer transitions simultaneously",
+    "target_layers": ["r_to_f", "f_to_t", "c_to_f", "t_to_c", "f_to_c", "r_to_d", "d_to_c", "p_to_f", "c_to_r", "t_to_r", "d_to_r", "l1_to_l2", "l2_to_l3", "l3_to_tc", "f_to_g", "c_to_e", "g_to_f", "f_to_f", "f_to_h"],
+    "mutation": {
+      "type": "config-change",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$",
+      "value": "MULTI_LAYER_STRESS",
+      "description": "Compound mutation touching all 19 layer transitions"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect issues across all layers and attempt multi-layer remediation",
+      "layers_affected": ["r_to_f", "f_to_t", "c_to_f", "t_to_c", "f_to_c", "r_to_d", "d_to_c", "p_to_f", "c_to_r", "t_to_r", "d_to_r", "l1_to_l2", "l2_to_l3", "l3_to_tc", "f_to_g", "c_to_e", "g_to_f", "f_to_f", "f_to_h"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "stress-test", "all-layers"]
+  }
+]

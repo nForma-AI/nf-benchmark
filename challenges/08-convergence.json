@@ -1,0 +1,220 @@
+[
+  {
+    "id": "BENCH-081",
+    "title": "A-B-A-B oscillation between R->F and F->T",
+    "category": "convergence",
+    "difficulty": "medium",
+    "description": "Create an oscillation pattern where fixing R->F creates F->T gaps and vice versa",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[0].formal_models",
+      "value": "OSCILLATE_CYCLE",
+      "description": "Create condition that causes oscillation between layers"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect oscillation and report it rather than looping forever",
+      "layers_affected": ["r_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "oscillation"]
+  },
+  {
+    "id": "BENCH-082",
+    "title": "Single iteration must prioritize best fix",
+    "category": "convergence",
+    "difficulty": "medium",
+    "description": "Set max_iterations to 1 — solver must pick the most impactful fix",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": "ADD_3_SMALL_GAPS",
+      "description": "Add 3 small R->F gaps so solver must prioritize"
+    },
+    "expected_outcome": {
+      "residual_change": "decrease",
+      "description": "nf:solve should fix the highest-priority gap in one iteration",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "residual_decreased",
+      "timeout_seconds": 300
+    },
+    "tags": ["convergence", "priority"]
+  },
+  {
+    "id": "BENCH-083",
+    "title": "Cascade where R->F fix creates F->T gaps",
+    "category": "convergence",
+    "difficulty": "hard",
+    "description": "Create a cascade where fixing R->F creates 3 new F->T gaps — cascade budget test",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models",
+      "value": "CASCADE_CREATE_F_TO_T",
+      "description": "Create cascade condition in model registry"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect cascade and apply cascade budget",
+      "layers_affected": ["r_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "cascade"]
+  },
+  {
+    "id": "BENCH-084",
+    "title": "Total residual increases after fix",
+    "category": "convergence",
+    "difficulty": "hard",
+    "description": "Create a scenario where total residual goes UP after a fix — solver should continue",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-CASCADE-01",
+        "text": "Cascade-inducing requirement",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [".planning/formal/tla/BenchCascade.tla"],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add requirement pointing to formal model that creates cascade"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect cascade and continue iterating",
+      "layers_affected": ["r_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "cascade", "residual-up"]
+  },
+  {
+    "id": "BENCH-085",
+    "title": "Unresolvable debt entry",
+    "category": "convergence",
+    "difficulty": "hard",
+    "description": "Add a debt entry that can never be resolved because it references an impossible layer",
+    "target_layers": ["p_to_f"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/debt.json",
+      "json_path": "$.debt_entries",
+      "value": {
+        "id": "BENCH-DEAD-DEBT-01",
+        "layer": "nonexistent_layer",
+        "description": "Debt entry with impossible layer reference",
+        "status": "open",
+        "fingerprint": "bench-dead-debt-001",
+        "created_at": "2026-04-13T00:00:00Z"
+      },
+      "description": "Add debt entry with invalid layer reference"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should handle unresolvable debt gracefully without crashing",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 300
+    },
+    "tags": ["convergence", "debt"]
+  },
+  {
+    "id": "BENCH-086",
+    "title": "Wave DAG with cycle",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Create a wave DAG with a cycle — solver should detect and break the cycle",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/layer-manifest.json",
+      "json_path": "$.wave_dependencies",
+      "value": "CYCLE_DEPS",
+      "description": "Create circular wave dependency"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should detect cycle in wave DAG and handle gracefully",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "wave-dag", "cycle"]
+  },
+  {
+    "id": "BENCH-087",
+    "title": "Regression in converged layer",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Introduce a regression where a previously converged layer diverges in a later iteration",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[1].formal_models",
+      "value": [],
+      "description": "Clear formal models for second requirement to simulate regression"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect regression and re-converge",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "residual_layer_zero",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "regression"]
+  },
+  {
+    "id": "BENCH-088",
+    "title": "All automatable layers oscillating simultaneously",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Create a scenario where all automatable layers oscillate simultaneously — full stall",
+    "target_layers": ["r_to_f", "f_to_t", "t_to_c", "c_to_f"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": "FULL_OSCILLATION_STATE",
+      "description": "Create multi-layer oscillation condition"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect full stall and report oscillation verdicts",
+      "layers_affected": ["r_to_f", "f_to_t", "t_to_c", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["convergence", "oscillation", "stall"]
+  }
+]

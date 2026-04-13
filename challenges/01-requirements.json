@@ -1,0 +1,314 @@
+[
+  {
+    "id": "BENCH-001",
+    "title": "Requirement without formal model",
+    "category": "requirements",
+    "difficulty": "easy",
+    "description": "Add a new requirement to requirements.json without a corresponding formal model entry, creating an R->F gap",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-FAKE-01",
+        "text": "Benchmark synthetic requirement with no formal model coverage",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add a requirement with empty formal_models array"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect R->F gap for BENCH-FAKE-01",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "residual_layer_zero",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "r_to_f", "synthetic"]
+  },
+  {
+    "id": "BENCH-002",
+    "title": "Deleted formal_model field from requirement",
+    "category": "requirements",
+    "difficulty": "easy",
+    "description": "Remove a requirement's formal_models field to create an R->F gap for an existing requirement",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[0].formal_models",
+      "value": [],
+      "description": "Clear formal_models array on first requirement (ACT-01)"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing formal coverage for ACT-01",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "residual_layer_zero",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "r_to_f"]
+  },
+  {
+    "id": "BENCH-003",
+    "title": "Requirement with nonexistent provenance file",
+    "category": "requirements",
+    "difficulty": "easy",
+    "description": "Add a requirement whose provenance.source_file points to a file that doesn't exist",
+    "target_layers": ["r_to_d"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-FAKE-03",
+        "text": "Benchmark requirement with broken provenance",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "nonexistent/path/to/requirements.md", "milestone": "unknown" },
+        "formal_models": [],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add requirement pointing to nonexistent source file"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect invalid provenance reference",
+      "layers_affected": ["r_to_d"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "provenance"]
+  },
+  {
+    "id": "BENCH-004",
+    "title": "Duplicate requirement with different ID",
+    "category": "requirements",
+    "difficulty": "medium",
+    "description": "Copy an existing requirement with a different ID but identical text, creating a redundancy",
+    "target_layers": ["r_to_f", "r_to_d"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-DUP-ACT01",
+        "text": "`.planning/current-activity.json` is written atomically at every major workflow state transition (execute-phase, plan-phase, debug, quorum, circuit-breaker, new-milestone stages)",
+        "category": "Planning & Tracking",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [".planning/formal/tla/QGSDActivityTracking.tla"],
+        "category_raw": "Activity Tracking"
+      },
+      "description": "Duplicate ACT-01 with different ID"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect duplicate requirement",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "duplicate"]
+  },
+  {
+    "id": "BENCH-005",
+    "title": "Requirement status downgraded to draft",
+    "category": "requirements",
+    "difficulty": "medium",
+    "description": "Change a requirement's status from Complete to draft, which should cascade flag downstream",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[0].status",
+      "value": "draft",
+      "description": "Downgrade ACT-01 status to draft"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect status mismatch with existing formal coverage",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "status"]
+  },
+  {
+    "id": "BENCH-006",
+    "title": "Orphaned formal model after requirement removal",
+    "category": "requirements",
+    "difficulty": "medium",
+    "description": "Remove a requirement but leave its formal model entry intact, creating an orphaned formal model",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "json-entry-remove",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[0]",
+      "description": "Remove first requirement (ACT-01) but keep its formal model"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect orphaned formal model with no requirement",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "orphan"]
+  },
+  {
+    "id": "BENCH-007",
+    "title": "Requirement with circular dependency",
+    "category": "requirements",
+    "difficulty": "medium",
+    "description": "Add a requirement with circular depends_on references",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-CIRC-A",
+        "text": "Circular dependency test requirement A",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [],
+        "depends_on": ["BENCH-CIRC-B"],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add requirement A that depends on B"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect circular dependency in requirement graph",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "circular"]
+  },
+  {
+    "id": "BENCH-008",
+    "title": "Requirement with invalid layer field",
+    "category": "requirements",
+    "difficulty": "hard",
+    "description": "Add a requirement with an invalid layer field value that doesn't match any known category",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-FAKE-08",
+        "text": "Requirement with invalid layer classification",
+        "category": "NonexistentCategory",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [],
+        "category_raw": "Invalid Category XYZ"
+      },
+      "description": "Add requirement with unrecognized category"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect invalid category/layer classification",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "validation"]
+  },
+  {
+    "id": "BENCH-009",
+    "title": "Five requirements claiming same formal invariant",
+    "category": "requirements",
+    "difficulty": "hard",
+    "description": "Add 5 new requirements all pointing to the same formal model invariant, creating over-coverage ambiguity",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "json-field-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": "ARRAY_APPEND_5_SAME_MODEL",
+      "description": "Add 5 requirements all referencing the same formal model"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect over-coverage or ambiguity in formal model mapping",
+      "layers_affected": ["r_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["requirements", "coverage", "ambiguity"]
+  },
+  {
+    "id": "BENCH-010",
+    "title": "Requirement contradicting formal spec invariant",
+    "category": "requirements",
+    "difficulty": "expert",
+    "description": "Add a requirement whose text contradicts a known formal spec invariant, creating a semantic inconsistency",
+    "target_layers": ["r_to_f", "f_to_c"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-CONTRA-01",
+        "text": "The circuit breaker threshold MUST be set to 0 (disabled) for all hook operations",
+        "category": "Circuit Breaker",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [".planning/formal/tla/CircuitBreaker.tla"],
+        "category_raw": "Circuit Breaker"
+      },
+      "description": "Requirement contradicts formal model that specifies positive threshold"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect semantic contradiction between requirement and formal model",
+      "layers_affected": ["r_to_f", "f_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["requirements", "formal", "contradiction"]
+  }
+]

@@ -1,0 +1,249 @@
+[
+  {
+    "id": "BENCH-061",
+    "title": "Wiring evidence below gate threshold",
+    "category": "cross-layer-alignment",
+    "difficulty": "medium",
+    "description": "Add a wiring evidence entry with a score below the gate threshold",
+    "target_layers": ["l1_to_l2"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/evidence/wiring.json",
+      "json_path": "$.entries[0].score",
+      "value": 0.2,
+      "description": "Lower wiring evidence score below threshold"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect L1->L2 alignment score below gate",
+      "layers_affected": ["l1_to_l2"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l1_to_l2"]
+  },
+  {
+    "id": "BENCH-062",
+    "title": "Low purpose alignment score",
+    "category": "cross-layer-alignment",
+    "difficulty": "medium",
+    "description": "Create a requirement-purpose mapping with low alignment score",
+    "target_layers": ["l2_to_l3"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix[0].alignment_score",
+      "value": 0.1,
+      "description": "Lower alignment score below threshold"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect L2->L3 low alignment score",
+      "layers_affected": ["l2_to_l3"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l2_to_l3"]
+  },
+  {
+    "id": "BENCH-063",
+    "title": "Test claiming wrong requirement coverage",
+    "category": "cross-layer-alignment",
+    "difficulty": "medium",
+    "description": "Add a test that claims to cover a requirement but tests something unrelated",
+    "target_layers": ["l3_to_tc"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/layer-constants.test.cjs",
+      "description": "Add @req annotation pointing to unrelated requirement"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect L3->TC coverage mismatch",
+      "layers_affected": ["l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l3_to_tc"]
+  },
+  {
+    "id": "BENCH-064",
+    "title": "Removed wiring entry entirely",
+    "category": "cross-layer-alignment",
+    "difficulty": "medium",
+    "description": "Remove a wiring entry entirely, dropping alignment score to zero",
+    "target_layers": ["l1_to_l2"],
+    "mutation": {
+      "type": "json-entry-remove",
+      "target_file": ".planning/formal/evidence/wiring.json",
+      "json_path": "$.entries[0]",
+      "description": "Remove first wiring evidence entry"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing wiring evidence",
+      "layers_affected": ["l1_to_l2"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l1_to_l2"]
+  },
+  {
+    "id": "BENCH-065",
+    "title": "Good L1->L2 but tanked L2->L3",
+    "category": "cross-layer-alignment",
+    "difficulty": "hard",
+    "description": "Create perfect L1->L2 score but intentionally lower L2->L3 — partial alignment gap",
+    "target_layers": ["l2_to_l3"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix",
+      "value": "MODIFY_ALL_ALIGNMENT_LOW",
+      "description": "Set all L2->L3 alignment scores low while keeping L1->L2 intact"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect L2->L3 failure while L1->L2 passes",
+      "layers_affected": ["l2_to_l3"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l2_to_l3", "partial"]
+  },
+  {
+    "id": "BENCH-066",
+    "title": "Correct evidence but wrong purpose classification",
+    "category": "cross-layer-alignment",
+    "difficulty": "hard",
+    "description": "Add a wiring entry with correct evidence but wrong purpose classification",
+    "target_layers": ["l2_to_l3"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix[0].purpose",
+      "value": "INCORRECT_PURPOSE_CATEGORY",
+      "description": "Change purpose classification to wrong value"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect misclassified wiring purpose",
+      "layers_affected": ["l2_to_l3"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l2_to_l3", "classification"]
+  },
+  {
+    "id": "BENCH-067",
+    "title": "Test-to-coverage mapping for deleted code",
+    "category": "cross-layer-alignment",
+    "difficulty": "hard",
+    "description": "Create a test-to-coverage mapping for code that was deleted",
+    "target_layers": ["l3_to_tc"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/unit-test-coverage.json",
+      "json_path": "$.coverage[0].source_file",
+      "value": "bin/deleted-file-that-no-longer-exists.cjs",
+      "description": "Point coverage mapping to deleted source file"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect stale coverage mapping to nonexistent file",
+      "layers_affected": ["l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "l3_to_tc", "stale"]
+  },
+  {
+    "id": "BENCH-068",
+    "title": "Two requirements mapping to same evidence with different purposes",
+    "category": "cross-layer-alignment",
+    "difficulty": "expert",
+    "description": "Create a wiring conflict where two requirements map to the same evidence with different purposes",
+    "target_layers": ["l1_to_l2", "l2_to_l3"],
+    "mutation": {
+      "type": "json-field-add",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix",
+      "value": "CONFLICT_DUPLICATE_EVIDENCE",
+      "description": "Add duplicate evidence mapping with conflicting purpose"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect evidence mapping conflict",
+      "layers_affected": ["l1_to_l2", "l2_to_l3"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["alignment", "conflict"]
+  },
+  {
+    "id": "BENCH-069",
+    "title": "All gates pass individually but fail end-to-end",
+    "category": "cross-layer-alignment",
+    "difficulty": "expert",
+    "description": "Create an alignment chain that passes all gates individually but fails end-to-end consistency",
+    "target_layers": ["l1_to_l2", "l2_to_l3", "l3_to_tc"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix",
+      "value": "INDIVIDUAL_PASS_E2E_FAIL",
+      "description": "Create subtle inconsistencies that pass individual gate checks"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect end-to-end alignment inconsistency",
+      "layers_affected": ["l1_to_l2", "l2_to_l3", "l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["alignment", "e2e"]
+  },
+  {
+    "id": "BENCH-070",
+    "title": "Gate check order inversion",
+    "category": "cross-layer-alignment",
+    "difficulty": "expert",
+    "description": "Flip the order of gate checks (L3 before L1) and verify solver detects the inversion",
+    "target_layers": ["l1_to_l2", "l3_to_tc"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/layer-manifest.json",
+      "json_path": "$.gate_order",
+      "value": ["l3_to_tc", "l2_to_l3", "l1_to_l2"],
+      "description": "Invert gate check order in manifest"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect incorrect gate ordering",
+      "layers_affected": ["l1_to_l2", "l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["alignment", "ordering"]
+  }
+]

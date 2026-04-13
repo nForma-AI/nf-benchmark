@@ -1,0 +1,235 @@
+[
+  {
+    "id": "BENCH-026",
+    "title": "Off-by-one test assertion",
+    "category": "tests",
+    "difficulty": "easy",
+    "description": "Break a passing test by changing an assertion value with an off-by-one error",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/layer-constants.test.cjs",
+      "description": "Change an expected array length by +1 in an assertion"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect failing test via T->C sweep",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "residual_layer_zero",
+      "target_layer": "t_to_c",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "t_to_c", "assertion"]
+  },
+  {
+    "id": "BENCH-027",
+    "title": "Missing @req annotation from test",
+    "category": "tests",
+    "difficulty": "easy",
+    "description": "Remove a @req annotation from a test file, breaking traceability",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/layer-constants.test.cjs",
+      "description": "Remove @req annotation from test description"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect T->R gap for untraced test",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "t_to_r", "annotation"]
+  },
+  {
+    "id": "BENCH-028",
+    "title": "Test file with no @req annotations",
+    "category": "tests",
+    "difficulty": "easy",
+    "description": "Create a test file with valid tests but no @req traceability",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/bench-untraced.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nconst fs = require('fs');\n\ntest('fs.existsSync returns true for existing files', () => {\n  assert.ok(fs.existsSync(__filename));\n});\n\ntest('fs.existsSync returns false for missing files', () => {\n  assert.ok(!fs.existsSync('/nonexistent/bench/file'));\n});",
+      "description": "Create test file without any @req annotations"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect T->R gap for entire test file",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "t_to_r"]
+  },
+  {
+    "id": "BENCH-029",
+    "title": "Wrong expected value in test assertion",
+    "category": "tests",
+    "difficulty": "easy",
+    "description": "Change a test's expected output to an incorrect value",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/solve-trend-helpers.test.cjs",
+      "description": "Change expected return value in an assertion"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect failing test",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "residual_layer_zero",
+      "target_layer": "t_to_c",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "t_to_c"]
+  },
+  {
+    "id": "BENCH-030",
+    "title": "Duplicate test with slightly different description",
+    "category": "tests",
+    "difficulty": "medium",
+    "description": "Duplicate a test with a slightly different name but identical logic — dead test detection",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/layer-constants.test.cjs",
+      "description": "Copy an existing test block with modified description string"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect duplicate/redundant test",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "duplicate"]
+  },
+  {
+    "id": "BENCH-031",
+    "title": "Race condition in async test",
+    "category": "tests",
+    "difficulty": "medium",
+    "description": "Introduce a missing await in an async test creating a race condition",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/quorum-slot-dispatch.test.cjs",
+      "description": "Remove await from an async test callback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect flaky/failing test",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "async", "race"]
+  },
+  {
+    "id": "BENCH-032",
+    "title": "Test passing but testing wrong behavior",
+    "category": "tests",
+    "difficulty": "medium",
+    "description": "Modify a test so it passes but tests incorrect behavior (false positive)",
+    "target_layers": ["f_to_t", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/solve-cycle-detector.test.cjs",
+      "description": "Change assertion to test wrong property (passes but meaningless)"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve may detect semantic drift between test intent and formal invariant",
+      "layers_affected": ["f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "false-positive"]
+  },
+  {
+    "id": "BENCH-033",
+    "title": "Test with hardcoded absolute path",
+    "category": "tests",
+    "difficulty": "hard",
+    "description": "Add a test that uses a hardcoded absolute path, making it machine-dependent",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/layer-constants.test.cjs",
+      "description": "Add test using hardcoded /Users/bench/ path"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect portability issue or test failure",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "portability"]
+  },
+  {
+    "id": "BENCH-034",
+    "title": "Test dependency ordering issue",
+    "category": "tests",
+    "difficulty": "hard",
+    "description": "Create a test that depends on side effects from another test in the same file",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/solve-wave-dag.test.cjs",
+      "description": "Add test that reads state set by preceding test without proper isolation"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect test isolation violation",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["tests", "isolation"]
+  },
+  {
+    "id": "BENCH-035",
+    "title": "Test suite with coverage hole",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Create a test suite where removing any single test still passes — coverage hole",
+    "target_layers": ["f_to_t", "l3_to_tc"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/oscillation-detector.test.cjs",
+      "description": "Remove unique assertions from tests so each test is redundant"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect that tests don't provide unique coverage",
+      "layers_affected": ["f_to_t", "l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["tests", "coverage", "expert"]
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "name": "@nforma.ai/nf-benchmark",
+  "version": "0.1.0",
+  "description": "Benchmark suite for measuring nf:solve autonomous fixing capability across 100 challenges",
+  "type": "module",
+  "bin": {
+    "nf-benchmark": "./bin/nf-benchmark.cjs"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "run": "node bin/nf-benchmark.cjs",
+    "run:single": "node bin/nf-benchmark.cjs --single",
+    "run:category": "node bin/nf-benchmark.cjs --category",
+    "report": "node bin/nf-benchmark.cjs --report",
+    "validate": "node bin/validate-challenges.cjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nForma-AI/nf-benchmark.git"
+  }
+}

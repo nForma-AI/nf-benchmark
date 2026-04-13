@@ -1,0 +1,176 @@
+[
+  {
+    "id": "BENCH-089",
+    "title": "Untraced module in bin/ discovered as C->R",
+    "category": "reverse-flow",
+    "difficulty": "medium",
+    "description": "Add a module in bin/ with no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/bench-feature-handler.cjs",
+      "content": "'use strict';\nconst fs = require('fs');\nconst path = require('path');\n\nfunction processFeature(config) {\n  if (!config || !config.name) throw new Error('name required');\n  return { processed: true, name: config.name, ts: Date.now() };\n}\n\nfunction validateFeature(feature) {\n  return feature.processed === true && typeof feature.name === 'string';\n}\n\nmodule.exports = { processFeature, validateFeature };",
+      "description": "Create feature handler module with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover C->R candidate for untraced module",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "c_to_r"]
+  },
+  {
+    "id": "BENCH-090",
+    "title": "Test file without formal-test-sync mapping",
+    "category": "reverse-flow",
+    "difficulty": "medium",
+    "description": "Create a test file with no formal-test-sync mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/bench-handler.test.cjs",
+      "content": "const { test, assert } = require('node:test');\n\nlet mod;\ntry { mod = require('./bench-feature-handler.cjs'); } catch (e) { mod = null; }\n\ntest('processFeature returns processed object', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.processFeature({ name: 'test' });\n  assert.ok(result.processed);\n  assert.strictEqual(result.name, 'test');\n});\n\ntest('validateFeature checks processed flag', () => {\n  assert.ok(mod, 'module should load');\n  assert.ok(mod.validateFeature({ processed: true, name: 'x' }));\n  assert.ok(!mod.validateFeature({ processed: false, name: 'x' }));\n});",
+      "description": "Create test file with no @req or formal sync mapping"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover T->R candidate for untraced test",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "t_to_r"]
+  },
+  {
+    "id": "BENCH-091",
+    "title": "Doc capability claim without requirement",
+    "category": "reverse-flow",
+    "difficulty": "medium",
+    "description": "Add a doc capability claim with no backing requirement — D->R discovery",
+    "target_layers": ["d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/USER-GUIDE.md",
+      "description": "Add section claiming auto-scaling feature with no backing requirement"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover D->R candidate for undocumented capability",
+      "layers_affected": ["d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "d_to_r"]
+  },
+  {
+    "id": "BENCH-092",
+    "title": "C->R candidate already covered (false positive)",
+    "category": "reverse-flow",
+    "difficulty": "hard",
+    "description": "Create a C->R candidate that is actually covered by an existing requirement (false positive)",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "bin/solve-focus-filter.cjs",
+      "description": "Add @req comment but remove from traceability index"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should classify the candidate as false positive via quorum",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "false-positive"]
+  },
+  {
+    "id": "BENCH-093",
+    "title": "Module that should NOT get a requirement",
+    "category": "reverse-flow",
+    "difficulty": "hard",
+    "description": "Add a utility/helper module that solver should shelve as not-needing-a-requirement",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/bench-pure-util.cjs",
+      "content": "'use strict';\nfunction identity(x) { return x; }\nfunction noop() {}\nfunction constant(v) { return () => v; }\nmodule.exports = { identity, noop, constant };",
+      "description": "Create trivial utility module"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover then shelve as acknowledged-not-required",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "shelving"]
+  },
+  {
+    "id": "BENCH-094",
+    "title": "Overlapping C->R and T->R for same feature",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Create overlapping C->R and T->R candidates for the same feature — deduplication test",
+    "target_layers": ["c_to_r", "t_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/bench-overlap.cjs",
+      "content": "'use strict';\nfunction overlapFeature(input) {\n  return { result: input * 2 };\n}\nmodule.exports = { overlapFeature };",
+      "description": "Create module + test pair both missing requirements"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should deduplicate overlapping reverse flow candidates",
+      "layers_affected": ["c_to_r", "t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "dedup"]
+  },
+  {
+    "id": "BENCH-095",
+    "title": "Reverse flow creating circular requirement dependency",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Introduce a reverse flow candidate that would create a circular requirement dependency",
+    "target_layers": ["c_to_r", "d_to_r"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/candidates.json",
+      "json_path": "$.candidates",
+      "value": {
+        "id": "BENCH-CIRC-CANDIDATE",
+        "type": "C->R",
+        "source": "bin/bench-circular.cjs",
+        "proposed_requirement": "BENCH-CIRC-A",
+        "depends_on": ["BENCH-CIRC-B"],
+        "status": "pending"
+      },
+      "description": "Add candidate that creates circular dependency"
+    },
+    "expected_outcome": {
+      "residual_change": "no_change",
+      "description": "nf:solve should detect circular dependency and reject candidate",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "no_crash",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "circular"]
+  }
+]

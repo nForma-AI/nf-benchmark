@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "nf:solve Challenge",
+  "description": "A single benchmark challenge that injects a defect and measures nf:solve's ability to fix it",
+  "type": "object",
+  "required": ["id", "title", "category", "difficulty", "description", "target_layers", "mutation", "expected_outcome", "scoring"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^BENCH-\\d{3}$",
+      "description": "Unique challenge identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short descriptive title"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "requirements",
+        "formal-models",
+        "tests",
+        "code",
+        "documentation",
+        "cross-layer-alignment",
+        "config-hooks",
+        "convergence",
+        "reverse-flow",
+        "integration"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard", "expert"]
+    },
+    "description": {
+      "type": "string",
+      "description": "What defect is injected and why"
+    },
+    "target_layers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "r_to_f", "f_to_t", "c_to_f", "t_to_c", "f_to_c",
+          "r_to_d", "d_to_c", "p_to_f", "c_to_r", "t_to_r",
+          "d_to_r", "l1_to_l2", "l2_to_l3", "l3_to_tc",
+          "f_to_g", "c_to_e", "g_to_f", "f_to_f", "f_to_h"
+        ]
+      },
+      "minItems": 1
+    },
+    "mutation": {
+      "type": "object",
+      "required": ["type", "target_file", "description"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "json-field-delete",
+            "json-field-modify",
+            "json-field-add",
+            "json-entry-add",
+            "json-entry-remove",
+            "file-create",
+            "file-delete",
+            "file-modify",
+            "file-rename",
+            "config-change"
+          ]
+        },
+        "target_file": {
+          "type": "string",
+          "description": "Path relative to QGSD root"
+        },
+        "json_path": {
+          "type": "string",
+          "description": "JSONPath to the field being mutated (for json mutations)"
+        },
+        "value": {
+          "description": "The value to set (for modify/add mutations)"
+        },
+        "content": {
+          "type": "string",
+          "description": "File content (for file-create mutations)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human description of the mutation"
+        }
+      }
+    },
+    "expected_outcome": {
+      "type": "object",
+      "required": ["residual_change", "description"],
+      "properties": {
+        "residual_change": {
+          "type": "string",
+          "enum": ["increase", "decrease", "no_change"],
+          "description": "How the residual should change after mutation"
+        },
+        "description": {
+          "type": "string",
+          "description": "What nf:solve should detect or fix"
+        },
+        "layers_affected": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "required": ["method"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "residual_zero",
+            "residual_decreased",
+            "residual_layer_zero",
+            "file_restored",
+            "json_field_restored",
+            "convergence_achieved",
+            "detection_only",
+            "no_crash",
+            "custom"
+          ]
+        },
+        "target_layer": {
+          "type": "string",
+          "description": "Specific layer to check for residual_zero"
+        },
+        "custom_check": {
+          "type": "string",
+          "description": "Description of custom validation logic"
+        },
+        "timeout_seconds": {
+          "type": "number",
+          "default": 300
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
