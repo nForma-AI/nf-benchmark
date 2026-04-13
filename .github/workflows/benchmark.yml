@@ -1,0 +1,41 @@
+name: Benchmark nf:solve
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'nForma-AI/nf-benchmark'
+          path: 'nf-benchmark'
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 'nForma-AI/nForma'
+          path: 'nforma'
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: nf-benchmark
+        run: npm install
+
+      - name: Run benchmark
+        working-directory: nf-benchmark
+        run: node bin/nf-benchmark.cjs run --project-root ../nforma --timeout 600
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: nf-benchmark/results/
