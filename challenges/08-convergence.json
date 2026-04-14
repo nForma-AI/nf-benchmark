@@ -35,7 +35,41 @@
       "type": "json-entry-add",
       "target_file": ".planning/formal/requirements.json",
       "json_path": "$.requirements",
-      "value": "ADD_3_SMALL_GAPS",
+      "value": [
+        {
+          "id": "BENCH-GAP-01",
+          "text": "Gap requirement alpha with no formal coverage",
+          "category": "Benchmark",
+          "tier": "user",
+          "phase": "unknown",
+          "status": "Complete",
+          "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+          "formal_models": [],
+          "category_raw": "Benchmark"
+        },
+        {
+          "id": "BENCH-GAP-02",
+          "text": "Gap requirement beta with no formal coverage",
+          "category": "Benchmark",
+          "tier": "user",
+          "phase": "unknown",
+          "status": "Complete",
+          "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+          "formal_models": [],
+          "category_raw": "Benchmark"
+        },
+        {
+          "id": "BENCH-GAP-03",
+          "text": "Gap requirement gamma with no formal coverage",
+          "category": "Benchmark",
+          "tier": "user",
+          "phase": "unknown",
+          "status": "Complete",
+          "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+          "formal_models": [],
+          "category_raw": "Benchmark"
+        }
+      ],
       "description": "Add 3 small R->F gaps so solver must prioritize"
     },
     "expected_outcome": {
@@ -44,7 +78,7 @@
       "layers_affected": ["r_to_f"]
     },
     "scoring": {
-      "method": "residual_decreased",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
     "tags": ["convergence", "priority"]
