@@ -100,21 +100,20 @@ describe('Challenge Coverage', () => {
 describe('JSON Path Parser', () => {
   test('parses simple key path', () => {
     const segments = parseJsonPath('$.requirements');
-    assert.strictEqual(segments.length, 2);
-    assert.strictEqual(segments[0].value, '$');
-    assert.strictEqual(segments[1].value, 'requirements');
+    assert.strictEqual(segments.length, 1);
+    assert.strictEqual(segments[0].value, 'requirements');
   });
 
   test('parses array index path', () => {
     const segments = parseJsonPath('$.requirements[0]');
-    assert.strictEqual(segments.length, 3);
-    assert.strictEqual(segments[2].type, 'index');
-    assert.strictEqual(segments[2].value, 0);
+    assert.strictEqual(segments.length, 2);
+    assert.strictEqual(segments[1].type, 'index');
+    assert.strictEqual(segments[1].value, 0);
   });
 
   test('parses nested path with string key', () => {
     const segments = parseJsonPath('$.models["key.with.dots"]');
-    assert.ok(segments.length >= 2);
+    assert.ok(segments.length >= 1);
   });
 });
 

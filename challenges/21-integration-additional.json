@@ -1,0 +1,234 @@
+[
+  {
+    "id": "BENCH-166",
+    "title": "Integration with API rate limiting",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "External API with strict rate limits causing integration failures",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/api-client.js",
+      "description": "Exceed rate limits in API integration"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect rate limiting issues in integration",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "rate-limiting", "api"]
+  },
+  {
+    "id": "BENCH-167",
+    "title": "Third-party library version incompatibility",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Integration fails due to incompatible library versions",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": "package.json",
+      "json_path": "$.dependencies.lib",
+      "value": "incompatible_version",
+      "description": "Set incompatible version for dependency"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect version incompatibility in integration",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "version", "compatibility"]
+  },
+  {
+    "id": "BENCH-168",
+    "title": "Integration with legacy system encoding mismatch",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Data encoding mismatch between modern and legacy systems",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/legacy-integration.js",
+      "description": "Use different encoding for data exchange"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect encoding mismatch in integration",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "encoding", "legacy"]
+  },
+  {
+    "id": "BENCH-169",
+    "title": "Webhook integration with signature verification failure",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Webhook payloads fail signature verification",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/webhook-handler.js",
+      "description": "Disable signature verification for webhooks"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect webhook signature verification issues",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "webhook", "signature"]
+  },
+  {
+    "id": "BENCH-170",
+    "title": "Database integration with connection pool exhaustion",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Database connections exhausted during high load integration",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/db-integration.js",
+      "description": "Reduce connection pool size below requirements"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect connection pool exhaustion",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "database", "connections"]
+  },
+  {
+    "id": "BENCH-171",
+    "title": "Message queue integration with ordering guarantees",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Message processing violates ordering requirements",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/message-queue.js",
+      "description": "Process messages out of order"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect message ordering violations",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "message-queue", "ordering"]
+  },
+  {
+    "id": "BENCH-172",
+    "title": "OAuth integration with expired tokens",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Integration fails due to expired OAuth tokens",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/oauth-client.js",
+      "description": "Use expired tokens in OAuth integration"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect expired OAuth tokens",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "oauth", "tokens"]
+  },
+  {
+    "id": "BENCH-173",
+    "title": "File system integration with permission issues",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Integration fails due to insufficient file system permissions",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/file-integration.js",
+      "description": "Attempt operations without proper permissions"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect permission issues in file integration",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "permissions", "filesystem"]
+  },
+  {
+    "id": "BENCH-174",
+    "title": "Cache integration with stale data issues",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Caching layer serves stale data causing inconsistencies",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/cache-integration.js",
+      "description": "Disable cache invalidation logic"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect stale cache data issues",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "cache", "stale-data"]
+  },
+  {
+    "id": "BENCH-175",
+    "title": "Monitoring integration with false positives",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Monitoring system generates excessive false positive alerts",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/monitoring-integration.js",
+      "description": "Lower alert thresholds causing false positives"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect monitoring false positives",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "monitoring", "false-positives"]
+  }
+]

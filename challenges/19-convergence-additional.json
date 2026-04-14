@@ -1,0 +1,234 @@
+[
+  {
+    "id": "BENCH-146",
+    "title": "Convergence timeout due to cyclic dependencies",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "System with cyclic dependencies that prevent convergence within timeout",
+    "target_layers": ["f_to_g", "c_to_e"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/convergence-rules.json",
+      "json_path": "$.cycles.allowed",
+      "value": false,
+      "description": "Disallow cyclic dependencies causing timeout"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect convergence timeout from cycles",
+      "layers_affected": ["f_to_g", "c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "timeout", "cycles"]
+  },
+  {
+    "id": "BENCH-147",
+    "title": "Oscillating state with periodic resets",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "State that oscillates due to periodic external resets",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/state-manager.js",
+      "description": "Add periodic state reset logic"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect periodic oscillation preventing convergence",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "oscillation", "periodic"]
+  },
+  {
+    "id": "BENCH-148",
+    "title": "Convergence failure with floating point precision",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Numerical convergence that fails due to floating point precision issues",
+    "target_layers": ["c_to_t", "f_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/numerical.js",
+      "description": "Use direct equality on floating point values"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect floating point precision convergence issues",
+      "layers_affected": ["c_to_t", "f_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "floating-point", "precision"]
+  },
+  {
+    "id": "BENCH-149",
+    "title": "Multi-agent convergence deadlock",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Multiple agents waiting for each other causing deadlock",
+    "target_layers": ["f_to_g", "c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/multi-agent.js",
+      "description": "Implement circular wait condition"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect deadlock in multi-agent convergence",
+      "layers_affected": ["f_to_g", "c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "deadlock", "multi-agent"]
+  },
+  {
+    "id": "BENCH-150",
+    "title": "Convergence with external dependency failures",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "System that can't converge due to intermittent external service failures",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/external-deps.js",
+      "description": "Add dependency on unreliable external service"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect external dependency causing convergence failure",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "external", "failures"]
+  },
+  {
+    "id": "BENCH-151",
+    "title": "Heuristic convergence with local optima",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Optimization algorithm stuck in local optima preventing global convergence",
+    "target_layers": ["f_to_c", "c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/optimizer.js",
+      "description": "Use greedy algorithm prone to local optima"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect local optima trap in convergence",
+      "layers_affected": ["f_to_c", "c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "optimization", "local-optima"]
+  },
+  {
+    "id": "BENCH-152",
+    "title": "Convergence race condition in parallel processing",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Parallel processing with race conditions preventing stable convergence",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/parallel.js",
+      "description": "Add unsynchronized shared state updates"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect race condition in parallel convergence",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "race-condition", "parallel"]
+  },
+  {
+    "id": "BENCH-153",
+    "title": "Convergence with non-monotonic progress",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Algorithm that makes progress but occasionally regresses",
+    "target_layers": ["f_to_g", "c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/algorithm.js",
+      "description": "Add random regression steps in convergence loop"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect non-monotonic convergence behavior",
+      "layers_affected": ["f_to_g", "c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "non-monotonic", "progress"]
+  },
+  {
+    "id": "BENCH-154",
+    "title": "Convergence failure due to memory constraints",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Algorithm that requires more memory than available for convergence",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/memory-intensive.js",
+      "description": "Increase memory requirements beyond system limits"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect memory constraint preventing convergence",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "memory", "constraints"]
+  },
+  {
+    "id": "BENCH-155",
+    "title": "Infinite loop in convergence check",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Convergence condition that never evaluates to true",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/convergence-check.js",
+      "description": "Set impossible convergence condition"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect infinite loop in convergence logic",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "infinite-loop", "logic"]
+  }
+]

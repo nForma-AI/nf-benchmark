@@ -1,0 +1,119 @@
+[
+  {
+    "id": "BENCH-136",
+    "title": "CI/CD pipeline with race condition in artifact deployment",
+    "category": "config-hooks",
+    "difficulty": "expert",
+    "description": "Concurrent pipeline runs that overwrite each other's artifacts",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".github/workflows/deploy.yml",
+      "description": "Remove locking mechanism for deployment steps"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect race condition in CI/CD pipeline",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["devops", "ci-cd", "race-condition"]
+  },
+  {
+    "id": "BENCH-137",
+    "title": "Container with security vulnerabilities",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Docker image built from base image with known CVEs",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "Dockerfile",
+      "description": "Use outdated base image with security vulnerabilities"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect container security vulnerabilities",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["devops", "containers", "security"]
+  },
+  {
+    "id": "BENCH-138",
+    "title": "Infrastructure as code with resource conflicts",
+    "category": "config-hooks",
+    "difficulty": "expert",
+    "description": "Terraform configuration with conflicting resource definitions",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "infrastructure/main.tf",
+      "description": "Add duplicate resource definitions causing conflicts"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect IaC resource conflicts",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["devops", "iac", "terraform"]
+  },
+  {
+    "id": "BENCH-139",
+    "title": "Deployment rollback failure",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Deployment process that cannot rollback gracefully on failure",
+    "target_layers": ["t_to_r", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "scripts/deploy.sh",
+      "description": "Remove rollback logic from deployment script"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect lack of rollback capability",
+      "layers_affected": ["t_to_r", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["devops", "rollback", "deployment"]
+  },
+  {
+    "id": "BENCH-140",
+    "title": "Cloud resource over-provisioning",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Cloud infrastructure configured with excessive resources causing cost waste",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": "infrastructure/cloud-config.json",
+      "json_path": "$.instances[0].size",
+      "value": "excessive_size",
+      "description": "Configure oversized cloud instances"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect resource over-provisioning",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["devops", "cloud", "cost-optimization"]
+  }
+]

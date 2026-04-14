@@ -1,0 +1,232 @@
+[
+  {
+    "id": "BENCH-156",
+    "title": "Reverse flow with corrupted backup data",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Backup data corrupted during creation preventing successful rollback",
+    "target_layers": ["t_to_r", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/backup.js",
+      "description": "Introduce corruption in backup creation process"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect corrupted backup in reverse flow",
+      "layers_affected": ["t_to_r", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "corruption", "backup"]
+  },
+  {
+    "id": "BENCH-157",
+    "title": "Rollback with dependency ordering issues",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Rollback operations performed in wrong order causing failures",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/rollback.js",
+      "description": "Reverse dependency order in rollback script"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect incorrect rollback ordering",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "ordering", "dependencies"]
+  },
+  {
+    "id": "BENCH-158",
+    "title": "Reverse flow timeout during large data restoration",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Restoration of large datasets exceeds timeout limits",
+    "target_layers": ["t_to_r", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/restore.js",
+      "description": "Add large data set that exceeds timeout"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect timeout in reverse flow operations",
+      "layers_affected": ["t_to_r", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "timeout", "large-data"]
+  },
+  {
+    "id": "BENCH-159",
+    "title": "Reverse migration with schema incompatibilities",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Database migration rollback fails due to schema changes",
+    "target_layers": ["c_to_r", "t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "migrations/down.sql",
+      "description": "Create incompatible schema rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect schema incompatibility in reverse migration",
+      "layers_affected": ["c_to_r", "t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "migration", "schema"]
+  },
+  {
+    "id": "BENCH-160",
+    "title": "Reverse flow with external service unavailability",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Rollback fails because external services are unavailable",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/external-rollback.js",
+      "description": "Depend on unavailable external service for rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect external dependency in reverse flow",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "external", "unavailable"]
+  },
+  {
+    "id": "BENCH-161",
+    "title": "Partial rollback leaving system in inconsistent state",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Rollback succeeds partially but leaves system inconsistent",
+    "target_layers": ["t_to_r", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/partial-rollback.js",
+      "description": "Implement rollback that fails midway"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect partial rollback inconsistency",
+      "layers_affected": ["t_to_r", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "partial", "inconsistent"]
+  },
+  {
+    "id": "BENCH-162",
+    "title": "Reverse flow with concurrent modifications",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Concurrent changes during rollback cause conflicts",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/concurrent-rollback.js",
+      "description": "Allow concurrent modifications during rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect concurrent modification conflicts in reverse flow",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "concurrent", "conflicts"]
+  },
+  {
+    "id": "BENCH-163",
+    "title": "Reverse flow with encrypted data loss",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Rollback loses encryption keys preventing data restoration",
+    "target_layers": ["t_to_r", "c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/encrypted-rollback.js",
+      "description": "Lose encryption keys during rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect encryption key loss in reverse flow",
+      "layers_affected": ["t_to_r", "c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "encryption", "keys"]
+  },
+  {
+    "id": "BENCH-164",
+    "title": "Reverse flow with network partition",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Network partition during distributed rollback causes failure",
+    "target_layers": ["t_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/distributed-rollback.js",
+      "description": "Add network partition simulation in rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect network partition affecting reverse flow",
+      "layers_affected": ["t_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "network", "partition"]
+  },
+  {
+    "id": "BENCH-165",
+    "title": "Reverse flow with resource exhaustion",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Rollback exhausts system resources preventing completion",
+    "target_layers": ["t_to_r", "c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/resource-intensive-rollback.js",
+      "description": "Make rollback consume excessive resources"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect resource exhaustion in reverse flow",
+      "layers_affected": ["t_to_r", "c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "resources", "exhaustion"]
+  }
+]

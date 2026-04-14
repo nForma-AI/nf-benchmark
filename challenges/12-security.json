@@ -1,0 +1,119 @@
+[
+  {
+    "id": "BENCH-111",
+    "title": "SQL injection vulnerability in data access layer",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Inject SQL injection vulnerability by concatenating user input directly into SQL queries without parameterization",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/database.js",
+      "description": "Replace parameterized query with string concatenation"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect SQL injection vulnerability and recommend parameterized queries",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["security", "sql-injection", "code"]
+  },
+  {
+    "id": "BENCH-112",
+    "title": "Cross-site scripting in user input rendering",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Allow unescaped user input to be rendered in HTML without proper sanitization",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/renderer.js",
+      "description": "Remove HTML escaping from user input display"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect XSS vulnerability and recommend input sanitization",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["security", "xss", "frontend"]
+  },
+  {
+    "id": "BENCH-113",
+    "title": "Authentication bypass through session management flaw",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Implement flawed session validation that allows bypassing authentication checks",
+    "target_layers": ["c_to_f", "c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/auth.js",
+      "description": "Introduce logic error in session validation that accepts invalid tokens"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect authentication bypass vulnerability",
+      "layers_affected": ["c_to_f", "c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["security", "authentication", "session"]
+  },
+  {
+    "id": "BENCH-114",
+    "title": "Cryptographic key exposure in configuration",
+    "category": "config-hooks",
+    "difficulty": "expert",
+    "description": "Store cryptographic keys in plaintext configuration files instead of secure vaults",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "json-field-add",
+      "target_file": "config/app.json",
+      "json_path": "$.secrets",
+      "value": { "api_key": "plaintext_secret_123", "private_key": "unencrypted_key_data" },
+      "description": "Add plaintext secrets to configuration"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect exposed cryptographic materials",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["security", "cryptography", "secrets"]
+  },
+  {
+    "id": "BENCH-115",
+    "title": "Insecure deserialization vulnerability",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Use unsafe deserialization that allows code execution through crafted input",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/serializer.js",
+      "description": "Replace safe deserialization with eval-based parsing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect insecure deserialization vulnerability",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["security", "deserialization", "code-execution"]
+  }
+]

@@ -1,0 +1,117 @@
+[
+  {
+    "id": "BENCH-191",
+    "title": "Test with non-deterministic failures",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Tests that pass/fail randomly due to race conditions or timing",
+    "target_layers": ["t_to_c", "f_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "test/nondeterministic.test.js",
+      "description": "Add race condition causing intermittent test failures"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect non-deterministic test behavior",
+      "layers_affected": ["t_to_c", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "nondeterministic", "race-condition"]
+  },
+  {
+    "id": "BENCH-192",
+    "title": "Test mocking that hides real bugs",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Over-mocking in tests prevents detection of actual implementation issues",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "test/overmocked.test.js",
+      "description": "Mock all dependencies hiding real bugs"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect inadequate test mocking",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "mocking", "overmocked"]
+  },
+  {
+    "id": "BENCH-193",
+    "title": "Integration test with environment dependencies",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Tests that require specific environment setup fail in CI",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "test/environment-dependent.test.js",
+      "description": "Add test requiring unavailable environment resources"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect environment-dependent test failures",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "environment", "ci"]
+  },
+  {
+    "id": "BENCH-194",
+    "title": "Test data that doesn't reflect production",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Test data is too clean compared to real-world production data",
+    "target_layers": ["t_to_c", "f_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "test/clean-data.test.js",
+      "description": "Use sanitized test data missing edge cases"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect unrealistic test data",
+      "layers_affected": ["t_to_c", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "data", "production"]
+  },
+  {
+    "id": "BENCH-195",
+    "title": "Performance test with unrealistic load",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Performance tests use load patterns that don't match real usage",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "test/performance-unrealistic.test.js",
+      "description": "Use uniform load instead of realistic patterns"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect unrealistic performance test scenarios",
+      "layers_affected": ["t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "performance", "load"]
+  }
+]

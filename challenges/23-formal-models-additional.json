@@ -1,0 +1,117 @@
+[
+  {
+    "id": "BENCH-186",
+    "title": "Formal model with contradictory axioms",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Formal specification contains mutually contradictory axioms",
+    "target_layers": ["f_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/tla/Contradiction.tla",
+      "description": "Add contradictory axioms to formal model"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect contradictory axioms in formal model",
+      "layers_affected": ["f_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "contradiction", "axioms"]
+  },
+  {
+    "id": "BENCH-187",
+    "title": "Model checking with state space explosion",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Formal model has exponential state space causing timeout",
+    "target_layers": ["f_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/tla/Explosion.tla",
+      "description": "Add variables causing state space explosion"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect state space explosion in model checking",
+      "layers_affected": ["f_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "state-space", "explosion"]
+  },
+  {
+    "id": "BENCH-188",
+    "title": "Formal invariant that is too weak",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Invariant allows undesirable behaviors that should be forbidden",
+    "target_layers": ["f_to_f", "f_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/tla/WeakInvariant.tla",
+      "description": "Weaken invariant to allow bad states"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect overly weak formal invariant",
+      "layers_affected": ["f_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "invariant", "weak"]
+  },
+  {
+    "id": "BENCH-189",
+    "title": "Cross-formal model inconsistency",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Different formal models (TLA+, Alloy) specify conflicting behaviors",
+    "target_layers": ["f_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/alloy/Inconsistent.als",
+      "description": "Make Alloy model contradict TLA+ specification"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect cross-formal model inconsistencies",
+      "layers_affected": ["f_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "inconsistency", "cross-model"]
+  },
+  {
+    "id": "BENCH-190",
+    "title": "Formal model with undefined behavior",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Model contains operations with undefined semantics",
+    "target_layers": ["f_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/tla/Undefined.tla",
+      "description": "Add operation with undefined behavior"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect undefined behavior in formal model",
+      "layers_affected": ["f_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "undefined", "behavior"]
+  }
+]

@@ -1,0 +1,119 @@
+[
+  {
+    "id": "BENCH-131",
+    "title": "Overfitting in ML model training",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Train ML model with insufficient validation data leading to overfitting",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/ml-training.js",
+      "description": "Use same dataset for training and validation"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect overfitting through validation metrics analysis",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ai-ml", "overfitting", "training"]
+  },
+  {
+    "id": "BENCH-132",
+    "title": "Data poisoning in training dataset",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Introduce adversarial examples in training data that compromise model accuracy",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "data/train.csv",
+      "description": "Add poisoned samples that bias model predictions"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect data poisoning through anomaly detection",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ai-ml", "data-poisoning", "adversarial"]
+  },
+  {
+    "id": "BENCH-133",
+    "title": "ML pipeline with data leakage",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Preprocessing pipeline that leaks future information into training data",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/pipeline.js",
+      "description": "Include target variable in feature engineering for training"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect data leakage in ML pipeline",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ai-ml", "data-leakage", "pipeline"]
+  },
+  {
+    "id": "BENCH-134",
+    "title": "Model deployment without monitoring",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Deploy ML model without performance monitoring or drift detection",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-delete",
+      "target_file": "src/monitoring.js",
+      "description": "Remove model performance tracking code"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect lack of ML model monitoring",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ai-ml", "monitoring", "deployment"]
+  },
+  {
+    "id": "BENCH-135",
+    "title": "Bias in ML training data",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Training data with systematic bias leading to discriminatory model predictions",
+    "target_layers": ["f_to_c", "c_to_t"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/model-bias.json",
+      "json_path": "$.bias_check",
+      "value": false,
+      "description": "Disable bias detection in formal model"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect bias in ML training through fairness metrics",
+      "layers_affected": ["f_to_c", "c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ai-ml", "bias", "fairness"]
+  }
+]

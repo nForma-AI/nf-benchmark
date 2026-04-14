@@ -1,0 +1,117 @@
+[
+  {
+    "id": "BENCH-196",
+    "title": "Documentation with contradictory information",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "Different sections of documentation provide conflicting guidance",
+    "target_layers": ["d_to_r", "d_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/contradictory.md",
+      "description": "Add conflicting information in documentation"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect contradictory documentation",
+      "layers_affected": ["d_to_r", "d_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["documentation", "contradictory", "conflicting"]
+  },
+  {
+    "id": "BENCH-197",
+    "title": "Outdated documentation not matching code",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "Documentation describes features that no longer exist in code",
+    "target_layers": ["d_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/outdated.md",
+      "description": "Document removed features as if they still exist"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect outdated documentation",
+      "layers_affected": ["d_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["documentation", "outdated", "code"]
+  },
+  {
+    "id": "BENCH-198",
+    "title": "Incomplete API documentation",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "API docs missing critical parameters or error conditions",
+    "target_layers": ["d_to_c", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/api-incomplete.md",
+      "description": "Remove error condition documentation"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect incomplete API documentation",
+      "layers_affected": ["d_to_c", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["documentation", "api", "incomplete"]
+  },
+  {
+    "id": "BENCH-199",
+    "title": "Documentation with ambiguous terminology",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "Technical terms used inconsistently or with multiple meanings",
+    "target_layers": ["d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/ambiguous.md",
+      "description": "Use same term with different meanings"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect ambiguous terminology in docs",
+      "layers_affected": ["d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["documentation", "ambiguous", "terminology"]
+  },
+  {
+    "id": "BENCH-200",
+    "title": "Documentation missing version compatibility notes",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "Breaking changes not documented with version compatibility info",
+    "target_layers": ["d_to_c", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/version-missing.md",
+      "description": "Remove version compatibility information"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing version compatibility docs",
+      "layers_affected": ["d_to_c", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["documentation", "version", "compatibility"]
+  }
+]

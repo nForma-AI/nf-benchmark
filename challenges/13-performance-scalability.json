@@ -1,0 +1,117 @@
+[
+  {
+    "id": "BENCH-116",
+    "title": "Memory leak in long-running process",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Introduce memory leak by not releasing event listeners or cached objects over time",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/cache.js",
+      "description": "Add code that accumulates references without cleanup"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect memory leak through heap analysis or profiling",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["performance", "memory-leak", "scalability"]
+  },
+  {
+    "id": "BENCH-117",
+    "title": "Inefficient algorithm with O(n²) complexity",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Replace efficient O(n) algorithm with nested loops causing quadratic time complexity",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/algorithm.js",
+      "description": "Change sorting/search to use nested loops instead of optimized methods"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect algorithmic inefficiency through complexity analysis",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["performance", "algorithm", "complexity"]
+  },
+  {
+    "id": "BENCH-118",
+    "title": "Database query without proper indexing",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Execute expensive database queries on unindexed columns causing slow performance",
+    "target_layers": ["c_to_t", "c_to_f"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/queries.js",
+      "description": "Add query that scans entire table without indexes"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing database indexes",
+      "layers_affected": ["c_to_t", "c_to_f"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["performance", "database", "indexing"]
+  },
+  {
+    "id": "BENCH-119",
+    "title": "Scalability bottleneck at 10k concurrent users",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Implement synchronous processing that blocks under high concurrency load",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/handler.js",
+      "description": "Make request handler synchronous, blocking concurrent requests"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect concurrency bottleneck and recommend async processing",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["performance", "concurrency", "scalability"]
+  },
+  {
+    "id": "BENCH-120",
+    "title": "Excessive API calls in tight loop",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Make redundant API calls within nested loops causing network overhead",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/api-client.js",
+      "description": "Move API call inside loop that executes multiple times per iteration"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect excessive network calls and recommend caching/batching",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["performance", "api", "network"]
+  }
+]

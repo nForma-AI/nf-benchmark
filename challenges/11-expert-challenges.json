@@ -1,0 +1,243 @@
+[
+  {
+    "id": "BENCH-101",
+    "title": "Complex cyclic dependency graph with 5+ requirements",
+    "category": "requirements",
+    "difficulty": "expert",
+    "description": "Create a complex dependency graph where 5 requirements form multiple interlocking cycles with transitive dependencies",
+    "target_layers": ["r_to_f", "r_to_t", "r_to_c"],
+    "mutation": {
+      "type": "json-field-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": "ARRAY_APPEND_COMPLEX_CYCLES_5_REQS",
+      "description": "Add 5 requirements with complex cyclic depends_on relationships"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect and resolve complex dependency cycles across multiple layers",
+      "layers_affected": ["r_to_f", "r_to_t", "r_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["requirements", "dependencies", "cycles", "complex"]
+  },
+  {
+    "id": "BENCH-102",
+    "title": "Formal model with unsatisfiable liveness property",
+    "category": "formal-models",
+    "difficulty": "expert",
+    "description": "Add a liveness property that can never be satisfied due to fundamental model constraints",
+    "target_layers": ["f_to_f", "f_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
+      "description": "Add <>[] (eventually always) property that contradicts model fairness assumptions"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect unsatisfiable liveness property through model checking",
+      "layers_affected": ["f_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["formal", "tla", "liveness", "unsatisfiable"]
+  },
+  {
+    "id": "BENCH-103",
+    "title": "Test suite with systematic false coverage",
+    "category": "tests",
+    "difficulty": "expert",
+    "description": "Create tests that appear to pass but systematically miss critical edge cases due to mocking",
+    "target_layers": ["t_to_c", "f_to_t"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "test/bench-false-coverage.test.js",
+      "content": "// Test file with mocks that hide actual bugs",
+      "description": "Create test suite with over-mocking that masks real issues"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect inadequate test coverage despite passing tests",
+      "layers_affected": ["t_to_c", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["tests", "coverage", "mocking", "false-positive"]
+  },
+  {
+    "id": "BENCH-104",
+    "title": "Code with ABA problem in concurrent data structure",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Implement a concurrent data structure susceptible to ABA problem with lock-free operations",
+    "target_layers": ["c_to_f", "c_to_t"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "src/concurrent-structure.js",
+      "content": "// Lock-free stack implementation vulnerable to ABA",
+      "description": "Create concurrent code with subtle ABA concurrency bug"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect concurrency race condition through formal verification",
+      "layers_affected": ["c_to_f", "c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["code", "concurrency", "aba", "lock-free"]
+  },
+  {
+    "id": "BENCH-105",
+    "title": "Documentation specifying impossible performance bounds",
+    "category": "documentation",
+    "difficulty": "expert",
+    "description": "Document performance requirements that violate fundamental physical or computational limits",
+    "target_layers": ["d_to_r", "d_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "docs/performance-spec.md",
+      "description": "Add requirements like 'response time < 1ns' or 'throughput > 10^12 ops/sec'"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect impossible performance specifications",
+      "layers_affected": ["d_to_r", "d_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 600
+    },
+    "tags": ["documentation", "performance", "impossible", "physics"]
+  },
+  {
+    "id": "BENCH-106",
+    "title": "Cross-layer alignment with conflicting optimization priorities",
+    "category": "cross-layer-alignment",
+    "difficulty": "expert",
+    "description": "Create alignment where performance and safety optimizations directly conflict",
+    "target_layers": ["l1_to_l2", "l2_to_l3", "l3_to_tc"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/optimization-priorities.json",
+      "json_path": "$.priorities.performance.weight",
+      "value": 1.0,
+      "description": "Set conflicting weights where performance and safety optimizations oppose each other"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect optimization priority conflicts across layers",
+      "layers_affected": ["l1_to_l2", "l2_to_l3", "l3_to_tc"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["cross-layer", "optimization", "conflicts", "priorities"]
+  },
+  {
+    "id": "BENCH-107",
+    "title": "Config hook with infinite recursion potential",
+    "category": "config-hooks",
+    "difficulty": "expert",
+    "description": "Implement a hook that can trigger infinite recursion through configuration updates",
+    "target_layers": ["c_to_e"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "hooks/config-recursive.js",
+      "content": "// Hook that modifies config in response to config changes",
+      "description": "Create hook with potential for infinite configuration recursion"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect infinite recursion in configuration hooks",
+      "layers_affected": ["c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["config-hooks", "recursion", "infinite", "configuration"]
+  },
+  {
+    "id": "BENCH-108",
+    "title": "Convergence failure with oscillating system state",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Create a system that oscillates between states without converging to a stable point",
+    "target_layers": ["f_to_g", "c_to_e"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/convergence-rules.json",
+      "json_path": "$.rules.oscillation_threshold",
+      "value": 0,
+      "description": "Disable oscillation detection in convergence rules"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect convergence failure due to state oscillation",
+      "layers_affected": ["f_to_g", "c_to_e"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["convergence", "oscillation", "stability", "failure"]
+  },
+  {
+    "id": "BENCH-109",
+    "title": "Reverse flow with data corruption in rollback",
+    "category": "reverse-flow",
+    "difficulty": "expert",
+    "description": "Implement rollback mechanism that corrupts data during reverse operations",
+    "target_layers": ["t_to_r", "d_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "src/rollback-corrupt.js",
+      "content": "// Rollback function that introduces data corruption",
+      "description": "Create reverse flow operation that corrupts data during rollback"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect data corruption in reverse flow operations",
+      "layers_affected": ["t_to_r", "d_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["reverse-flow", "rollback", "corruption", "data-integrity"]
+  },
+  {
+    "id": "BENCH-110",
+    "title": "Integration with intermittent external service failures",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Integrate with external service that fails randomly, requiring sophisticated retry logic",
+    "target_layers": ["c_to_r", "t_to_c"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "src/external-integration.js",
+      "content": "// Integration with service that fails 1% of the time",
+      "description": "Create integration that handles intermittent external service failures"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect inadequate handling of intermittent failures",
+      "layers_affected": ["c_to_r", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["integration", "external", "intermittent", "failures"]
+  }
+]

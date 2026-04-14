@@ -1,0 +1,117 @@
+[
+  {
+    "id": "BENCH-141",
+    "title": "Missing alt text on images",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "HTML images without alt attributes violating accessibility standards",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/components/Image.js",
+      "description": "Remove alt prop from image component"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing accessibility attributes",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ui-ux", "accessibility", "images"]
+  },
+  {
+    "id": "BENCH-142",
+    "title": "Poor color contrast ratio",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "UI elements with insufficient color contrast for readability",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/styles.css",
+      "description": "Set text color with low contrast against background"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect WCAG contrast violations",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ui-ux", "accessibility", "contrast"]
+  },
+  {
+    "id": "BENCH-143",
+    "title": "Keyboard navigation not supported",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Interactive elements that cannot be accessed via keyboard navigation",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/components/Button.js",
+      "description": "Remove keyboard event handlers from interactive component"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect lack of keyboard accessibility",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ui-ux", "accessibility", "keyboard"]
+  },
+  {
+    "id": "BENCH-144",
+    "title": "Responsive design breakpoint failure",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "Layout that breaks on mobile devices due to fixed widths",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/styles.css",
+      "description": "Use fixed pixel widths instead of responsive units"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect responsive design issues",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ui-ux", "responsive", "mobile"]
+  },
+  {
+    "id": "BENCH-145",
+    "title": "Poor user experience with slow loading states",
+    "category": "code",
+    "difficulty": "expert",
+    "description": "UI without loading indicators causing poor perceived performance",
+    "target_layers": ["c_to_t"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/components/DataTable.js",
+      "description": "Remove loading spinner during data fetch"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect lack of loading state UX",
+      "layers_affected": ["c_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 900
+    },
+    "tags": ["ui-ux", "loading", "performance"]
+  }
+]
