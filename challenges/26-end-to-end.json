@@ -1,0 +1,122 @@
+[
+  {
+    "id": "BENCH-201",
+    "title": "End-to-End User Authentication Feature",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Complete implementation from product requirement to UAT-ready authentication system with defects injected across all layers",
+    "target_layers": ["r_to_f", "f_to_c", "c_to_t", "t_to_d"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/auth-system-setup.js",
+      "description": "Create file with compound defects: missing formal coverage in requirements, incomplete TLA+ spec, SQL injection in code, incomplete tests"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve must fix all layers sequentially: validate requirements, complete formal models, secure code, comprehensive tests for UAT readiness",
+      "layers_affected": ["r_to_f", "f_to_c", "c_to_t", "t_to_d"]
+    },
+    "scoring": {
+      "method": "custom",
+      "custom_check": "All layers fixed: requirements linked to formal models, TLA+ spec complete, code secure, tests comprehensive",
+      "timeout_seconds": 1800
+    },
+    "tags": ["end-to-end", "authentication", "pipeline", "uat-ready"]
+  },
+  {
+    "id": "BENCH-202",
+    "title": "Complete E-commerce Checkout Flow",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Full implementation of checkout from requirements to UAT with cross-layer defects",
+    "target_layers": ["r_to_f", "f_to_t", "c_to_t", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/checkout-system-setup.js",
+      "description": "Setup with broken linkages, deadlock in formal spec, race condition in code, incomplete integration tests"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve must resolve dependencies: fix requirements, verify formal models, eliminate race conditions, add comprehensive integration tests",
+      "layers_affected": ["r_to_f", "f_to_t", "c_to_t", "t_to_c"]
+    },
+    "scoring": {
+      "method": "custom",
+      "custom_check": "Pipeline complete: no formal gaps, no deadlocks, no race conditions, full integration coverage",
+      "timeout_seconds": 1800
+    },
+    "tags": ["end-to-end", "e-commerce", "checkout", "concurrency"]
+  },
+  {
+    "id": "BENCH-203",
+    "title": "Progressive Feature Development: Basic to Advanced",
+    "category": "convergence",
+    "difficulty": "expert",
+    "description": "Multi-milestone development from MVP to production with escalating complexity",
+    "target_layers": ["r_to_f", "f_to_c", "c_to_t", "t_to_d", "d_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/feature-development-setup.js",
+      "description": "Progressive setup with MVP defects, then beta performance issues, then production documentation gaps"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve must achieve each milestone sequentially, maintaining quality as complexity increases",
+      "layers_affected": ["r_to_f", "f_to_c", "c_to_t", "t_to_d", "d_to_r"]
+    },
+    "scoring": {
+      "method": "custom",
+      "custom_check": "Milestone progress: 50% MVP complete, 70% beta features working, 90% production ready",
+      "timeout_seconds": 2400
+    },
+    "tags": ["end-to-end", "progressive", "milestones", "scalability"]
+  },
+  {
+    "id": "BENCH-204",
+    "title": "UAT-Ready API Gateway Implementation",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Complete API gateway from specification to UAT testing with security and performance requirements",
+    "target_layers": ["r_to_f", "f_to_c", "c_to_t", "t_to_c"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/api-gateway-setup.js",
+      "description": "Setup with performance/security requirements, incomplete formal model, vulnerable code, missing load tests, incomplete UAT"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve must deliver production-ready API gateway meeting all requirements, security, performance, and UAT criteria",
+      "layers_affected": ["r_to_f", "f_to_c", "c_to_t", "t_to_c"]
+    },
+    "scoring": {
+      "method": "custom",
+      "custom_check": "UAT ready: security audit passes, performance benchmarks met, formal verification complete",
+      "timeout_seconds": 1800
+    },
+    "tags": ["end-to-end", "api-gateway", "uat", "security", "performance"]
+  },
+  {
+    "id": "BENCH-205",
+    "title": "Cross-Team Feature Integration",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Feature requiring coordination between multiple teams/services with integration defects",
+    "target_layers": ["r_to_f", "f_to_c", "c_to_t", "t_to_c", "c_to_r"],
+    "mutation": {
+      "type": "file-modify",
+      "target_file": "src/cross-team-setup.js",
+      "description": "Setup with cross-team dependencies, inconsistent interfaces, poor error handling, missing outage tests"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve must coordinate fixes across services, ensuring consistent interfaces, proper error handling, and comprehensive testing",
+      "layers_affected": ["r_to_f", "f_to_c", "c_to_t", "t_to_c", "c_to_r"]
+    },
+    "scoring": {
+      "method": "custom",
+      "custom_check": "Integration complete: service interfaces consistent, error handling comprehensive, outage scenarios covered",
+      "timeout_seconds": 2100
+    },
+    "tags": ["end-to-end", "cross-team", "integration", "microservices"]
+  }
+]
