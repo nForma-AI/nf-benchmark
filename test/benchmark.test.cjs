@@ -7,9 +7,9 @@ const { parseJsonPath } = require(path.join(__dirname, '..', 'lib', 'mutator.cjs
 const { scoreChallenge } = require(path.join(__dirname, '..', 'lib', 'scorer.cjs'));
 
 describe('Challenge Loading', () => {
-  test('loads all 205 challenges', () => {
+  test('loads all 230 challenges', () => {
     const all = loadAllChallenges();
-    assert.strictEqual(all.length, 205, `Expected 205 challenges, got ${all.length}`);
+    assert.strictEqual(all.length, 230, `Expected 230 challenges, got ${all.length}`);
   });
 
   test('all challenges have unique IDs', () => {
@@ -26,10 +26,10 @@ describe('Challenge Loading', () => {
     }
   });
 
-  test('IDs are sequential BENCH-001 through BENCH-205', () => {
+  test('IDs are sequential BENCH-001 through BENCH-230', () => {
     const all = loadAllChallenges();
     const ids = all.map(c => parseInt(c.id.replace('BENCH-', ''), 10)).sort((a, b) => a - b);
-    for (let i = 0; i < 205; i++) {
+    for (let i = 0; i < 230; i++) {
       assert.strictEqual(ids[i], i + 1, `Missing BENCH-${String(i + 1).padStart(3, '0')}`);
     }
   });
@@ -73,9 +73,9 @@ describe('Challenge Validation', () => {
 });
 
 describe('Challenge Coverage', () => {
-  test('covers all 10 categories', () => {
+  test('covers all 12 categories', () => {
     const cats = getCategories();
-    assert.strictEqual(cats.length, 10, `Expected 10 categories, got ${cats.length}: ${cats.join(', ')}`);
+    assert.strictEqual(cats.length, 12, `Expected 12 categories, got ${cats.length}: ${cats.join(', ')}`);
   });
 
   test('covers all 4 difficulty levels', () => {
@@ -181,5 +181,68 @@ describe('Scorer', () => {
     const result = scoreChallenge(challenge, { total: 10 }, { total: 6 }, '', null);
     assert.ok(result.reduction_score > 0, `Expected positive reduction_score, got ${result.reduction_score}`);
     assert.ok(Math.abs(result.reduction_score - 0.4) < 0.001, `Expected 0.4, got ${result.reduction_score}`);
+  });
+
+  test('no_regression passes when totals are equal', () => {
+    const challenge = { scoring: { method: 'no_regression' } };
+    const result = scoreChallenge(challenge, { total: 10 }, { total: 10 }, '', null);
+    assert.ok(result.passed, `Expected pass but got: ${result.reason}`);
+  });
+
+  test('no_regression passes when delta is exactly 1', () => {
+    const challenge = { scoring: { method: 'no_regression' } };
+    const result = scoreChallenge(challenge, { total: 10 }, { total: 11 }, '', null);
+    assert.ok(result.passed, `Expected pass (delta=1 is allowed) but got: ${result.reason}`);
+  });
+
+  test('no_regression fails when delta exceeds 1', () => {
+    const challenge = { scoring: { method: 'no_regression' } };
+    const result = scoreChallenge(challenge, { total: 10 }, { total: 15 }, '', null);
+    assert.ok(!result.passed, `Expected fail but got: ${result.reason}`);
+    assert.strictEqual(result.details.delta, 5);
+  });
+
+  test('fix_and_verify passes when detection and fix both succeed', () => {
+    const challenge = {
+      scoring: { method: 'fix_and_verify', target_layer: 'r_to_f' },
+      expected_outcome: { layers_affected: ['r_to_f'] },
+      target_layers: ['r_to_f']
+    };
+    const pre = { total: 10, r_to_f: { residual: 2 } };
+    const seeded = { total: 14, r_to_f: { residual: 6 } };
+    const fix = { total: 10, r_to_f: { residual: 2 } };
+    const result = scoreChallenge(challenge, pre, seeded, '', null, fix);
+    assert.ok(result.passed, `Expected pass but got: ${result.reason}`);
+    assert.strictEqual(result.score, 1);
+  });
+
+  test('fix_and_verify fails with score=0.5 when detected but not fixed', () => {
+    const challenge = {
+      scoring: { method: 'fix_and_verify', target_layer: 'r_to_f' },
+      expected_outcome: { layers_affected: ['r_to_f'] },
+      target_layers: ['r_to_f']
+    };
+    const pre = { total: 10, r_to_f: { residual: 2 } };
+    const seeded = { total: 14, r_to_f: { residual: 6 } };
+    const fix = { total: 14, r_to_f: { residual: 5 } }; // still higher than pre
+    const result = scoreChallenge(challenge, pre, seeded, '', null, fix);
+    assert.ok(!result.passed, `Expected fail but got: ${result.reason}`);
+    assert.strictEqual(result.score, 0.5);
+    assert.ok(result.reason.includes('not fixed'), `Expected 'not fixed' in reason: ${result.reason}`);
+  });
+
+  test('fix_and_verify fails with score=0 when detection fails', () => {
+    const challenge = {
+      scoring: { method: 'fix_and_verify', target_layer: 'r_to_f' },
+      expected_outcome: { layers_affected: ['r_to_f'] },
+      target_layers: ['r_to_f']
+    };
+    const pre = { total: 10, r_to_f: { residual: 2 } };
+    const seeded = { total: 10, r_to_f: { residual: 2 } }; // not detected
+    const fix = { total: 10, r_to_f: { residual: 2 } };
+    const result = scoreChallenge(challenge, pre, seeded, '', null, fix);
+    assert.ok(!result.passed, `Expected fail but got: ${result.reason}`);
+    assert.strictEqual(result.score, 0);
+    assert.ok(result.reason.includes('not detected') || result.reason.includes('Mutation not detected'), `Expected 'not detected' in reason: ${result.reason}`);
   });
 });
