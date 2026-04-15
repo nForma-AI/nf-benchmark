@@ -11,6 +11,9 @@ const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
 const { scoreChallenge, computeReport, formatReport } = require(path.join(libDir, 'scorer.cjs'));
 const { createSnapshot, restoreSnapshot, runSolve, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
+const RESULTS_DIR = path.join(__dirname, '..', 'results');
+const BASELINE_PATH = path.join(__dirname, '..', 'baseline.json');
+
 const args = process.argv.slice(2);
 const command = args[0] || 'help';
 
@@ -36,6 +39,9 @@ function getFilterOptions() {
     if (args[i] === '--timeout' && args[i + 1]) opts.timeout = parseInt(args[++i], 10);
     if (args[i] === '--dry-run') opts.dryRun = true;
     if (args[i] === '--parallel' && args[i + 1]) opts.parallel = parseInt(args[++i], 10);
+    if (args[i] === '--save-baseline') opts.saveBaseline = true;
+    if (args[i] === '--compare-baseline') opts.compareBaseline = true;
+    if (args[i] === '--baseline-tolerance' && args[i + 1]) opts.baselineTolerance = parseFloat(args[++i]);
   }
   return opts;
 }
@@ -43,6 +49,8 @@ function getFilterOptions() {
 async function runBenchmark() {
   const opts = getFilterOptions();
   const projectRoot = opts.projectRoot || getProjectRoot();
+  // Default regression tolerance: pass rate may not drop more than 5 percentage points
+  const baselineTolerance = opts.baselineTolerance !== undefined ? opts.baselineTolerance : 5.0;
 
   if (!fs.existsSync(path.join(projectRoot, 'bin', 'nf-solve.cjs'))) {
     console.error(`Error: ${projectRoot} does not appear to be a valid nForma project`);
@@ -89,6 +97,7 @@ async function runBenchmark() {
     process.stdout.write(`${progress} ${challenge.id} ${challenge.title}... `);
 
     const snapshot = createSnapshot(projectRoot);
+    const challengeStart = Date.now();
 
     try {
       const preSolve = runSolve(projectRoot, { timeout: opts.timeout || 300 });
@@ -107,31 +116,40 @@ async function runBenchmark() {
         postSolve.error
       );
 
+      const executionTimeMs = Date.now() - challengeStart;
+
       const result = {
         challenge,
         pre_residual: preResidual,
         post_residual: postResidual,
         score,
+        execution_time_ms: executionTimeMs,
         timestamp: new Date().toISOString()
       };
 
       results.push(result);
       saveResult(challenge.id, result);
 
+      const timeStr = executionTimeMs >= 1000
+        ? `${(executionTimeMs / 1000).toFixed(1)}s`
+        : `${executionTimeMs}ms`;
+
       if (score.passed) {
         passed++;
-        console.log(`PASS (${score.reason})`);
+        console.log(`PASS (${score.reason}) [${timeStr}]`);
       } else {
         failed++;
-        console.log(`FAIL (${score.reason})`);
+        console.log(`FAIL (${score.reason}) [${timeStr}]`);
       }
     } catch (e) {
+      const executionTimeMs = Date.now() - challengeStart;
       failed++;
       const result = {
         challenge,
         pre_residual: null,
         post_residual: null,
-        score: { passed: false, score: 0, reason: `Benchmark error: ${e.message}` },
+        score: { passed: false, score: 0, reduction_score: 0, reason: `Benchmark error: ${e.message}` },
+        execution_time_ms: executionTimeMs,
         timestamp: new Date().toISOString()
       };
       results.push(result);
@@ -145,16 +163,59 @@ async function runBenchmark() {
   const report = computeReport(results);
   console.log('\n' + formatReport(report));
 
-  const reportPath = path.join(__dirname, '..', 'results', `report-${Date.now().toString(36)}.json`);
+  const reportPath = path.join(RESULTS_DIR, `report-${Date.now().toString(36)}.json`);
+  if (!fs.existsSync(RESULTS_DIR)) fs.mkdirSync(RESULTS_DIR, { recursive: true });
   fs.writeFileSync(reportPath, JSON.stringify({ report, results: results.map(r => ({
     id: r.challenge.id,
     title: r.challenge.title,
     category: r.challenge.category,
     difficulty: r.challenge.difficulty,
     passed: r.score.passed,
-    reason: r.score.reason
+    reason: r.score.reason,
+    reduction_score: r.score.reduction_score,
+    execution_time_ms: r.execution_time_ms
   })) }, null, 2) + '\n');
   console.log(`\nFull report saved to ${reportPath}`);
+
+  // Baseline operations
+  if (opts.saveBaseline) {
+    const baseline = {
+      saved_at: new Date().toISOString(),
+      total: report.total,
+      passed: report.passed,
+      pass_rate: parseFloat(report.passRate),
+      avg_reduction_score: report.avgReductionScore,
+      by_category: report.byCategory,
+      by_difficulty: report.byDifficulty
+    };
+    fs.writeFileSync(BASELINE_PATH, JSON.stringify(baseline, null, 2) + '\n');
+    console.log(`\nBaseline saved to ${BASELINE_PATH}`);
+  }
+
+  if (opts.compareBaseline) {
+    if (!fs.existsSync(BASELINE_PATH)) {
+      console.warn('\nWARN: --compare-baseline requested but no baseline.json found. Skipping comparison.');
+    } else {
+      const baseline = JSON.parse(fs.readFileSync(BASELINE_PATH, 'utf8'));
+      const currentRate = parseFloat(report.passRate);
+      const baselineRate = baseline.pass_rate;
+      const delta = currentRate - baselineRate;
+
+      console.log(`\nBaseline comparison:`);
+      console.log(`  Baseline pass rate : ${baselineRate.toFixed(1)}%  (saved ${baseline.saved_at})`);
+      console.log(`  Current pass rate  : ${currentRate.toFixed(1)}%`);
+      console.log(`  Delta              : ${delta >= 0 ? '+' : ''}${delta.toFixed(1)}pp`);
+
+      if (delta < -baselineTolerance) {
+        console.error(`\nREGRESSION: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (tolerance: ${baselineTolerance}pp)`);
+        process.exit(1);
+      } else if (delta < 0) {
+        console.warn(`\nWARN: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (within ${baselineTolerance}pp tolerance)`);
+      } else {
+        console.log(`\nOK: No regression detected.`);
+      }
+    }
+  }
 
   process.exit(failed > 0 ? 1 : 0);
 }
@@ -197,19 +258,24 @@ Commands:
   help             Show this help
 
 Options:
-  --project-root <path>   Path to nForma project (or set QGSD_ROOT env)
-  --single <BENCH-NNN>    Run a single challenge by ID
-  --category <name>       Filter by category
-  --difficulty <level>    Filter by difficulty (easy|medium|hard|expert)
-  --tags <tag1,tag2>      Filter by tags
-  --timeout <seconds>     Per-challenge timeout (default: 300)
-  --dry-run               Show what would run without executing
-  --parallel <N>          Run N challenges in parallel (not yet implemented)
+  --project-root <path>       Path to nForma project (or set QGSD_ROOT env)
+  --single <BENCH-NNN>        Run a single challenge by ID
+  --category <name>           Filter by category
+  --difficulty <level>        Filter by difficulty (easy|medium|hard|expert)
+  --tags <tag1,tag2>          Filter by tags
+  --timeout <seconds>         Per-challenge timeout (default: 300)
+  --dry-run                   Show what would run without executing
+  --parallel <N>              Run N challenges in parallel (not yet implemented)
+  --save-baseline             Save current results as baseline.json
+  --compare-baseline          Fail if pass rate drops >5pp vs baseline.json
+  --baseline-tolerance <pp>   Pass rate drop tolerance in percentage points (default: 5)
 
 Examples:
   nf-benchmark run --project-root ~/code/QGSD
   nf-benchmark run --single BENCH-001 --project-root ~/code/QGSD
   nf-benchmark run --category formal-models --project-root ~/code/QGSD
+  nf-benchmark run --project-root ~/code/QGSD --save-baseline
+  nf-benchmark run --project-root ~/code/QGSD --compare-baseline
   nf-benchmark list
   nf-benchmark validate
 `);
