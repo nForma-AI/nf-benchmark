@@ -1,0 +1,309 @@
+[
+  {
+    "id": "BENCH-221",
+    "title": "Requirement with empty formal_models and missing provenance — r_to_f + r_to_d",
+    "category": "multi-layer",
+    "difficulty": "medium",
+    "description": "Add a requirement with both empty formal_models AND a nonexistent provenance source file. This single mutation cascades into two layers: R->F (missing formal coverage) and R->D (broken provenance link).",
+    "target_layers": ["r_to_f", "r_to_d"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-MULTI-221",
+        "text": "Multi-layer benchmark requirement with no formal model and broken provenance",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "unknown",
+        "status": "Complete",
+        "provenance": { "source_file": "nonexistent/multi-layer/phantom.md", "milestone": "benchmark" },
+        "formal_models": [],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add requirement with empty formal_models and nonexistent provenance — cascades to r_to_f and r_to_d"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect both R->F gap and broken R->D provenance link",
+      "layers_affected": ["r_to_f", "r_to_d"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "r_to_d", "requirements", "provenance"],
+    "scoring_note": "Primary layer is r_to_f; r_to_d is a secondary signal"
+  },
+  {
+    "id": "BENCH-222",
+    "title": "Model entry with no test coverage and empty tags — f_to_t + per_model_gates",
+    "category": "multi-layer",
+    "difficulty": "medium",
+    "description": "Add a formal model registry entry with zero test coverage AND empty maturity tags. This cascades into F->T (no test references) and per_model_gates (empty gate tags indicate immature model).",
+    "target_layers": ["f_to_t", "per_model_gates"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models",
+      "value": {
+        "id": "bench-multi-222-model",
+        "name": "BenchMulti222Model",
+        "path": ".planning/formal/tla/BenchMulti222.tla",
+        "type": "tla",
+        "properties": [],
+        "tags": [],
+        "test_refs": [],
+        "maturity": "draft",
+        "description": "Multi-layer benchmark model with no tests and no gate tags"
+      },
+      "description": "Add model entry with empty test_refs and empty tags — cascades to f_to_t and per_model_gates"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect missing test coverage (F->T) and empty maturity gates",
+      "layers_affected": ["f_to_t", "per_model_gates"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "f_to_t",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "f_to_t", "per_model_gates", "formal-models"]
+  },
+  {
+    "id": "BENCH-223",
+    "title": "Unit test entry with no requirement link and no formal model — t_to_c + c_to_r",
+    "category": "multi-layer",
+    "difficulty": "medium",
+    "description": "Add a unit test coverage entry referencing a test file that has no requirement mapping and no formal model backing. This cascades into T->C (test with no code coverage link) and C->R (code path unclaimed by any requirement).",
+    "target_layers": ["t_to_c", "c_to_r"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/unit-test-coverage.json",
+      "json_path": "$.tests",
+      "value": {
+        "id": "bench-multi-223-test",
+        "file": "test/bench-phantom-multi-223.test.cjs",
+        "requirement_ids": [],
+        "formal_model_ids": [],
+        "coverage_percentage": 0,
+        "description": "Multi-layer benchmark phantom test with no req/model mapping"
+      },
+      "description": "Add test entry with no requirement or formal model references — cascades to t_to_c and c_to_r"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect unmapped test (T->C gap) and unclaimed code path (C->R gap)",
+      "layers_affected": ["t_to_c", "c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "t_to_c",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "t_to_c", "c_to_r", "tests"]
+  },
+  {
+    "id": "BENCH-224",
+    "title": "Requirement removed but formal model and test refs remain — r_to_f + f_to_t",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Remove the first requirement (ACT-01), leaving its formal model and test references as orphans. This simultaneously creates an R->F gap (orphaned formal model) and a potential F->T gap cascade.",
+    "target_layers": ["r_to_f", "f_to_t"],
+    "mutation": {
+      "type": "json-entry-remove",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements[0]",
+      "description": "Remove first requirement — orphans its formal model coverage, cascading into r_to_f and f_to_t"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect orphaned formal model (R->F) and cascading test coverage gap (F->T)",
+      "layers_affected": ["r_to_f", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "f_to_t", "requirements", "orphan"]
+  },
+  {
+    "id": "BENCH-225",
+    "title": "Solve-state wave_count zeroed — cascades to r_to_f + formal_lint",
+    "category": "multi-layer",
+    "difficulty": "medium",
+    "description": "Zero out the wave_count in solve-state.json. This can signal a solver state inconsistency that affects both the R->F layer (stale wave analysis) and the formal_lint layer (model-state mismatch).",
+    "target_layers": ["r_to_f", "formal_lint"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/solve-state.json",
+      "json_path": "$.wave_count",
+      "value": 0,
+      "description": "Zero out wave_count in solve-state — triggers solver inconsistency across r_to_f and formal_lint"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect stale wave state impacting formal layer consistency",
+      "layers_affected": ["r_to_f", "formal_lint"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "formal_lint", "solve-state"]
+  },
+  {
+    "id": "BENCH-226",
+    "title": "Model registry entry with broken path and no hazard entry — formal_lint + f_to_h",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Add a formal model registry entry whose path points to a nonexistent TLA+ file AND has no corresponding hazard model entry. This cascades into formal_lint (broken file reference) and f_to_h (missing hazard mapping).",
+    "target_layers": ["formal_lint", "f_to_h"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models",
+      "value": {
+        "id": "bench-multi-226-broken",
+        "name": "BenchMulti226Broken",
+        "path": ".planning/formal/tla/BenchMulti226NonExistent.tla",
+        "type": "tla",
+        "properties": ["SafetyP1"],
+        "tags": ["safety"],
+        "test_refs": [],
+        "maturity": "stable",
+        "description": "Multi-layer benchmark model with broken path and no hazard entry"
+      },
+      "description": "Add model with nonexistent TLA+ file and no hazard mapping — cascades to formal_lint and f_to_h"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect broken model file path (formal_lint) and missing hazard coverage (f_to_h)",
+      "layers_affected": ["formal_lint", "f_to_h"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "formal_lint",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "formal_lint", "f_to_h", "formal-models", "hazard"]
+  },
+  {
+    "id": "BENCH-227",
+    "title": "Requirement with status=draft cascades — r_to_f + r_to_d + f_to_t",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Add a requirement in draft status with formal_models populated AND a valid provenance file path. The draft status should cascade: the formal model is premature (R->F), the provenance link should flag as in-progress (R->D), and the associated test coverage should be flagged as pending (F->T).",
+    "target_layers": ["r_to_f", "r_to_d", "f_to_t"],
+    "mutation": {
+      "type": "json-entry-add",
+      "target_file": ".planning/formal/requirements.json",
+      "json_path": "$.requirements",
+      "value": {
+        "id": "BENCH-MULTI-227",
+        "text": "Multi-layer draft requirement that cascades across three formal layers",
+        "category": "Benchmark",
+        "tier": "user",
+        "phase": "future",
+        "status": "draft",
+        "provenance": { "source_file": "benchmark", "milestone": "benchmark" },
+        "formal_models": [".planning/formal/tla/NFQuorum.tla"],
+        "category_raw": "Benchmark"
+      },
+      "description": "Add draft requirement with formal model — draft status cascades across r_to_f, r_to_d, f_to_t"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect draft-status cascades across three layers",
+      "layers_affected": ["r_to_f", "r_to_d", "f_to_t"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "r_to_d", "f_to_t", "requirements", "status"]
+  },
+  {
+    "id": "BENCH-228",
+    "title": "Layer-manifest total_layers count mismatch — formal_lint + per_model_gates",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Corrupt the layer-manifest.json by setting total_layers to an incorrect value. This mismatch can cascade into formal_lint (manifest inconsistency) and per_model_gates (gate counts misaligned with manifest).",
+    "target_layers": ["formal_lint", "per_model_gates"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/layer-manifest.json",
+      "json_path": "$.total_layers",
+      "value": 9999,
+      "description": "Set total_layers to impossible value — cascades to formal_lint and per_model_gates"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect manifest count mismatch affecting formal_lint and per_model_gates",
+      "layers_affected": ["formal_lint", "per_model_gates"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "formal_lint",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "formal_lint", "per_model_gates", "layer-manifest"]
+  },
+  {
+    "id": "BENCH-229",
+    "title": "Proximity index entry with invalid refs — r_to_f + c_to_r",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Add an entry to proximity-index.json that references nonexistent requirement and code file IDs. This cascades: R->F sees a requirement reference without formal backing, and C->R sees a code path with no valid requirement claim.",
+    "target_layers": ["r_to_f", "c_to_r"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/proximity-index.json",
+      "json_path": "$.version",
+      "value": -1,
+      "description": "Corrupt proximity-index version to -1 — triggers inconsistency in r_to_f and c_to_r layer analysis"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect proximity index corruption affecting R->F and C->R layers",
+      "layers_affected": ["r_to_f", "c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "c_to_r", "proximity-index"]
+  },
+  {
+    "id": "BENCH-230",
+    "title": "Traceability matrix with conflicting layer status — r_to_f + f_to_t + t_to_c",
+    "category": "multi-layer",
+    "difficulty": "hard",
+    "description": "Corrupt the traceability-matrix.json by setting all layer statuses to 'broken'. This is a three-layer cascade: R->F, F->T, and T->C all report broken links simultaneously, simulating a root-cause corruption that ripples through the entire formal traceability chain.",
+    "target_layers": ["r_to_f", "f_to_t", "t_to_c"],
+    "mutation": {
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.status",
+      "value": "broken",
+      "description": "Set traceability matrix status to 'broken' — cascades across r_to_f, f_to_t, and t_to_c"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should detect broken traceability status cascading across three layers",
+      "layers_affected": ["r_to_f", "f_to_t", "t_to_c"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "target_layer": "r_to_f",
+      "timeout_seconds": 300
+    },
+    "tags": ["multi-layer", "r_to_f", "f_to_t", "t_to_c", "traceability"]
+  }
+]

@@ -1,41 +1,112 @@
 name: Benchmark nf:solve
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
   schedule:
-    - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
+    - cron: '0 2 * * 1'  # Weekly on Monday 2 AM UTC
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   benchmark:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout nf-benchmark
+        uses: actions/checkout@v4
         with:
           repository: 'nForma-AI/nf-benchmark'
           path: 'nf-benchmark'
 
-      - uses: actions/checkout@v4
+      - name: Checkout nForma (QGSD)
+        uses: actions/checkout@v4
         with:
           repository: 'nForma-AI/nForma'
           path: 'nforma'
           fetch-depth: 1
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: nf-benchmark/package-lock.json
 
       - name: Install dependencies
         working-directory: nf-benchmark
-        run: npm install
+        run: npm ci
 
-      - name: Run benchmark
+      # On main branch (or weekly): restore any existing baseline then save a new one
+      - name: Restore baseline cache (main)
+        if: github.event_name != 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: nf-benchmark/baseline.json
+          key: benchmark-baseline-main-${{ github.sha }}
+          restore-keys: |
+            benchmark-baseline-main-
+
+      # On PRs: restore the main branch baseline so we can compare against it
+      - name: Restore baseline cache (PR)
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: nf-benchmark/baseline.json
+          key: benchmark-baseline-main-
+          restore-keys: |
+            benchmark-baseline-main-
+
+      # Main / nightly run: run all challenges and save as new baseline
+      - name: Run benchmark (main — save baseline)
+        if: github.event_name != 'pull_request'
         working-directory: nf-benchmark
-        run: node bin/nf-benchmark.cjs run --project-root ../nforma --timeout 600
+        run: |
+          node bin/nf-benchmark.cjs run \
+            --project-root ../nforma \
+            --timeout 600 \
+            --save-baseline
+        env:
+          CI: true
+
+      # PR run: compare against main baseline; fail if pass rate drops > 2pp
+      - name: Run benchmark (PR — compare baseline)
+        if: github.event_name == 'pull_request'
+        working-directory: nf-benchmark
+        run: |
+          COMPARE_FLAG=""
+          if [ -f baseline.json ]; then
+            COMPARE_FLAG="--compare-baseline --baseline-tolerance 0"
+          else
+            echo "No baseline found — running without comparison (first run on this repo?)"
+          fi
+
+          node bin/nf-benchmark.cjs run \
+            --project-root ../nforma \
+            --timeout 600 \
+            $COMPARE_FLAG
+        env:
+          CI: true
+
+      # Save the newly generated baseline so PRs can compare against it
+      - name: Save baseline cache (main)
+        if: github.event_name != 'pull_request' && success()
+        uses: actions/cache/save@v4
+        with:
+          path: nf-benchmark/baseline.json
+          key: benchmark-baseline-main-${{ github.sha }}
 
       - name: Upload results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: benchmark-results
-          path: nf-benchmark/results/
+          name: benchmark-results-${{ github.run_id }}
+          path: |
+            nf-benchmark/results/
+            nf-benchmark/baseline.json
+          retention-days: 30

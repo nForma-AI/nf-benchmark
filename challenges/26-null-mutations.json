@@ -1,0 +1,347 @@
+[
+  {
+    "id": "BENCH-206",
+    "title": "Stability check — r_to_f layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the r_to_f layer residual is stable (no false positives)",
+    "target_layers": ["r_to_f"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "r_to_f"]
+  },
+  {
+    "id": "BENCH-207",
+    "title": "Stability check — f_to_t layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the f_to_t layer residual is stable",
+    "target_layers": ["f_to_t"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "f_to_t"]
+  },
+  {
+    "id": "BENCH-208",
+    "title": "Stability check — c_to_r layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the c_to_r layer residual is stable",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "c_to_r"]
+  },
+  {
+    "id": "BENCH-209",
+    "title": "Stability check — t_to_c layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the t_to_c layer residual is stable",
+    "target_layers": ["t_to_c"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "t_to_c"]
+  },
+  {
+    "id": "BENCH-210",
+    "title": "Stability check — formal_lint layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the formal_lint layer residual is stable",
+    "target_layers": ["formal_lint"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "formal_lint"]
+  },
+  {
+    "id": "BENCH-211",
+    "title": "Stability check — r_to_d layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the r_to_d layer residual is stable",
+    "target_layers": ["r_to_d"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "r_to_d"]
+  },
+  {
+    "id": "BENCH-212",
+    "title": "Stability check — f_to_c layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the f_to_c layer residual is stable",
+    "target_layers": ["f_to_c"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "f_to_c"]
+  },
+  {
+    "id": "BENCH-213",
+    "title": "Stability check — c_to_f layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the c_to_f layer residual is stable",
+    "target_layers": ["c_to_f"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "c_to_f"]
+  },
+  {
+    "id": "BENCH-214",
+    "title": "Stability check — f_to_h layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the f_to_h layer residual is stable",
+    "target_layers": ["f_to_h"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "f_to_h"]
+  },
+  {
+    "id": "BENCH-215",
+    "title": "Stability check — git_heatmap layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the git_heatmap layer residual is stable",
+    "target_layers": ["git_heatmap"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "git_heatmap"]
+  },
+  {
+    "id": "BENCH-216",
+    "title": "Stability check — hazard_model layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the hazard_model layer residual is stable",
+    "target_layers": ["hazard_model"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "hazard_model"]
+  },
+  {
+    "id": "BENCH-217",
+    "title": "Stability check — per_model_gates layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the per_model_gates layer residual is stable",
+    "target_layers": ["per_model_gates"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "per_model_gates"]
+  },
+  {
+    "id": "BENCH-218",
+    "title": "Stability check — git_history layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the git_history layer residual is stable",
+    "target_layers": ["git_history"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "git_history"]
+  },
+  {
+    "id": "BENCH-219",
+    "title": "Stability check — d_to_r layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the d_to_r layer residual is stable",
+    "target_layers": ["d_to_r"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "d_to_r"]
+  },
+  {
+    "id": "BENCH-220",
+    "title": "Stability check — l3_to_tc layer (null mutation)",
+    "category": "stability",
+    "difficulty": "easy",
+    "description": "Run solver twice without any mutation and verify the l3_to_tc layer residual is stable",
+    "target_layers": ["l3_to_tc"],
+    "mutation": {
+      "type": "null-mutation",
+      "target_file": ".planning/formal/solve-state.json",
+      "description": "No mutation applied — stability check only"
+    },
+    "expected_outcome": {
+      "residual_change": "none",
+      "description": "Solver residual should remain stable across two runs",
+      "layers_affected": []
+    },
+    "scoring": {
+      "method": "no_regression",
+      "timeout_seconds": 300
+    },
+    "tags": ["stability", "null-mutation", "l3_to_tc"]
+  }
+]

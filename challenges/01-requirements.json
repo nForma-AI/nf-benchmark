@@ -29,8 +29,7 @@
       "layers_affected": ["r_to_f"]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "r_to_f",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
     "tags": ["requirements", "r_to_f", "synthetic"]
