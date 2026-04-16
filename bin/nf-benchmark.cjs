@@ -13,13 +13,21 @@ if (!isMainThread) {
 
   const libDir = path.join(__dirname, '..', 'lib');
   const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
-  const { scoreChallenge } = require(path.join(libDir, 'scorer.cjs'));
+  const { scoreChallenge, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
   const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
+
+  function workerFocusLayer(challenge) {
+    const layer = challenge.scoring && challenge.scoring.target_layer;
+    if (!layer) return null;
+    return LAYER_ALIASES[layer] || layer;
+  }
 
   (async () => {
     for (const challenge of challenges) {
       const challengeStart = Date.now();
       const snapshot = createSnapshot(projectRoot);
+      const focus = workerFocusLayer(challenge);
+      const solveOpts = { timeout, focus };
       let result;
 
       try {
@@ -27,31 +35,31 @@ if (!isMainThread) {
 
         if (challenge.scoring.method === 'no_regression') {
           // No mutation applied — just run twice
-          const preSolve = runSolve(projectRoot, { timeout });
+          const preSolve = runSolve(projectRoot, solveOpts);
           preResidual = preSolve.residual_vector;
-          const postSolve = runSolve(projectRoot, { timeout });
+          const postSolve = runSolve(projectRoot, solveOpts);
           seededResidual = postSolve.residual_vector;
           postSolveOutput = postSolve.raw_output;
           postSolveError = postSolve.error;
           fixResidual = undefined;
         } else if (challenge.scoring.method === 'fix_and_verify') {
-          const preSolve = runSolve(projectRoot, { timeout });
+          const preSolve = runSolve(projectRoot, solveOpts);
           preResidual = preSolve.residual_vector;
           applyMutation(challenge, projectRoot);
-          const seededSolve = runSolve(projectRoot, { timeout });
+          const seededSolve = runSolve(projectRoot, solveOpts);
           seededResidual = seededSolve.residual_vector;
           postSolveOutput = seededSolve.raw_output;
           postSolveError = seededSolve.error;
           // Attempt full remediation
-          runSolveFull(projectRoot, { timeout: timeout * 2 });
+          runSolveFull(projectRoot, { timeout: timeout * 2, focus });
           // Measure result after fix
-          const postFixSolve = runSolve(projectRoot, { timeout });
+          const postFixSolve = runSolve(projectRoot, solveOpts);
           fixResidual = postFixSolve.residual_vector;
         } else {
-          const preSolve = runSolve(projectRoot, { timeout });
+          const preSolve = runSolve(projectRoot, solveOpts);
           preResidual = preSolve.residual_vector;
           applyMutation(challenge, projectRoot);
-          const postSolve = runSolve(projectRoot, { timeout });
+          const postSolve = runSolve(projectRoot, solveOpts);
           seededResidual = postSolve.residual_vector;
           postSolveOutput = postSolve.raw_output;
           postSolveError = postSolve.error;
@@ -110,8 +118,16 @@ if (!isMainThread) {
 const libDir = path.join(__dirname, '..', 'lib');
 const { loadAllChallenges, loadChallenge, loadByCategory, loadByDifficulty, validateAll, printSummary } = require(path.join(libDir, 'challenges.cjs'));
 const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
-const { scoreChallenge, computeReport, formatReport } = require(path.join(libDir, 'scorer.cjs'));
+const { scoreChallenge, computeReport, formatReport, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
 const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
+
+// Resolve a benchmark target_layer name to the canonical nf-solve key for --focus.
+// Falls back to the layer name itself if not in LAYER_ALIASES.
+function focusLayerFor(challenge) {
+  const layer = challenge.scoring && challenge.scoring.target_layer;
+  if (!layer) return null;
+  return LAYER_ALIASES[layer] || layer;
+}
 
 const RESULTS_DIR = path.join(__dirname, '..', 'results');
 const BASELINE_PATH = path.join(__dirname, '..', 'baseline.json');
@@ -195,34 +211,36 @@ function appendTrend(report, results) {
 async function runChallengeSerial(challenge, projectRoot, timeout) {
   const challengeStart = Date.now();
   const snapshot = createSnapshot(projectRoot);
+  const focus = focusLayerFor(challenge);
+  const solveOpts = { timeout, focus };
 
   try {
     let preResidual, seededResidual, fixResidual, postSolveOutput, postSolveError;
 
     if (challenge.scoring.method === 'no_regression') {
-      const preSolve = runSolve(projectRoot, { timeout });
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      const postSolve = runSolve(projectRoot, { timeout });
+      const postSolve = runSolve(projectRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
       fixResidual = undefined;
     } else if (challenge.scoring.method === 'fix_and_verify') {
-      const preSolve = runSolve(projectRoot, { timeout });
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
       applyMutation(challenge, projectRoot);
-      const seededSolve = runSolve(projectRoot, { timeout });
+      const seededSolve = runSolve(projectRoot, solveOpts);
       seededResidual = seededSolve.residual_vector;
       postSolveOutput = seededSolve.raw_output;
       postSolveError = seededSolve.error;
-      runSolveFull(projectRoot, { timeout: timeout * 2 });
-      const postFixSolve = runSolve(projectRoot, { timeout });
+      runSolveFull(projectRoot, { timeout: timeout * 2, focus });
+      const postFixSolve = runSolve(projectRoot, solveOpts);
       fixResidual = postFixSolve.residual_vector;
     } else {
-      const preSolve = runSolve(projectRoot, { timeout });
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
       applyMutation(challenge, projectRoot);
-      const postSolve = runSolve(projectRoot, { timeout });
+      const postSolve = runSolve(projectRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
