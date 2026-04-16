@@ -81,7 +81,7 @@ jobs:
         run: |
           COMPARE_FLAG=""
           if [ -f baseline.json ]; then
-            COMPARE_FLAG="--compare-baseline --baseline-tolerance 2"
+            COMPARE_FLAG="--compare-baseline --baseline-tolerance 0"
           else
             echo "No baseline found — running without comparison (first run on this repo?)"
           fi
