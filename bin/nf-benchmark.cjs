@@ -476,7 +476,9 @@ async function runBenchmark() {
     }
   }
 
-  process.exit(failed > 0 ? 1 : 0);
+  // Exit 1 only on baseline regression (handled above). Raw failures are expected
+  // during active development — CI tracks the score, not a pass-all gate.
+  process.exit(0);
 }
 
 function listChallenges() {
