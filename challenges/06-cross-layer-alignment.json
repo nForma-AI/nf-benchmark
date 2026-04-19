@@ -51,19 +51,21 @@
   },
   {
     "id": "BENCH-063",
-    "title": "Test claiming wrong requirement coverage",
+    "title": "Test-coverage source file pointing to deleted code",
     "category": "cross-layer-alignment",
     "difficulty": "medium",
-    "description": "Add a test that claims to cover a requirement but tests something unrelated",
+    "description": "A unit-test-coverage entry references a source file that no longer exists — stale coverage mapping",
     "target_layers": ["l3_to_tc"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/layer-constants.test.cjs",
-      "description": "Add @req annotation pointing to unrelated requirement"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/unit-test-coverage.json",
+      "json_path": "$.coverage",
+      "value": [{"source_file": "bin/deleted-legacy-module.cjs", "coverage_percentage": 95, "test_files": ["test/legacy.test.cjs"]}],
+      "description": "Set coverage array to entry with nonexistent source_file"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect L3->TC coverage mismatch",
+      "description": "nf:solve should detect L3->TC stale coverage mapping to nonexistent file",
       "layers_affected": ["l3_to_tc"]
     },
     "scoring": {
