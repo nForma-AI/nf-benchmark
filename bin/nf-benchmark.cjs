@@ -465,13 +465,36 @@ async function runBenchmark() {
       console.log(`  Current pass rate  : ${currentRate.toFixed(1)}%`);
       console.log(`  Delta              : ${delta >= 0 ? '+' : ''}${delta.toFixed(1)}pp`);
 
-      if (delta < -baselineTolerance) {
-        console.error(`\nREGRESSION: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (tolerance: ${baselineTolerance}pp)`);
+      const categoryRegressions = [];
+      if (baseline.by_category && report.byCategory) {
+        console.log(`\n  Per-category comparison:`);
+        for (const [cat, baseData] of Object.entries(baseline.by_category)) {
+          const curData = report.byCategory[cat];
+          if (!curData) continue;
+          const basePassed = baseData.passed;
+          const curPassed = curData.passed;
+          const catDelta = curPassed - basePassed;
+          const marker = catDelta < 0 ? '  ◀ REGRESSED' : catDelta > 0 ? '  ▲ improved' : '';
+          console.log(`    ${cat.padEnd(28)} ${basePassed}→${curPassed} (${catDelta >= 0 ? '+' : ''}${catDelta})${marker}`);
+          if (catDelta < 0) {
+            categoryRegressions.push({ category: cat, from: basePassed, to: curPassed, delta: catDelta });
+          }
+        }
+      }
+
+      if (categoryRegressions.length > 0) {
+        console.error(`\nREGRESSION: ${categoryRegressions.length} category(s) regressed:`);
+        for (const r of categoryRegressions) {
+          console.error(`  ${r.category}: ${r.from}→${r.to} (${r.delta})`);
+        }
+        process.exit(1);
+      } else if (delta < -baselineTolerance) {
+        console.error(`\nREGRESSION: Overall pass rate dropped ${Math.abs(delta).toFixed(1)}pp (tolerance: ${baselineTolerance}pp)`);
         process.exit(1);
       } else if (delta < 0) {
         console.warn(`\nWARN: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (within ${baselineTolerance}pp tolerance)`);
       } else {
-        console.log(`\nOK: No regression detected.`);
+        console.log(`\nOK: No regression detected (overall or per-category).`);
       }
     }
   }
