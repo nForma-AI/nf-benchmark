@@ -1,5 +1,12 @@
 node_modules/
 results/*.json
 !results/.gitkeep
+results/trend.jsonl
 *.log
 .DS_Store
+
+# Baseline is owned by the consuming tool's repo (e.g. nForma's benchmarks/full-benchmark-baseline.json)
+baseline.json
+
+# Local tool artifacts
+.claude/
