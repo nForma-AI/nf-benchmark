@@ -194,27 +194,27 @@
   },
   {
     "id": "BENCH-109",
-    "title": "Reverse flow with data corruption in rollback",
+    "title": "Untraced rollback handler module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Implement rollback mechanism that corrupts data during reverse operations",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "description": "Add a rollback handler module in bin/ with undo logic but no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
       "type": "file-create",
-      "target_file": "src/rollback-corrupt.js",
-      "content": "// Rollback function that introduces data corruption",
-      "description": "Create reverse flow operation that corrupts data during rollback"
+      "target_file": "bin/rf-rollback-handler.cjs",
+      "content": "'use strict';\nfunction createRollback(steps) {\n  const executed = [];\n  return {\n    execute(stepName) {\n      const step = steps.find(s => s.name === stepName);\n      if (!step) throw new Error('unknown step: ' + stepName);\n      step.execute();\n      executed.push({ name: stepName, timestamp: Date.now() });\n    },\n    undo() {\n      while (executed.length > 0) {\n        const last = executed.pop();\n        const step = steps.find(s => s.name === last.name);\n        if (step && step.undo) step.undo();\n      }\n    },\n    getHistory() { return [...executed]; }\n  };\n}\nmodule.exports = { createRollback };",
+      "description": "Create rollback handler module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect data corruption in reverse flow operations",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced rollback handler",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "rollback", "corruption", "data-integrity"]
+    "tags": ["reverse-flow", "c_to_r", "rollback"]
   },
   {
     "id": "BENCH-110",

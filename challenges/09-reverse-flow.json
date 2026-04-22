@@ -49,49 +49,51 @@
   },
   {
     "id": "BENCH-091",
-    "title": "Doc capability claim without requirement",
+    "title": "Untraced config validator module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "medium",
-    "description": "Add a doc capability claim with no backing requirement — D->R discovery",
-    "target_layers": ["d_to_r"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "docs/USER-GUIDE.md",
-      "description": "Add section claiming auto-scaling feature with no backing requirement"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should discover D->R candidate for undocumented capability",
-      "layers_affected": ["d_to_r"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 300
-    },
-    "tags": ["reverse-flow", "d_to_r"]
-  },
-  {
-    "id": "BENCH-092",
-    "title": "C->R candidate already covered (false positive)",
-    "category": "reverse-flow",
-    "difficulty": "hard",
-    "description": "Create a C->R candidate that is actually covered by an existing requirement (false positive)",
+    "description": "Add a config validation module in bin/ with no @req traceability — solver discovers C->R candidate",
     "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-focus-filter.cjs",
-      "description": "Add @req comment but remove from traceability index"
+      "type": "file-create",
+      "target_file": "bin/rf-config-validator.cjs",
+      "content": "'use strict';\nfunction validateConfig(config) {\n  const errors = [];\n  if (!config.env) errors.push('missing env');\n  if (!config.port || config.port < 1) errors.push('invalid port');\n  if (!config.host) errors.push('missing host');\n  return { valid: errors.length === 0, errors };\n}\nfunction mergeDefaults(config, defaults) {\n  return { ...defaults, ...config };\n}\nmodule.exports = { validateConfig, mergeDefaults };",
+      "description": "Create config validator module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should classify the candidate as false positive via quorum",
+      "description": "nf:solve should discover C->R candidate for untraced config validator",
       "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "false-positive"]
+    "tags": ["reverse-flow", "c_to_r"]
+  },
+  {
+    "id": "BENCH-092",
+    "title": "Untraced state machine module discovered as C->R",
+    "category": "reverse-flow",
+    "difficulty": "hard",
+    "description": "Add a state machine module in bin/ with transition logic but no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-state-machine.cjs",
+      "content": "'use strict';\nconst transitions = {\n  idle: ['running'],\n  running: ['paused', 'completed', 'failed'],\n  paused: ['running', 'cancelled'],\n  failed: ['retrying'],\n  retrying: ['running', 'failed'],\n  completed: [],\n  cancelled: []\n};\nfunction createState(initialState) {\n  let current = initialState || 'idle';\n  return {\n    transition(to) {\n      if (!transitions[current] || !transitions[current].includes(to)) {\n        throw new Error('invalid transition: ' + current + ' -> ' + to);\n      }\n      current = to;\n      return current;\n    },\n    state() { return current; },\n    canTransition(to) { return (transitions[current] || []).includes(to); }\n  };\n}\nmodule.exports = { createState, transitions };",
+      "description": "Create state machine module with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover C->R candidate for untraced state machine module",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["reverse-flow", "c_to_r", "state-machine"]
   },
   {
     "id": "BENCH-093",
