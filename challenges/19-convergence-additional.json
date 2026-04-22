@@ -8,15 +8,7 @@
     "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
   },
   {
-    "id": "BENCH-147", "title": "Formal lint: model-registry broken Alloy path", "category": "convergence", "difficulty": "expert",
-    "description": "Change Alloy model path to nonexistent file to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/model-registry.json", "json_path": "$.models[\".planning/formal/alloy/agent-context-payload.als\"].file", "value": ".planning/formal/alloy/BENCH_NONEXISTENT.als", "description": "Break model path" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects broken model path", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
-  },
-  {
-    "id": "BENCH-148", "title": "Formal lint: layer-manifest inflated", "category": "convergence", "difficulty": "expert",
+    "id": "BENCH-147", "title": "Formal lint: layer-manifest total_layers inflated to 500", "category": "convergence", "difficulty": "expert",
     "description": "Set total_layers to 500 in layer-manifest.json to trigger formal_lint",
     "target_layers": ["f_to_f"],
     "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/layer-manifest.json", "json_path": "$.total_layers", "value": 500, "description": "Inflate total_layers" },
@@ -24,59 +16,67 @@
     "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
   },
   {
-    "id": "BENCH-149", "title": "Formal lint: solve-state iteration zeroed", "category": "convergence", "difficulty": "expert",
-    "description": "Set iteration_count to 0 in solve-state.json to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/solve-state.json", "json_path": "$.iteration_count", "value": 0, "description": "Zero iteration_count" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects zeroed iteration_count", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-148", "title": "Untraced signal aggregator as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a signal aggregator in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-signal-aggregator.cjs", "content": "'use strict';\nfunction aggregateSignals(signals) {\n  return signals.reduce((acc, s) => { acc[s.name] = (acc[s.name] || 0) + s.value; return acc; }, {});\n}\nmodule.exports = { aggregateSignals };", "description": "Create signal aggregator with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-150", "title": "Formal lint: model-registry broken TLA+ path", "category": "convergence", "difficulty": "expert",
-    "description": "Change TLA+ model path to nonexistent file to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/model-registry.json", "json_path": "$.models[\".planning/formal/tla/NFAccountManager.tla\"].file", "value": ".planning/formal/tla/BENCH_GHOST.tla", "description": "Break TLA+ model path" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects broken model path", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-149", "title": "Untraced threshold detector as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a threshold detector in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-threshold-detector.cjs", "content": "'use strict';\nfunction detectThreshold(values, threshold) {\n  return values.filter(v => v > threshold).map((v, i) => ({ index: i, value: v, exceeded: v - threshold }));\n}\nmodule.exports = { detectThreshold };", "description": "Create threshold detector with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-151", "title": "Formal lint: model-registry phantom entry", "category": "convergence", "difficulty": "expert",
-    "description": "Add phantom model entry to model-registry.json pointing to nonexistent file",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/model-registry.json", "json_path": "$.models[\".planning/formal/tla/BENCH_PHANTOM.tla\"]", "value": {"file": ".planning/formal/tla/BENCH_PHANTOM.tla", "requirements": ["BENCH-PH-01"], "gate_maturity": 0, "layer_maturity": 0}, "description": "Add phantom model entry" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects phantom model", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-150", "title": "Untraced convergence monitor as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a convergence monitor in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-convergence-monitor.cjs", "content": "'use strict';\nfunction monitorConvergence(history) {\n  if (history.length < 2) return { converged: false, reason: 'insufficient data' };\n  const last = history[history.length - 1];\n  const prev = history[history.length - 2];\n  return { converged: last === prev, delta: last - prev };\n}\nmodule.exports = { monitorConvergence };", "description": "Create convergence monitor with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-152", "title": "Formal lint: layer-manifest set to 1", "category": "convergence", "difficulty": "expert",
-    "description": "Set total_layers to 1 in layer-manifest.json (too low) to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/layer-manifest.json", "json_path": "$.total_layers", "value": 1, "description": "Set total_layers to 1" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects anomalous total_layers", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-151", "title": "Untraced drift calculator as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a drift calculator in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-drift-calculator.cjs", "content": "'use strict';\nfunction calculateDrift(baseline, current) {\n  const keys = Object.keys(baseline);\n  let totalDrift = 0;\n  for (const k of keys) { totalDrift += Math.abs((current[k] || 0) - baseline[k]); }\n  return { totalDrift, avgDrift: keys.length ? totalDrift / keys.length : 0 };\n}\nmodule.exports = { calculateDrift };", "description": "Create drift calculator with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-153", "title": "Formal lint: solve-state last_wave reset", "category": "convergence", "difficulty": "expert",
-    "description": "Set last_wave to -1 in solve-state.json to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/solve-state.json", "json_path": "$.last_wave", "value": -1, "description": "Set last_wave to -1" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects anomalous last_wave", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-152", "title": "Untraced oscillation detector as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add an oscillation detector in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-oscillation-detector.cjs", "content": "'use strict';\nfunction detectOscillation(values, windowSize) {\n  const w = windowSize || 4;\n  if (values.length < w * 2) return { oscillating: false };\n  const recent = values.slice(-w);\n  const prev = values.slice(-w * 2, -w);\n  const avgRecent = recent.reduce((a, b) => a + b, 0) / w;\n  const avgPrev = prev.reduce((a, b) => a + b, 0) / w;\n  return { oscillating: Math.abs(avgRecent - avgPrev) < 0.01, amplitude: Math.abs(avgRecent - avgPrev) };\n}\nmodule.exports = { detectOscillation };", "description": "Create oscillation detector with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-154", "title": "Formal lint: model-registry broken PRISM path", "category": "convergence", "difficulty": "expert",
-    "description": "Change PRISM model path to nonexistent file to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/model-registry.json", "json_path": "$.models[\".planning/formal/prism/quorum.pm\"].file", "value": ".planning/formal/prism/BENCH_GONE.pm", "description": "Break PRISM model path" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects broken PRISM path", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-153", "title": "Untraced stability scorer as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a stability scorer in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-stability-scorer.cjs", "content": "'use strict';\nfunction scoreStability(residuals) {\n  if (residuals.length < 2) return { score: 0, stable: false };\n  let changes = 0;\n  for (let i = 1; i < residuals.length; i++) { if (residuals[i] !== residuals[i-1]) changes++; }\n  return { score: 1 - changes / (residuals.length - 1), stable: changes === 0 };\n}\nmodule.exports = { scoreStability };", "description": "Create stability scorer with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   },
   {
-    "id": "BENCH-155", "title": "Formal lint: solve-state wave_count negative", "category": "convergence", "difficulty": "expert",
-    "description": "Set wave_count to -5 in solve-state.json to trigger formal_lint",
-    "target_layers": ["f_to_f"],
-    "mutation": { "type": "json-field-modify", "target_file": ".planning/formal/solve-state.json", "json_path": "$.wave_count", "value": -5, "description": "Set wave_count to -5" },
-    "expected_outcome": { "residual_change": "increase", "description": "formal_lint detects negative wave_count", "layers_affected": ["f_to_f"] },
-    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "f_to_f"]
+    "id": "BENCH-154", "title": "Untraced wave analyzer as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a wave analyzer in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-wave-analyzer.cjs", "content": "'use strict';\nfunction analyzeWaves(waves) {\n  return { total: waves.length, avgLayers: waves.reduce((s, w) => s + w.layers.length, 0) / (waves.length || 1), maxLayers: Math.max(...waves.map(w => w.layers.length)) };\n}\nmodule.exports = { analyzeWaves };", "description": "Create wave analyzer with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
+  },
+  {
+    "id": "BENCH-155", "title": "Untraced residual forecaster as C->R", "category": "convergence", "difficulty": "expert",
+    "description": "Add a residual forecaster in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-residual-forecaster.cjs", "content": "'use strict';\nfunction forecastResidual(history, steps) {\n  if (history.length < 2) return { forecast: history[0] || 0, trend: 0 };\n  const trend = (history[history.length-1] - history[0]) / history.length;\n  return { forecast: Math.max(0, history[history.length-1] + trend * (steps || 1)), trend };\n}\nmodule.exports = { forecastResidual };", "description": "Create residual forecaster with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["convergence", "c_to_r"]
   }
 ]
