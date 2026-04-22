@@ -120,28 +120,28 @@
   },
   {
     "id": "BENCH-106",
-    "title": "Cross-layer alignment with conflicting optimization priorities",
+    "title": "Cross-layer alignment with low alignment scores",
     "category": "cross-layer-alignment",
     "difficulty": "expert",
-    "description": "Create alignment where performance and safety optimizations directly conflict",
+    "description": "Set traceability matrix alignment scores below threshold across layers",
     "target_layers": ["l1_to_l2", "l2_to_l3", "l3_to_tc"],
     "mutation": {
       "type": "json-field-modify",
-      "target_file": ".planning/formal/optimization-priorities.json",
-      "json_path": "$.priorities.performance.weight",
-      "value": 1.0,
-      "description": "Set conflicting weights where performance and safety optimizations oppose each other"
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix",
+      "value": [{"alignment_score": 0.1, "layer": "l1_to_l2"}, {"alignment_score": 0.2, "layer": "l2_to_l3"}, {"alignment_score": 0.15, "layer": "l3_to_tc"}],
+      "description": "Add matrix entries with very low alignment scores across all layers"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect optimization priority conflicts across layers",
+      "description": "nf:solve should detect low alignment scores across multiple layers",
       "layers_affected": ["l1_to_l2", "l2_to_l3", "l3_to_tc"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["cross-layer", "optimization", "conflicts", "priorities"]
+    "tags": ["cross-layer", "alignment", "low-scores"]
   },
   {
     "id": "BENCH-107",

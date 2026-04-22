@@ -51,19 +51,21 @@
   },
   {
     "id": "BENCH-063",
-    "title": "Test claiming wrong requirement coverage",
+    "title": "Corrupted traceability matrix status",
     "category": "cross-layer-alignment",
     "difficulty": "medium",
-    "description": "Add a test that claims to cover a requirement but tests something unrelated",
+    "description": "Set traceability matrix status to broken to indicate data corruption",
     "target_layers": ["l3_to_tc"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/layer-constants.test.cjs",
-      "description": "Add @req annotation pointing to unrelated requirement"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.status",
+      "value": "broken",
+      "description": "Set status field to 'broken' to indicate corrupted traceability data"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect L3->TC coverage mismatch",
+      "description": "nf:solve should detect L3->TC traceability corruption via status field",
       "layers_affected": ["l3_to_tc"]
     },
     "scoring": {
@@ -148,21 +150,21 @@
   },
   {
     "id": "BENCH-067",
-    "title": "Test-to-coverage mapping for deleted code",
+    "title": "Corrupted traceability matrix structure",
     "category": "cross-layer-alignment",
     "difficulty": "hard",
-    "description": "Create a test-to-coverage mapping for code that was deleted",
+    "description": "Replace traceability matrix with corrupted non-array structure",
     "target_layers": ["l3_to_tc"],
     "mutation": {
       "type": "json-field-modify",
-      "target_file": ".planning/formal/unit-test-coverage.json",
-      "json_path": "$.coverage[0].source_file",
-      "value": "bin/deleted-file-that-no-longer-exists.cjs",
-      "description": "Point coverage mapping to deleted source file"
+      "target_file": ".planning/formal/traceability-matrix.json",
+      "json_path": "$.matrix",
+      "value": "CORRUPTED_MATRIX_STRUCTURE",
+      "description": "Set matrix field to a string to break the expected array structure"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect stale coverage mapping to nonexistent file",
+      "description": "nf:solve should detect corrupted traceability matrix structure",
       "layers_affected": ["l3_to_tc"]
     },
     "scoring": {

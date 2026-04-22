@@ -209,8 +209,8 @@ function appendTrend(report, results) {
 }
 
 async function runChallengeSerial(challenge, projectRoot, timeout) {
+  const isolatedRoot = createIsolatedRoot(projectRoot);
   const challengeStart = Date.now();
-  const snapshot = createSnapshot(projectRoot);
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 
@@ -218,29 +218,29 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
     let preResidual, seededResidual, fixResidual, postSolveOutput, postSolveError;
 
     if (challenge.scoring.method === 'no_regression') {
-      const preSolve = runSolve(projectRoot, solveOpts);
+      const preSolve = runSolve(isolatedRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      const postSolve = runSolve(projectRoot, solveOpts);
+      const postSolve = runSolve(isolatedRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
       fixResidual = undefined;
     } else if (challenge.scoring.method === 'fix_and_verify') {
-      const preSolve = runSolve(projectRoot, solveOpts);
+      const preSolve = runSolve(isolatedRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      applyMutation(challenge, projectRoot);
-      const seededSolve = runSolve(projectRoot, solveOpts);
+      applyMutation(challenge, isolatedRoot);
+      const seededSolve = runSolve(isolatedRoot, solveOpts);
       seededResidual = seededSolve.residual_vector;
       postSolveOutput = seededSolve.raw_output;
       postSolveError = seededSolve.error;
-      runSolveFull(projectRoot, { timeout: timeout * 2, focus });
-      const postFixSolve = runSolve(projectRoot, solveOpts);
+      runSolveFull(isolatedRoot, { timeout: timeout * 2, focus });
+      const postFixSolve = runSolve(isolatedRoot, solveOpts);
       fixResidual = postFixSolve.residual_vector;
     } else {
-      const preSolve = runSolve(projectRoot, solveOpts);
+      const preSolve = runSolve(isolatedRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      applyMutation(challenge, projectRoot);
-      const postSolve = runSolve(projectRoot, solveOpts);
+      applyMutation(challenge, isolatedRoot);
+      const postSolve = runSolve(isolatedRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
@@ -278,7 +278,7 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
       timestamp: new Date().toISOString()
     };
   } finally {
-    restoreSnapshot(snapshot, projectRoot);
+    cleanupIsolatedRoot(isolatedRoot);
   }
 }
 
