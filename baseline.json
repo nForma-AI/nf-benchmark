@@ -1,8 +1,8 @@
 {
-  "saved_at": "2026-04-22T18:48:29.234Z",
+  "saved_at": "2026-04-22T19:05:16.121Z",
   "total": 230,
-  "passed": 127,
-  "pass_rate": 55.2,
+  "passed": 130,
+  "pass_rate": 56.5,
   "avg_reduction_score": -0.03792684153130035,
   "by_category": {
     "requirements": {
@@ -10,7 +10,7 @@
       "total": 11
     },
     "formal-models": {
-      "passed": 4,
+      "passed": 7,
       "total": 23
     },
     "tests": {
@@ -68,7 +68,7 @@
       "total": 30
     },
     "expert": {
-      "passed": 63,
+      "passed": 66,
       "total": 123
     }
   }
