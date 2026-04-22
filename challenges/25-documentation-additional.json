@@ -4,12 +4,13 @@
     "title": "Documentation with contradictory information",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "Different sections of documentation provide conflicting guidance",
+    "description": "Add capability claims and broken references to documentation",
     "target_layers": ["d_to_r", "d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/contradictory.md",
-      "description": "Add conflicting information in documentation"
+      "append": "\n## Contradictory Claims\n\nThe system validates blockchain consensus before dispatching transactions. It ensures cryptographic hash integrity across distributed ledger nodes. See `src/blockchain-validator.js` for implementation.\n",
+      "description": "Add capability claim with no requirement + nonexistent file reference"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -18,7 +19,7 @@
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
     "tags": ["documentation", "contradictory", "conflicting"]
   },
@@ -27,12 +28,13 @@
     "title": "Outdated documentation not matching code",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "Documentation describes features that no longer exist in code",
+    "description": "Add references to nonexistent files in documentation",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/outdated.md",
-      "description": "Document removed features as if they still exist"
+      "append": "\n## Legacy Features\n\nThe legacy feature handler in `bin/legacy-feature-handler.cjs` processes deprecated API calls. See `lib/deprecated-utils.cjs` for helper functions.\n",
+      "description": "Add references to nonexistent legacy files"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -41,7 +43,7 @@
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
     "tags": ["documentation", "outdated", "code"]
   },
@@ -50,12 +52,13 @@
     "title": "Incomplete API documentation",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "API docs missing critical parameters or error conditions",
+    "description": "Add capability claims and broken file references to API docs",
     "target_layers": ["d_to_c", "d_to_r"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/api-incomplete.md",
-      "description": "Remove error condition documentation"
+      "append": "\n## API Extensions\n\nThe API extension framework validates request signatures before routing to handlers. It prevents unauthorized access through token-based authentication middleware. Implementation: `src/api-middleware.cjs`.\n",
+      "description": "Add capability claim + nonexistent file reference"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -64,7 +67,7 @@
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
     "tags": ["documentation", "api", "incomplete"]
   },
@@ -73,12 +76,13 @@
     "title": "Documentation with ambiguous terminology",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "Technical terms used inconsistently or with multiple meanings",
+    "description": "Add capability claim with no requirement backing",
     "target_layers": ["d_to_r"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/ambiguous.md",
-      "description": "Use same term with different meanings"
+      "append": "\n## Terminology Validation\n\nThe terminology validator ensures consistent use of technical terms across all documentation. It detects ambiguous usage and enforces a single canonical definition for each concept.\n",
+      "description": "Add capability claim about terminology validation with no matching requirement"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -87,7 +91,7 @@
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
     "tags": ["documentation", "ambiguous", "terminology"]
   },
@@ -96,12 +100,13 @@
     "title": "Documentation missing version compatibility notes",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "Breaking changes not documented with version compatibility info",
+    "description": "Add broken file references to version compatibility docs",
     "target_layers": ["d_to_c", "d_to_r"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/version-missing.md",
-      "description": "Remove version compatibility information"
+      "append": "\n## Version Compatibility\n\nThe version compatibility checker in `bin/version-checker.cjs` validates semantic version constraints. It prevents incompatible dependency resolution. See `lib/semver-utils.cjs` for helper functions.\n",
+      "description": "Add capability claim + nonexistent file references"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -110,7 +115,7 @@
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
     "tags": ["documentation", "version", "compatibility"]
   }

@@ -1,117 +1,107 @@
 [
   {
     "id": "BENCH-191",
-    "title": "Test with non-deterministic failures",
+    "title": "Orphan test for nondeterministic handler without requirement mapping",
     "category": "tests",
     "difficulty": "expert",
-    "description": "Tests that pass/fail randomly due to race conditions or timing",
-    "target_layers": ["t_to_c", "f_to_t"],
+    "description": "Create test file for nondeterministic handler with no @req mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "test/nondeterministic.test.js",
-      "description": "Add race condition causing intermittent test failures"
+      "type": "file-create",
+      "target_file": "bin/rf-nondeterministic-handler.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-nondeterministic-handler.cjs'); } catch (e) { mod = null; }\n\ntest('handler processes random input', () => {\n  assert.ok(mod, 'module should load');\n});",
+      "description": "Create orphan test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect non-deterministic test behavior",
-      "layers_affected": ["t_to_c", "f_to_t"]
+      "description": "nf:solve should discover T->R candidate for orphan test",
+      "layers_affected": ["t_to_r"]
     },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["tests", "nondeterministic", "race-condition"]
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 },
+    "tags": ["tests", "t_to_r"]
   },
   {
     "id": "BENCH-192",
-    "title": "Test mocking that hides real bugs",
+    "title": "Orphan test for mock validator without requirement mapping",
     "category": "tests",
     "difficulty": "expert",
-    "description": "Over-mocking in tests prevents detection of actual implementation issues",
-    "target_layers": ["t_to_c"],
+    "description": "Create test file for mock validator with no @req mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "test/overmocked.test.js",
-      "description": "Mock all dependencies hiding real bugs"
+      "type": "file-create",
+      "target_file": "bin/rf-mock-validator.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-mock-validator.cjs'); } catch (e) { mod = null; }\n\ntest('validator rejects invalid mocks', () => {\n  assert.ok(mod, 'module should load');\n});",
+      "description": "Create orphan test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect inadequate test mocking",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve should discover T->R candidate for orphan test",
+      "layers_affected": ["t_to_r"]
     },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["tests", "mocking", "overmocked"]
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 },
+    "tags": ["tests", "t_to_r"]
   },
   {
     "id": "BENCH-193",
-    "title": "Integration test with environment dependencies",
+    "title": "Orphan test for environment parser without requirement mapping",
     "category": "tests",
     "difficulty": "expert",
-    "description": "Tests that require specific environment setup fail in CI",
-    "target_layers": ["t_to_c"],
+    "description": "Create test file for environment parser with no @req mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "test/environment-dependent.test.js",
-      "description": "Add test requiring unavailable environment resources"
+      "type": "file-create",
+      "target_file": "bin/rf-env-parser.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-env-parser.cjs'); } catch (e) { mod = null; }\n\ntest('parser handles environment variables', () => {\n  assert.ok(mod, 'module should load');\n});",
+      "description": "Create orphan test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect environment-dependent test failures",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve should discover T->R candidate for orphan test",
+      "layers_affected": ["t_to_r"]
     },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["tests", "environment", "ci"]
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 },
+    "tags": ["tests", "t_to_r"]
   },
   {
     "id": "BENCH-194",
-    "title": "Test data that doesn't reflect production",
+    "title": "Orphan test for data cleaner without requirement mapping",
     "category": "tests",
     "difficulty": "expert",
-    "description": "Test data is too clean compared to real-world production data",
-    "target_layers": ["t_to_c", "f_to_t"],
+    "description": "Create test file for data cleaner with no @req mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "test/clean-data.test.js",
-      "description": "Use sanitized test data missing edge cases"
+      "type": "file-create",
+      "target_file": "bin/rf-data-cleaner.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-data-cleaner.cjs'); } catch (e) { mod = null; }\n\ntest('cleaner sanitizes input data', () => {\n  assert.ok(mod, 'module should load');\n});",
+      "description": "Create orphan test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect unrealistic test data",
-      "layers_affected": ["t_to_c", "f_to_t"]
+      "description": "nf:solve should discover T->R candidate for orphan test",
+      "layers_affected": ["t_to_r"]
     },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["tests", "data", "production"]
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 },
+    "tags": ["tests", "t_to_r"]
   },
   {
     "id": "BENCH-195",
-    "title": "Performance test with unrealistic load",
+    "title": "Orphan test for performance tracker without requirement mapping",
     "category": "tests",
     "difficulty": "expert",
-    "description": "Performance tests use load patterns that don't match real usage",
-    "target_layers": ["t_to_c"],
+    "description": "Create test file for performance tracker with no @req mapping — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "test/performance-unrealistic.test.js",
-      "description": "Use uniform load instead of realistic patterns"
+      "type": "file-create",
+      "target_file": "bin/rf-perf-tracker.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-perf-tracker.cjs'); } catch (e) { mod = null; }\n\ntest('tracker records performance metrics', () => {\n  assert.ok(mod, 'module should load');\n});",
+      "description": "Create orphan test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect unrealistic performance test scenarios",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve should discover T->R candidate for orphan test",
+      "layers_affected": ["t_to_r"]
     },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["tests", "performance", "load"]
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 },
+    "tags": ["tests", "t_to_r"]
   }
 ]

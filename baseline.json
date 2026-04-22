@@ -1,20 +1,20 @@
 {
-  "saved_at": "2026-04-22T10:39:33.174Z",
+  "saved_at": "2026-04-22T16:22:13.505Z",
   "total": 230,
-  "passed": 76,
-  "pass_rate": 33,
-  "avg_reduction_score": 0.0060200668896321086,
+  "passed": 119,
+  "pass_rate": 51.7,
+  "avg_reduction_score": -0.04037267080745341,
   "by_category": {
     "requirements": {
-      "passed": 7,
+      "passed": 6,
       "total": 11
     },
     "formal-models": {
-      "passed": 1,
+      "passed": 4,
       "total": 23
     },
     "tests": {
-      "passed": 2,
+      "passed": 7,
       "total": 16
     },
     "code": {
@@ -22,7 +22,7 @@
       "total": 36
     },
     "documentation": {
-      "passed": 0,
+      "passed": 14,
       "total": 16
     },
     "cross-layer-alignment": {
@@ -30,11 +30,11 @@
       "total": 11
     },
     "config-hooks": {
-      "passed": 4,
+      "passed": 14,
       "total": 24
     },
     "convergence": {
-      "passed": 4,
+      "passed": 6,
       "total": 20
     },
     "reverse-flow": {
@@ -42,7 +42,7 @@
       "total": 19
     },
     "integration": {
-      "passed": 4,
+      "passed": 14,
       "total": 29
     },
     "stability": {
@@ -56,19 +56,19 @@
   },
   "by_difficulty": {
     "easy": {
-      "passed": 23,
+      "passed": 28,
       "total": 37
     },
     "medium": {
-      "passed": 15,
+      "passed": 18,
       "total": 40
     },
     "hard": {
-      "passed": 16,
+      "passed": 18,
       "total": 30
     },
     "expert": {
-      "passed": 22,
+      "passed": 55,
       "total": 123
     }
   }

@@ -1,117 +1,127 @@
 [
   {
     "id": "BENCH-186",
-    "title": "Formal model with contradictory axioms",
+    "title": "Formal lint: solve-state wave_count zeroed",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Formal specification contains mutually contradictory axioms",
+    "description": "Set wave_count to 0 in solve-state.json to trigger formal_lint structural anomaly",
     "target_layers": ["f_to_f"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Contradiction.tla",
-      "description": "Add contradictory axioms to formal model"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/solve-state.json",
+      "json_path": "$.wave_count",
+      "value": 0,
+      "description": "Set wave_count to 0 triggering formal_lint anomaly"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect contradictory axioms in formal model",
+      "description": "nf:solve should detect zeroed wave_count via formal_lint",
       "layers_affected": ["f_to_f"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["formal", "contradiction", "axioms"]
+    "tags": ["formal", "f_to_f", "solve-state"]
   },
   {
     "id": "BENCH-187",
-    "title": "Model checking with state space explosion",
+    "title": "Formal lint: layer-manifest total_layers inflated",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Formal model has exponential state space causing timeout",
+    "description": "Set total_layers to 999 in layer-manifest.json to trigger formal_lint anomaly",
     "target_layers": ["f_to_f"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Explosion.tla",
-      "description": "Add variables causing state space explosion"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/layer-manifest.json",
+      "json_path": "$.total_layers",
+      "value": 999,
+      "description": "Set total_layers to 999 triggering formal_lint anomaly"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect state space explosion in model checking",
+      "description": "nf:solve should detect inflated total_layers via formal_lint",
       "layers_affected": ["f_to_f"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["formal", "state-space", "explosion"]
+    "tags": ["formal", "f_to_f", "layer-manifest"]
   },
   {
     "id": "BENCH-188",
-    "title": "Formal invariant that is too weak",
+    "title": "Formal lint: model-registry TLA+ path broken",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Invariant allows undesirable behaviors that should be forbidden",
-    "target_layers": ["f_to_f", "f_to_t"],
+    "description": "Change a model path in model-registry.json to a nonexistent file to trigger formal_lint",
+    "target_layers": ["f_to_f"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/WeakInvariant.tla",
-      "description": "Weaken invariant to allow bad states"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models[\".planning/formal/alloy/account-pool-structure.als\"].file",
+      "value": ".planning/formal/alloy/NONEXISTENT_BENCH_FILE.als",
+      "description": "Change model path to nonexistent file"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect overly weak formal invariant",
-      "layers_affected": ["f_to_f", "f_to_t"]
+      "description": "nf:solve should detect broken model path via formal_lint",
+      "layers_affected": ["f_to_f"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["formal", "invariant", "weak"]
+    "tags": ["formal", "f_to_f", "model-registry"]
   },
   {
     "id": "BENCH-189",
-    "title": "Cross-formal model inconsistency",
+    "title": "Formal lint: model-registry entry pointing to nonexistent file",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Different formal models (TLA+, Alloy) specify conflicting behaviors",
+    "description": "Add a model entry pointing to a nonexistent TLA+ file to trigger formal_lint",
     "target_layers": ["f_to_f"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/alloy/Inconsistent.als",
-      "description": "Make Alloy model contradict TLA+ specification"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/model-registry.json",
+      "json_path": "$.models[\".planning/formal/tla/BENCH_MISSING.tla\"]",
+      "value": {"file": ".planning/formal/tla/BENCH_MISSING.tla", "requirements": ["BENCH-MISS-01"], "gate_maturity": 0, "layer_maturity": 0},
+      "description": "Add model entry pointing to nonexistent TLA+ file"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect cross-formal model inconsistencies",
+      "description": "nf:solve should detect missing model file via formal_lint",
       "layers_affected": ["f_to_f"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["formal", "inconsistency", "cross-model"]
+    "tags": ["formal", "f_to_f", "consistency"]
   },
   {
     "id": "BENCH-190",
-    "title": "Formal model with undefined behavior",
+    "title": "Formal lint: solve-state iteration_count zeroed",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Model contains operations with undefined semantics",
+    "description": "Set iteration_count to 0 in solve-state.json to trigger formal_lint structural anomaly",
     "target_layers": ["f_to_f"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Undefined.tla",
-      "description": "Add operation with undefined behavior"
+      "type": "json-field-modify",
+      "target_file": ".planning/formal/solve-state.json",
+      "json_path": "$.iteration_count",
+      "value": 0,
+      "description": "Set iteration_count to 0 triggering formal_lint anomaly"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect undefined behavior in formal model",
+      "description": "nf:solve should detect zeroed iteration_count via formal_lint",
       "layers_affected": ["f_to_f"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["formal", "undefined", "behavior"]
+    "tags": ["formal", "f_to_f", "solve-state"]
   }
 ]

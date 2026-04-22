@@ -9,7 +9,8 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add reference to nf:bench-analyze command that doesn't exist"
+      "append": "\n## Benchmark Analysis Tool\n\nRun `npx @nforma.ai/nforma bench-analyze --deep` to perform deep benchmark analysis.\nSee `bin/bench-analyzer-deep.cjs` for the implementation.\n",
+      "description": "Add reference to non-existent CLI command and file path"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -24,19 +25,20 @@
   },
   {
     "id": "BENCH-052",
-    "title": "Removed documented feature with code backing",
+    "title": "Capability claim without requirement backing",
     "category": "documentation",
     "difficulty": "easy",
-    "description": "Remove a documented feature that still has code backing — D->R gap",
+    "description": "Add a capability claim in docs with no corresponding requirement",
     "target_layers": ["d_to_r"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Remove a section documenting an existing feature"
+      "append": "\n## Token Bucket Scaling\n\nThe system validates token bucket capacity against configured burst limits before dispatching quorum requests. It prevents oversubscription by detecting when concurrent dispatches exceed the available token budget.\n",
+      "description": "Add capability claim about token bucket scaling with no matching requirement"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect D->R gap for undocumented feature",
+      "description": "nf:solve should detect D->R gap for unsupported capability claim",
       "layers_affected": ["d_to_r"]
     },
     "scoring": {
@@ -50,12 +52,13 @@
     "title": "Doc referencing nonexistent file path",
     "category": "documentation",
     "difficulty": "easy",
-    "description": "Change a file path reference in docs to a nonexistent path",
+    "description": "Add file path references in docs that don't exist on disk",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Change a valid path reference to /nonexistent/path/to/file"
+      "append": "\n## Advanced Configuration\n\nFor advanced tuning, see `lib/quantum-coherence-validator.cjs` and `src/bench-deep-analyzer.js` for implementation details.\n",
+      "description": "Add references to nonexistent file paths"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -78,7 +81,8 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add reference to 'jest' dependency that doesn't exist in project"
+      "append": "\n## Dependencies\n\nThe dependency resolver in `lib/dep-resolver.cjs` handles version conflicts. See `src/deep-resolver.js` for the deep dependency tree analysis.\n",
+      "description": "Add references to nonexistent dependency files"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -93,7 +97,7 @@
   },
   {
     "id": "BENCH-055",
-    "title": "Capability claim without requirement backing",
+    "title": "Capability claim about quantum entanglement",
     "category": "documentation",
     "difficulty": "medium",
     "description": "Add a capability claim in docs with no corresponding requirement",
@@ -101,7 +105,8 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add section claiming auto-scaling capability with no requirement"
+      "append": "\n## Quantum Coherence\n\nThe solver validates quantum entanglement coherence before dispatching results to the quorum. It ensures superposition states collapse correctly during multi-agent deliberation.\n",
+      "description": "Add capability claim about quantum coherence with no matching requirement"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -116,19 +121,20 @@
   },
   {
     "id": "BENCH-056",
-    "title": "Documented unused environment variable",
+    "title": "Documented env var with nonexistent file reference",
     "category": "documentation",
     "difficulty": "medium",
-    "description": "Document an environment variable that no code actually reads",
+    "description": "Document an environment variable and reference a nonexistent implementation file",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add NF_BENCH_MODE env var documentation with no backing code"
+      "append": "\n## Environment Variables\n\n- `NF_BENCH_DEEP_MODE` — Enables deep benchmark analysis mode. See `bin/bench-deep-mode-handler.cjs` for implementation.\n",
+      "description": "Add env var documentation referencing nonexistent file"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect documented env var with no code reference",
+      "description": "nf:solve should detect documented env var with nonexistent file reference",
       "layers_affected": ["d_to_c"]
     },
     "scoring": {
@@ -139,19 +145,20 @@
   },
   {
     "id": "BENCH-057",
-    "title": "Documentation version drift",
+    "title": "Doc references nonexistent analysis module",
     "category": "documentation",
     "difficulty": "medium",
-    "description": "Create a doc section describing a feature from a different version",
+    "description": "Add documentation referencing an analysis module that doesn't exist",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add section referencing v0.1.0 features removed in current version"
+      "append": "\n## Analysis Pipeline\n\nThe analysis pipeline in `src/bench-analysis-pipeline.js` processes benchmark results through `lib/result-aggregator.cjs` before rendering.\n",
+      "description": "Add references to nonexistent analysis pipeline files"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect version drift in documentation",
+      "description": "nf:solve should detect stale path reference via D->C",
       "layers_affected": ["d_to_c"]
     },
     "scoring": {
@@ -162,19 +169,20 @@
   },
   {
     "id": "BENCH-058",
-    "title": "Doc code example with wrong API",
+    "title": "Doc referencing nonexistent integration module",
     "category": "documentation",
     "difficulty": "hard",
-    "description": "Add a code example in docs with syntax that doesn't match actual API",
+    "description": "Add documentation referencing integration modules that don't exist",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add code example using wrong function name or parameters"
+      "append": "\n## Integration Testing\n\nThe integration test runner in `test/integration-runner.cjs` uses `lib/test-harness.cjs` to validate end-to-end flows. See `src/api-gateway.js` for the gateway implementation.\n",
+      "description": "Add references to nonexistent integration files"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect API mismatch in documentation examples",
+      "description": "nf:solve should detect API mismatch in documentation references",
       "layers_affected": ["d_to_c"]
     },
     "scoring": {
@@ -185,42 +193,44 @@
   },
   {
     "id": "BENCH-059",
-    "title": "Hook lifecycle event in wrong order",
+    "title": "Doc with capability claim about caching",
     "category": "documentation",
     "difficulty": "hard",
-    "description": "Document a hook lifecycle event in the wrong order",
-    "target_layers": ["d_to_c"],
+    "description": "Add capability claim about caching subsystem with no requirement backing",
+    "target_layers": ["d_to_r"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Swap PreToolUse and PostToolUse order in lifecycle docs"
+      "append": "\n## Caching Subsystem\n\nThe caching subsystem automatically detects stale cache entries and prevents data inconsistency. It validates cache coherence across distributed nodes before returning results.\n",
+      "description": "Add capability claim about caching with no matching requirement"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect lifecycle ordering error in docs",
-      "layers_affected": ["d_to_c"]
+      "description": "nf:solve should detect D->R gap for unsupported caching claim",
+      "layers_affected": ["d_to_r"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["docs", "d_to_c", "hooks"]
+    "tags": ["docs", "d_to_r", "hooks"]
   },
   {
     "id": "BENCH-060",
-    "title": "Conflicting documentation sections",
+    "title": "Doc referencing nonexistent devops scripts",
     "category": "documentation",
     "difficulty": "expert",
-    "description": "Create two docs sections that describe the same feature differently",
+    "description": "Add documentation referencing DevOps scripts that don't exist",
     "target_layers": ["d_to_c"],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add section describing quorum behavior that contradicts another section"
+      "append": "\n## DevOps\n\nDeployment is managed by `scripts/bench-deploy.sh` which calls `scripts/bench-health-check.sh` after each rollout. The rollback procedure is in `scripts/bench-rollback.sh`.\n",
+      "description": "Add references to nonexistent DevOps script files"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect internal documentation contradiction",
+      "description": "nf:solve should detect stale DevOps script references via D->C",
       "layers_affected": ["d_to_c"]
     },
     "scoring": {
