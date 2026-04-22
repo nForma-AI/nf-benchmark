@@ -8,7 +8,7 @@
     "target_layers": ["c_to_r"],
     "mutation": {
       "type": "file-create",
-      "target_file": "bin/bench-feature-handler.cjs",
+      "target_file": "bin/rf-feature-handler.cjs",
       "content": "'use strict';\nconst fs = require('fs');\nconst path = require('path');\n\nfunction processFeature(config) {\n  if (!config || !config.name) throw new Error('name required');\n  return { processed: true, name: config.name, ts: Date.now() };\n}\n\nfunction validateFeature(feature) {\n  return feature.processed === true && typeof feature.name === 'string';\n}\n\nmodule.exports = { processFeature, validateFeature };",
       "description": "Create feature handler module with no requirement tracing"
     },
@@ -32,8 +32,8 @@
     "target_layers": ["t_to_r"],
     "mutation": {
       "type": "file-create",
-      "target_file": "bin/bench-handler.test.cjs",
-      "content": "const { test, assert } = require('node:test');\n\nlet mod;\ntry { mod = require('./bench-feature-handler.cjs'); } catch (e) { mod = null; }\n\ntest('processFeature returns processed object', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.processFeature({ name: 'test' });\n  assert.ok(result.processed);\n  assert.strictEqual(result.name, 'test');\n});\n\ntest('validateFeature checks processed flag', () => {\n  assert.ok(mod, 'module should load');\n  assert.ok(mod.validateFeature({ processed: true, name: 'x' }));\n  assert.ok(!mod.validateFeature({ processed: false, name: 'x' }));\n});",
+      "target_file": "bin/rf-handler.test.cjs",
+      "content": "const { test, assert } = require('node:test');\n\nlet mod;\ntry { mod = require('./rf-feature-handler.cjs'); } catch (e) { mod = null; }\n\ntest('processFeature returns processed object', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.processFeature({ name: 'test' });\n  assert.ok(result.processed);\n  assert.strictEqual(result.name, 'test');\n});\n\ntest('validateFeature checks processed flag', () => {\n  assert.ok(mod, 'module should load');\n  assert.ok(mod.validateFeature({ processed: true, name: 'x' }));\n  assert.ok(!mod.validateFeature({ processed: false, name: 'x' }));\n});",
       "description": "Create test file with no @req or formal sync mapping"
     },
     "expected_outcome": {
@@ -102,7 +102,7 @@
     "target_layers": ["c_to_r"],
     "mutation": {
       "type": "file-create",
-      "target_file": "bin/bench-pure-util.cjs",
+      "target_file": "bin/rf-pure-util.cjs",
       "content": "'use strict';\nfunction identity(x) { return x; }\nfunction noop() {}\nfunction constant(v) { return () => v; }\nmodule.exports = { identity, noop, constant };",
       "description": "Create trivial utility module"
     },
@@ -126,7 +126,7 @@
     "target_layers": ["c_to_r", "t_to_r"],
     "mutation": {
       "type": "file-create",
-      "target_file": "bin/bench-overlap.cjs",
+      "target_file": "bin/rf-overlap.cjs",
       "content": "'use strict';\nfunction overlapFeature(input) {\n  return { result: input * 2 };\n}\nmodule.exports = { overlapFeature };",
       "description": "Create module + test pair both missing requirements"
     },
@@ -155,7 +155,7 @@
       "value": {
         "id": "BENCH-CIRC-CANDIDATE",
         "type": "C->R",
-        "source": "bin/bench-circular.cjs",
+        "source": "bin/rf-circular.cjs",
         "proposed_requirement": "BENCH-CIRC-A",
         "depends_on": ["BENCH-CIRC-B"],
         "status": "pending"
