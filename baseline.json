@@ -1,0 +1,75 @@
+{
+  "saved_at": "2026-04-22T10:39:33.174Z",
+  "total": 230,
+  "passed": 76,
+  "pass_rate": 33,
+  "avg_reduction_score": 0.0060200668896321086,
+  "by_category": {
+    "requirements": {
+      "passed": 7,
+      "total": 11
+    },
+    "formal-models": {
+      "passed": 1,
+      "total": 23
+    },
+    "tests": {
+      "passed": 2,
+      "total": 16
+    },
+    "code": {
+      "passed": 4,
+      "total": 36
+    },
+    "documentation": {
+      "passed": 0,
+      "total": 16
+    },
+    "cross-layer-alignment": {
+      "passed": 11,
+      "total": 11
+    },
+    "config-hooks": {
+      "passed": 4,
+      "total": 24
+    },
+    "convergence": {
+      "passed": 4,
+      "total": 20
+    },
+    "reverse-flow": {
+      "passed": 19,
+      "total": 19
+    },
+    "integration": {
+      "passed": 4,
+      "total": 29
+    },
+    "stability": {
+      "passed": 15,
+      "total": 15
+    },
+    "multi-layer": {
+      "passed": 5,
+      "total": 10
+    }
+  },
+  "by_difficulty": {
+    "easy": {
+      "passed": 23,
+      "total": 37
+    },
+    "medium": {
+      "passed": 15,
+      "total": 40
+    },
+    "hard": {
+      "passed": 16,
+      "total": 30
+    },
+    "expert": {
+      "passed": 22,
+      "total": 123
+    }
+  }
+}
