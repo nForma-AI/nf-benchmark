@@ -1,9 +1,9 @@
 {
-  "saved_at": "2026-04-22T16:22:13.505Z",
+  "saved_at": "2026-04-22T18:48:29.234Z",
   "total": 230,
-  "passed": 119,
-  "pass_rate": 51.7,
-  "avg_reduction_score": -0.04037267080745341,
+  "passed": 127,
+  "pass_rate": 55.2,
+  "avg_reduction_score": -0.03792684153130035,
   "by_category": {
     "requirements": {
       "passed": 6,
@@ -34,7 +34,7 @@
       "total": 24
     },
     "convergence": {
-      "passed": 6,
+      "passed": 14,
       "total": 20
     },
     "reverse-flow": {
@@ -68,7 +68,7 @@
       "total": 30
     },
     "expert": {
-      "passed": 55,
+      "passed": 63,
       "total": 123
     }
   }
