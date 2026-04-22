@@ -51,77 +51,74 @@
   },
   {
     "id": "BENCH-188",
-    "title": "Formal lint: model-registry TLA+ path broken",
+    "title": "Untraced formal model validator as C->R",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Change a model path in model-registry.json to a nonexistent file to trigger formal_lint",
-    "target_layers": ["f_to_f"],
+    "description": "Add a formal model validator in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": ".planning/formal/model-registry.json",
-      "json_path": "$.models[\".planning/formal/alloy/account-pool-structure.als\"].file",
-      "value": ".planning/formal/alloy/NONEXISTENT_BENCH_FILE.als",
-      "description": "Change model path to nonexistent file"
+      "type": "file-create",
+      "target_file": "bin/rf-formal-model-validator.cjs",
+      "content": "'use strict';\nfunction validateFormalModel(modelPath, invariant) {\n  const fs = require('fs');\n  if (!fs.existsSync(modelPath)) return { valid: false, error: 'model not found' };\n  return { valid: true, invariant };\n}\nmodule.exports = { validateFormalModel };",
+      "description": "Create formal model validator with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect broken model path via formal_lint",
-      "layers_affected": ["f_to_f"]
+      "description": "C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_f", "model-registry"]
+    "tags": ["formal", "c_to_r"]
   },
   {
     "id": "BENCH-189",
-    "title": "Formal lint: model-registry entry pointing to nonexistent file",
+    "title": "Untraced TLA+ spec checker as C->R",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Add a model entry pointing to a nonexistent TLA+ file to trigger formal_lint",
-    "target_layers": ["f_to_f"],
+    "description": "Add a TLA+ spec checker in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": ".planning/formal/model-registry.json",
-      "json_path": "$.models[\".planning/formal/tla/BENCH_MISSING.tla\"]",
-      "value": {"file": ".planning/formal/tla/BENCH_MISSING.tla", "requirements": ["BENCH-MISS-01"], "gate_maturity": 0, "layer_maturity": 0},
-      "description": "Add model entry pointing to nonexistent TLA+ file"
+      "type": "file-create",
+      "target_file": "bin/rf-tla-checker.cjs",
+      "content": "'use strict';\nfunction checkTLASpec(specPath) {\n  const fs = require('fs');\n  if (!fs.existsSync(specPath)) return { checkable: false, error: 'spec not found' };\n  return { checkable: true };\n}\nmodule.exports = { checkTLASpec };",
+      "description": "Create TLA+ spec checker with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect missing model file via formal_lint",
-      "layers_affected": ["f_to_f"]
+      "description": "C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_f", "consistency"]
+    "tags": ["formal", "c_to_r"]
   },
   {
     "id": "BENCH-190",
-    "title": "Formal lint: solve-state iteration_count zeroed",
+    "title": "Untraced Alloy analyzer as C->R",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Set iteration_count to 0 in solve-state.json to trigger formal_lint structural anomaly",
-    "target_layers": ["f_to_f"],
+    "description": "Add an Alloy analyzer in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": ".planning/formal/solve-state.json",
-      "json_path": "$.iteration_count",
-      "value": 0,
-      "description": "Set iteration_count to 0 triggering formal_lint anomaly"
+      "type": "file-create",
+      "target_file": "bin/rf-alloy-analyzer.cjs",
+      "content": "'use strict';\nfunction analyzeAlloyModel(modelPath) {\n  const fs = require('fs');\n  if (!fs.existsSync(modelPath)) return { analyzable: false, error: 'model not found' };\n  return { analyzable: true };\n}\nmodule.exports = { analyzeAlloyModel };",
+      "description": "Create Alloy analyzer with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect zeroed iteration_count via formal_lint",
-      "layers_affected": ["f_to_f"]
+      "description": "C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_f", "solve-state"]
+    "tags": ["formal", "c_to_r"]
   }
 ]
