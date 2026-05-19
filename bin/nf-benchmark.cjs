@@ -209,8 +209,8 @@ function appendTrend(report, results) {
 }
 
 async function runChallengeSerial(challenge, projectRoot, timeout) {
-  const isolatedRoot = createIsolatedRoot(projectRoot);
   const challengeStart = Date.now();
+  const snapshot = createSnapshot(projectRoot);
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 
@@ -218,29 +218,29 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
     let preResidual, seededResidual, fixResidual, postSolveOutput, postSolveError;
 
     if (challenge.scoring.method === 'no_regression') {
-      const preSolve = runSolve(isolatedRoot, solveOpts);
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      const postSolve = runSolve(isolatedRoot, solveOpts);
+      const postSolve = runSolve(projectRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
       fixResidual = undefined;
     } else if (challenge.scoring.method === 'fix_and_verify') {
-      const preSolve = runSolve(isolatedRoot, solveOpts);
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      applyMutation(challenge, isolatedRoot);
-      const seededSolve = runSolve(isolatedRoot, solveOpts);
+      applyMutation(challenge, projectRoot);
+      const seededSolve = runSolve(projectRoot, solveOpts);
       seededResidual = seededSolve.residual_vector;
       postSolveOutput = seededSolve.raw_output;
       postSolveError = seededSolve.error;
-      runSolveFull(isolatedRoot, { timeout: timeout * 2, focus });
-      const postFixSolve = runSolve(isolatedRoot, solveOpts);
+      runSolveFull(projectRoot, { timeout: timeout * 2, focus });
+      const postFixSolve = runSolve(projectRoot, solveOpts);
       fixResidual = postFixSolve.residual_vector;
     } else {
-      const preSolve = runSolve(isolatedRoot, solveOpts);
+      const preSolve = runSolve(projectRoot, solveOpts);
       preResidual = preSolve.residual_vector;
-      applyMutation(challenge, isolatedRoot);
-      const postSolve = runSolve(isolatedRoot, solveOpts);
+      applyMutation(challenge, projectRoot);
+      const postSolve = runSolve(projectRoot, solveOpts);
       seededResidual = postSolve.residual_vector;
       postSolveOutput = postSolve.raw_output;
       postSolveError = postSolve.error;
@@ -278,7 +278,7 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
       timestamp: new Date().toISOString()
     };
   } finally {
-    cleanupIsolatedRoot(isolatedRoot);
+    restoreSnapshot(snapshot, projectRoot);
   }
 }
 
@@ -465,13 +465,36 @@ async function runBenchmark() {
       console.log(`  Current pass rate  : ${currentRate.toFixed(1)}%`);
       console.log(`  Delta              : ${delta >= 0 ? '+' : ''}${delta.toFixed(1)}pp`);
 
-      if (delta < -baselineTolerance) {
-        console.error(`\nREGRESSION: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (tolerance: ${baselineTolerance}pp)`);
+      const categoryRegressions = [];
+      if (baseline.by_category && report.byCategory) {
+        console.log(`\n  Per-category comparison:`);
+        for (const [cat, baseData] of Object.entries(baseline.by_category)) {
+          const curData = report.byCategory[cat];
+          if (!curData) continue;
+          const basePassed = baseData.passed;
+          const curPassed = curData.passed;
+          const catDelta = curPassed - basePassed;
+          const marker = catDelta < 0 ? '  ◀ REGRESSED' : catDelta > 0 ? '  ▲ improved' : '';
+          console.log(`    ${cat.padEnd(28)} ${basePassed}→${curPassed} (${catDelta >= 0 ? '+' : ''}${catDelta})${marker}`);
+          if (catDelta < 0) {
+            categoryRegressions.push({ category: cat, from: basePassed, to: curPassed, delta: catDelta });
+          }
+        }
+      }
+
+      if (categoryRegressions.length > 0) {
+        console.error(`\nREGRESSION: ${categoryRegressions.length} category(s) regressed:`);
+        for (const r of categoryRegressions) {
+          console.error(`  ${r.category}: ${r.from}→${r.to} (${r.delta})`);
+        }
+        process.exit(1);
+      } else if (delta < -baselineTolerance) {
+        console.error(`\nREGRESSION: Overall pass rate dropped ${Math.abs(delta).toFixed(1)}pp (tolerance: ${baselineTolerance}pp)`);
         process.exit(1);
       } else if (delta < 0) {
         console.warn(`\nWARN: Pass rate dropped ${Math.abs(delta).toFixed(1)}pp (within ${baselineTolerance}pp tolerance)`);
       } else {
-        console.log(`\nOK: No regression detected.`);
+        console.log(`\nOK: No regression detected (overall or per-category).`);
       }
     }
   }
