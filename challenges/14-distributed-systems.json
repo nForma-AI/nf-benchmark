@@ -1,119 +1,162 @@
 [
   {
     "id": "BENCH-121",
-    "title": "Network partition causing data inconsistency",
+    "title": "Untraced partition-detector utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Implement distributed system that doesn't handle network partitions gracefully, leading to split-brain",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a network partition detector in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/distributed.js",
-      "description": "Remove partition detection and failover logic"
+      "type": "file-create",
+      "target_file": "bin/rf-partition-detector.cjs",
+      "content": "'use strict';\nfunction detectPartition(heartbeats, now, timeoutMs) {\n  const unreachable = [];\n  for (const [node, lastSeen] of Object.entries(heartbeats)) {\n    if (now - lastSeen > timeoutMs) unreachable.push(node);\n  }\n  return { partitioned: unreachable.length > 0, unreachable };\n}\nmodule.exports = { detectPartition };\n",
+      "description": "Create partition-detector utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect CAP theorem violation and recommend consensus protocols",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["distributed", "network-partition", "cap-theorem"]
+    "tags": [
+      "distributed",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-122",
-    "title": "Race condition in distributed lock implementation",
+    "title": "Untraced lease-manager utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Flawed distributed lock that allows concurrent access to shared resources",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a distributed lock lease manager in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/lock.js",
-      "description": "Introduce timing window in lock acquisition/release"
+      "type": "file-create",
+      "target_file": "bin/rf-lease-manager.cjs",
+      "content": "'use strict';\nfunction grantLease(holder, ttlMs, now) {\n  return { holder, grantedAt: now, expiresAt: now + ttlMs };\n}\nfunction isLeaseValid(lease, now) {\n  return Boolean(lease) && lease.expiresAt > now;\n}\nmodule.exports = { grantLease, isLeaseValid };\n",
+      "description": "Create lease-manager utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect race condition in distributed synchronization",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["distributed", "race-condition", "locking"]
+    "tags": [
+      "distributed",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-123",
-    "title": "Microservices with tight coupling",
+    "title": "Untraced service-broker utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Implement microservices that violate loose coupling principles with direct dependencies",
-    "target_layers": ["c_to_r"],
+    "description": "Add a microservice decoupling broker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/microservice-a.js",
-      "description": "Add direct calls to another service's internal methods"
+      "type": "file-create",
+      "target_file": "bin/rf-service-broker.cjs",
+      "content": "'use strict';\nfunction createBroker() {\n  const subscribers = {};\n  return {\n    subscribe(topic, fn) { (subscribers[topic] = subscribers[topic] || []).push(fn); },\n    publish(topic, msg) { (subscribers[topic] || []).forEach((fn) => fn(msg)); },\n  };\n}\nmodule.exports = { createBroker };\n",
+      "description": "Create service-broker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect tight coupling and recommend event-driven architecture",
-      "layers_affected": ["c_to_r"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["distributed", "microservices", "coupling"]
+    "tags": [
+      "distributed",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-124",
-    "title": "Eventual consistency violation in data replication",
+    "title": "Untraced replication-lag-tracker utility (C->R)",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Distributed database replication that doesn't guarantee eventual consistency",
-    "target_layers": ["f_to_c", "c_to_t"],
+    "description": "Add a replica lag tracker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Replication.tla",
-      "description": "Modify formal model to allow permanent inconsistencies"
+      "type": "file-create",
+      "target_file": "bin/rf-replication-lag-tracker.cjs",
+      "content": "'use strict';\nfunction replicaLag(primaryOffset, replicaOffset) {\n  return Math.max(0, primaryOffset - replicaOffset);\n}\nfunction isCaughtUp(primaryOffset, replicaOffset, slack) {\n  return replicaLag(primaryOffset, replicaOffset) <= (slack || 0);\n}\nmodule.exports = { replicaLag, isCaughtUp };\n",
+      "description": "Create replication-lag-tracker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect eventual consistency violation through model checking",
-      "layers_affected": ["f_to_c", "c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["distributed", "consistency", "replication"]
+    "tags": [
+      "distributed",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-125",
-    "title": "Service discovery failure in containerized environment",
+    "title": "Untraced service-registry utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Container orchestration without proper service discovery, causing connection failures",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a service discovery registry in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": "docker-compose.yml",
-      "json_path": "$.services.app.environment.DISCOVERY_URL",
-      "value": "invalid_url",
-      "description": "Set invalid service discovery endpoint"
+      "type": "file-create",
+      "target_file": "bin/rf-service-registry.cjs",
+      "content": "'use strict';\nfunction createRegistry() {\n  const services = {};\n  return {\n    register(name, addr) { (services[name] = services[name] || []).push(addr); },\n    deregister(name, addr) {\n      services[name] = (services[name] || []).filter((a) => a !== addr);\n    },\n    lookup(name) { return (services[name] || []).slice(); },\n  };\n}\nmodule.exports = { createRegistry };\n",
+      "description": "Create service-registry utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect service discovery issues in distributed deployment",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["distributed", "service-discovery", "containers"]
+    "tags": [
+      "distributed",
+      "c_to_r",
+      "code"
+    ]
   }
 ]

@@ -5,7 +5,9 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Change a code constant to diverge from the formal specification value",
-    "target_layers": ["c_to_f"],
+    "target_layers": [
+      "c_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/constants-mapping.json",
@@ -16,84 +18,115 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect C->F constant divergence",
-      "layers_affected": ["c_to_f"]
+      "layers_affected": [
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "c_to_f", "constants"]
+    "tags": [
+      "code",
+      "c_to_f",
+      "constants"
+    ]
   },
   {
     "id": "BENCH-037",
-    "title": "Require of nonexistent module",
+    "title": "Untraced module-resolver utility (C->R)",
     "category": "code",
     "difficulty": "easy",
-    "description": "Add a require() for a module that doesn't exist — runtime import error",
-    "target_layers": ["t_to_c"],
+    "description": "Add a module path resolver in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Add require('./nonexistent-module.cjs') at top of file"
+      "type": "file-create",
+      "target_file": "bin/rf-module-resolver.cjs",
+      "content": "'use strict';\nconst fs = require('fs');\nfunction resolveModule(baseDir, request) {\n  for (const ext of ['', '.js', '.cjs', '.json']) {\n    const candidate = baseDir + '/' + request + ext;\n    if (fs.existsSync(candidate)) return candidate;\n  }\n  return null;\n}\nmodule.exports = { resolveModule };\n",
+      "description": "Create module-resolver utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect failing tests due to broken import",
-      "layers_affected": ["t_to_c"]
-    },
-    "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
-      "timeout_seconds": 300
-    },
-    "tags": ["code", "import"]
-  },
-  {
-    "id": "BENCH-038",
-    "title": "Broken fail-open hook error handling",
-    "category": "code",
-    "difficulty": "easy",
-    "description": "Remove error handling from a fail-open hook path, breaking the fail-open contract",
-    "target_layers": ["t_to_c"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/nf-context-monitor.js",
-      "description": "Remove try/catch wrapper around main logic"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect broken fail-open contract via tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "hooks", "fail-open"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
-    "id": "BENCH-039",
-    "title": "Typo in module export name",
+    "id": "BENCH-038",
+    "title": "Untraced failclosed-guard utility (C->R)",
     "category": "code",
     "difficulty": "easy",
-    "description": "Introduce a typo in a module.exports key, breaking downstream consumers",
-    "target_layers": ["t_to_c"],
+    "description": "Add a fail-closed error guard in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Rename appendTrendEntry export to appendTrendEntri (typo)"
+      "type": "file-create",
+      "target_file": "bin/rf-failclosed-guard.cjs",
+      "content": "'use strict';\nfunction guardFailClosed(fn) {\n  return function guarded(...args) {\n    try {\n      return { ok: true, value: fn(...args) };\n    } catch (err) {\n      return { ok: false, blocked: true, error: err.message };\n    }\n  };\n}\nmodule.exports = { guardFailClosed };\n",
+      "description": "Create failclosed-guard utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect downstream test failures",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "export"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
+  },
+  {
+    "id": "BENCH-039",
+    "title": "Untraced export-linter utility (C->R)",
+    "category": "code",
+    "difficulty": "easy",
+    "description": "Add a module export name linter in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-export-linter.cjs",
+      "content": "'use strict';\nfunction lintExports(moduleObj, expectedNames) {\n  const actual = Object.keys(moduleObj);\n  const missing = expectedNames.filter((n) => !actual.includes(n));\n  const extra = actual.filter((n) => !expectedNames.includes(n));\n  return { ok: missing.length === 0, missing, extra };\n}\nmodule.exports = { lintExports };\n",
+      "description": "Create export-linter utility with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-040",
@@ -101,7 +134,10 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Change a function signature without updating callers — C->E churn",
-    "target_layers": ["c_to_e", "t_to_c"],
+    "target_layers": [
+      "c_to_e",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-focus-filter.cjs",
@@ -110,14 +146,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect test failures from signature change",
-      "layers_affected": ["t_to_c", "c_to_e"]
+      "layers_affected": [
+        "t_to_c",
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "t_to_c",
       "timeout_seconds": 300
     },
-    "tags": ["code", "signature"]
+    "tags": [
+      "code",
+      "signature"
+    ]
   },
   {
     "id": "BENCH-041",
@@ -125,7 +167,9 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a new .cjs file in bin/ with no requirement traceability — C->R gap",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-utility.cjs",
@@ -135,13 +179,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect C->R gap for untraced module",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "c_to_r"]
+    "tags": [
+      "code",
+      "c_to_r"
+    ]
   },
   {
     "id": "BENCH-042",
@@ -149,7 +198,9 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a hardcoded API key or URL that should be in config",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/quorum-slot-dispatch.cjs",
@@ -158,60 +209,82 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect hardcoded secret or security issue",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "security"]
+    "tags": [
+      "code",
+      "security"
+    ]
   },
   {
     "id": "BENCH-043",
-    "title": "Circular require dependency",
+    "title": "Untraced cycle-detector utility (C->R)",
     "category": "code",
     "difficulty": "medium",
-    "description": "Create a circular require() dependency between two modules",
-    "target_layers": ["t_to_c"],
+    "description": "Add a require-graph cycle detector in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-wave-dag.cjs",
-      "description": "Add circular require to solve-cycle-detector.cjs which already requires this"
+      "type": "file-create",
+      "target_file": "bin/rf-cycle-detector.cjs",
+      "content": "'use strict';\nfunction findCycle(graph) {\n  const stack = new Set();\n  const seen = new Set();\n  function dfs(node, trail) {\n    if (stack.has(node)) return trail.concat(node);\n    if (seen.has(node)) return null;\n    seen.add(node); stack.add(node);\n    for (const next of graph[node] || []) {\n      const hit = dfs(next, trail.concat(node));\n      if (hit) return hit;\n    }\n    stack.delete(node);\n    return null;\n  }\n  for (const n of Object.keys(graph)) {\n    const c = dfs(n, []);\n    if (c) return c;\n  }\n  return null;\n}\nmodule.exports = { findCycle };\n",
+      "description": "Create cycle-detector utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect circular dependency or resulting test failures",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "circular"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-044",
-    "title": "Return type change breaking structural tests",
+    "title": "Untraced return-shape-checker utility (C->R)",
     "category": "code",
     "difficulty": "medium",
-    "description": "Change a pure function's return type from object to array",
-    "target_layers": ["t_to_c"],
+    "description": "Add a return-value shape checker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Change appendTrendEntry to return array instead of object"
+      "type": "file-create",
+      "target_file": "bin/rf-return-shape-checker.cjs",
+      "content": "'use strict';\nfunction matchesShape(value, shape) {\n  if (value === null || typeof value !== 'object') return false;\n  return Object.keys(shape).every((key) => typeof value[key] === shape[key]);\n}\nmodule.exports = { matchesShape };\n",
+      "description": "Create return-shape-checker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect test failures from return type mismatch",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "type-change"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-045",
@@ -219,7 +292,10 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a new CLI flag to the solver without updating help text or docs",
-    "target_layers": ["r_to_d", "d_to_c"],
+    "target_layers": [
+      "r_to_d",
+      "d_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/nf-solve.cjs",
@@ -228,36 +304,52 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect R->D gap for undocumented feature",
-      "layers_affected": ["r_to_d", "d_to_c"]
+      "layers_affected": [
+        "r_to_d",
+        "d_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "docs", "cli"]
+    "tags": [
+      "code",
+      "docs",
+      "cli"
+    ]
   },
   {
     "id": "BENCH-046",
-    "title": "Off-by-one in quorum fan-out",
+    "title": "Untraced fanout-planner utility (C->R)",
     "category": "code",
     "difficulty": "hard",
-    "description": "Introduce an off-by-one error in the quorum fan-out calculation",
-    "target_layers": ["t_to_c"],
+    "description": "Add a quorum fan-out planner in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/quorum-slot-dispatch.cjs",
-      "description": "Change fan-out boundary condition from < to <="
+      "type": "file-create",
+      "target_file": "bin/rf-fanout-planner.cjs",
+      "content": "'use strict';\nfunction planFanout(workerCount, requests) {\n  const buckets = Array.from({ length: workerCount }, () => []);\n  requests.forEach((req, idx) => {\n    buckets[idx % workerCount].push(req);\n  });\n  return buckets;\n}\nfunction quorumThreshold(total) {\n  return Math.floor(total / 2) + 1;\n}\nmodule.exports = { planFanout, quorumThreshold };\n",
+      "description": "Create fanout-planner utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect behavioral regression via tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "quorum", "logic"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-047",
@@ -265,7 +357,10 @@
     "category": "code",
     "difficulty": "hard",
     "description": "Change circuit breaker threshold to an invalid value (negative or zero)",
-    "target_layers": ["t_to_c", "c_to_f"],
+    "target_layers": [
+      "t_to_c",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-circuit-breaker.js",
@@ -274,36 +369,51 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect invalid threshold via tests or C->F divergence",
-      "layers_affected": ["t_to_c", "c_to_f"]
+      "layers_affected": [
+        "t_to_c",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "circuit-breaker"]
+    "tags": [
+      "code",
+      "circuit-breaker"
+    ]
   },
   {
     "id": "BENCH-048",
-    "title": "Rate-limit semaphore deadlock",
+    "title": "Untraced semaphore-tracker utility (C->R)",
     "category": "code",
     "difficulty": "hard",
-    "description": "Modify rate-limit file semaphore logic to create a deadlock scenario",
-    "target_layers": ["t_to_c"],
+    "description": "Add a counting-semaphore tracker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Change semaphore acquire to never release"
+      "type": "file-create",
+      "target_file": "bin/rf-semaphore-tracker.cjs",
+      "content": "'use strict';\nfunction createSemaphore(limit) {\n  let active = 0;\n  return {\n    tryAcquire() {\n      if (active >= limit) return false;\n      active += 1;\n      return true;\n    },\n    release() { if (active > 0) active -= 1; },\n    inUse() { return active; },\n  };\n}\nmodule.exports = { createSemaphore };\n",
+      "description": "Create semaphore-tracker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect deadlock via timeout in tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 600
+      "timeout_seconds": 300
     },
-    "tags": ["code", "deadlock", "semaphore"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-049",
@@ -311,7 +421,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Add a new adapter in bin/adapters/ that doesn't conform to the MachineIR schema",
-    "target_layers": ["t_to_c", "c_to_f"],
+    "target_layers": [
+      "t_to_c",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/adapters/bench-fsm.cjs",
@@ -321,35 +434,50 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect adapter schema violation via adapter tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "adapter", "schema"]
+    "tags": [
+      "code",
+      "adapter",
+      "schema"
+    ]
   },
   {
     "id": "BENCH-050",
-    "title": "Timing bug in convergence cycle detection",
+    "title": "Untraced cycle-timing-monitor utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Introduce a subtle timing bug in the convergence loop's cycle detection algorithm",
-    "target_layers": ["t_to_c"],
+    "description": "Add a convergence cycle timing monitor in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-cycle-detector.cjs",
-      "description": "Change cycle window comparison from >= to > causing missed oscillation"
+      "type": "file-create",
+      "target_file": "bin/rf-cycle-timing-monitor.cjs",
+      "content": "'use strict';\nfunction detectCycle(history) {\n  for (let len = 1; len <= history.length / 2; len += 1) {\n    const tail = history.slice(-len);\n    const prev = history.slice(-2 * len, -len);\n    if (tail.length === prev.length && tail.every((v, i) => v === prev[i])) {\n      return { cycle: true, period: len };\n    }\n  }\n  return { cycle: false, period: 0 };\n}\nmodule.exports = { detectCycle };\n",
+      "description": "Create cycle-timing-monitor utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect regression in cycle detection via tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 600
+      "timeout_seconds": 300
     },
-    "tags": ["code", "convergence", "timing"]
+    "tags": [
+      "code",
+      "c_to_r",
+      "code"
+    ]
   }
 ]

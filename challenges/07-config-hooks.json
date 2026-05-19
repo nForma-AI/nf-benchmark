@@ -1,100 +1,131 @@
 [
   {
     "id": "BENCH-071",
-    "title": "Impossible quorum consensus value",
+    "title": "Untraced consensus-calculator utility (C->R)",
     "category": "config-hooks",
     "difficulty": "easy",
-    "description": "Set quorum min_consensus to 0 or > number of agents",
-    "target_layers": ["t_to_c"],
+    "description": "Add a quorum consensus calculator in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": "templates/nf.json",
-      "json_path": "$.quorum.min_consensus",
-      "value": 0,
-      "description": "Set min_consensus to impossible value"
+      "type": "file-create",
+      "target_file": "bin/rf-consensus-calculator.cjs",
+      "content": "'use strict';\nfunction reachesConsensus(votes, threshold) {\n  const tally = {};\n  for (const v of votes) tally[v] = (tally[v] || 0) + 1;\n  const top = Math.max(0, ...Object.values(tally));\n  return top >= threshold;\n}\nmodule.exports = { reachesConsensus };\n",
+      "description": "Create consensus-calculator utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect invalid config value",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "quorum"]
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-072",
-    "title": "Missing required config field",
+    "title": "Untraced config-defaults utility (C->R)",
     "category": "config-hooks",
     "difficulty": "easy",
-    "description": "Remove a required field from nf.json config — two-layer merge should still fail gracefully",
-    "target_layers": ["t_to_c"],
+    "description": "Add a config default-filler in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "json-field-delete",
-      "target_file": "templates/nf.json",
-      "json_path": "$.quorum",
-      "description": "Remove entire quorum config section"
-    },
-    "expected_outcome": {
-      "residual_change": "no_change",
-      "description": "nf:solve should handle missing config gracefully (fail-open)",
-      "layers_affected": []
-    },
-    "scoring": {
-      "method": "no_crash",
-      "timeout_seconds": 300
-    },
-    "tags": ["config", "fail-open"]
-  },
-  {
-    "id": "BENCH-073",
-    "title": "Hook with invalid lifecycle event",
-    "category": "config-hooks",
-    "difficulty": "easy",
-    "description": "Add a hook with an invalid lifecycle event name",
-    "target_layers": ["t_to_c"],
-    "mutation": {
-      "type": "json-field-add",
-      "target_file": "templates/nf.json",
-      "json_path": "$.hooks",
-      "value": { "nf-bench-hook": { "event": "InvalidLifecycle", "command": "echo test" } },
-      "description": "Add hook with invalid lifecycle event name"
-    },
-    "expected_outcome": {
-      "residual_change": "no_change",
-      "description": "nf:solve should handle invalid hook config gracefully",
-      "layers_affected": []
-    },
-    "scoring": {
-      "method": "no_crash",
-      "timeout_seconds": 300
-    },
-    "tags": ["config", "hooks"]
-  },
-  {
-    "id": "BENCH-074",
-    "title": "Config loader ignoring local layer",
-    "category": "config-hooks",
-    "difficulty": "medium",
-    "description": "Modify config loader to ignore the local config layer, using only global",
-    "target_layers": ["t_to_c"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/config-loader.js",
-      "description": "Change config merge to skip local config file"
+      "type": "file-create",
+      "target_file": "bin/rf-config-defaults.cjs",
+      "content": "'use strict';\nfunction applyDefaults(config, defaults) {\n  const out = Object.assign({}, defaults);\n  for (const key of Object.keys(config || {})) {\n    if (config[key] !== undefined) out[key] = config[key];\n  }\n  return out;\n}\nmodule.exports = { applyDefaults };\n",
+      "description": "Create config-defaults utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect config loader regression via tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "merge"]
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
+  },
+  {
+    "id": "BENCH-073",
+    "title": "Untraced lifecycle-registry utility (C->R)",
+    "category": "config-hooks",
+    "difficulty": "easy",
+    "description": "Add a hook lifecycle-event registry in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-lifecycle-registry.cjs",
+      "content": "'use strict';\nconst VALID_EVENTS = ['preStart', 'postStart', 'preStop', 'postStop'];\nfunction registerHook(registry, event, handler) {\n  if (!VALID_EVENTS.includes(event)) {\n    throw new Error('unknown lifecycle event: ' + event);\n  }\n  (registry[event] = registry[event] || []).push(handler);\n  return registry;\n}\nmodule.exports = { registerHook, VALID_EVENTS };\n",
+      "description": "Create lifecycle-registry utility with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
+  },
+  {
+    "id": "BENCH-074",
+    "title": "Untraced config-layer-merger utility (C->R)",
+    "category": "config-hooks",
+    "difficulty": "medium",
+    "description": "Add a layered config merger in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-config-layer-merger.cjs",
+      "content": "'use strict';\nfunction mergeLayers(layers) {\n  return layers.reduce((acc, layer) => Object.assign(acc, layer || {}), {});\n}\nmodule.exports = { mergeLayers };\n",
+      "description": "Create config-layer-merger utility with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-075",
@@ -102,7 +133,9 @@
     "category": "config-hooks",
     "difficulty": "medium",
     "description": "Set oscillation detection window to 1 — too small to detect real oscillation",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "templates/nf.json",
@@ -113,61 +146,82 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect that oscillation detection is effectively disabled",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "oscillation"]
+    "tags": [
+      "config",
+      "oscillation"
+    ]
   },
   {
     "id": "BENCH-076",
-    "title": "Hook exits non-zero on success",
+    "title": "Untraced exit-code-mapper utility (C->R)",
     "category": "config-hooks",
     "difficulty": "medium",
-    "description": "Modify a hook to exit with non-zero on success, inverting the fail-open contract",
-    "target_layers": ["t_to_c"],
+    "description": "Add a hook exit-code interpreter in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/nf-session-start.js",
-      "description": "Change exit code from 0 to 1 on successful completion"
+      "type": "file-create",
+      "target_file": "bin/rf-exit-code-mapper.cjs",
+      "content": "'use strict';\nfunction interpretExit(code) {\n  if (code === 0) return 'success';\n  if (code === 2) return 'blocked';\n  return 'error';\n}\nfunction isSuccess(code) {\n  return code === 0;\n}\nmodule.exports = { interpretExit, isSuccess };\n",
+      "description": "Create exit-code-mapper utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect inverted exit code via tests",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["hooks", "exit-code"]
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-077",
-    "title": "Circular config include chain",
+    "title": "Untraced include-graph-walker utility (C->R)",
     "category": "config-hooks",
     "difficulty": "medium",
-    "description": "Create a circular config include chain (config A includes B includes A)",
-    "target_layers": ["t_to_c"],
+    "description": "Add a config include-chain walker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "json-field-add",
-      "target_file": "templates/nf.json",
-      "json_path": "$.includes",
-      "value": ["nf-aux.json"],
-      "description": "Add circular include reference"
+      "type": "file-create",
+      "target_file": "bin/rf-include-graph-walker.cjs",
+      "content": "'use strict';\nfunction walkIncludes(root, resolve) {\n  const visited = [];\n  const seen = new Set();\n  const queue = [root];\n  while (queue.length) {\n    const node = queue.shift();\n    if (seen.has(node)) continue;\n    seen.add(node);\n    visited.push(node);\n    for (const inc of resolve(node) || []) queue.push(inc);\n  }\n  return visited;\n}\nmodule.exports = { walkIncludes };\n",
+      "description": "Create include-graph-walker utility with no requirement tracing"
     },
     "expected_outcome": {
-      "residual_change": "no_change",
-      "description": "nf:solve should handle circular includes gracefully without crash",
-      "layers_affected": []
+      "residual_change": "increase",
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
-      "method": "no_crash",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "circular"]
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-078",
@@ -175,7 +229,9 @@
     "category": "config-hooks",
     "difficulty": "hard",
     "description": "Set context monitor threshold to 0, triggering warnings on every tool use",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "templates/nf.json",
@@ -186,58 +242,81 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect degenerate threshold configuration",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "threshold"]
+    "tags": [
+      "config",
+      "threshold"
+    ]
   },
   {
     "id": "BENCH-079",
-    "title": "Hook stderr breaks JSON parser",
+    "title": "Untraced stream-splitter utility (C->R)",
     "category": "config-hooks",
     "difficulty": "hard",
-    "description": "Create a hook that writes to stderr in a format that breaks the JSON parser",
-    "target_layers": ["t_to_c"],
+    "description": "Add a hook stdout/stderr stream splitter in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/nf-precompact.js",
-      "description": "Add stderr output that looks like partial JSON before real output"
-    },
-    "expected_outcome": {
-      "residual_change": "no_change",
-      "description": "nf:solve should handle malformed stderr gracefully",
-      "layers_affected": []
-    },
-    "scoring": {
-      "method": "no_crash",
-      "timeout_seconds": 300
-    },
-    "tags": ["hooks", "stderr", "parsing"]
-  },
-  {
-    "id": "BENCH-080",
-    "title": "Path-dependent config works in dev but breaks CI",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Introduce a config value that works in development but breaks in CI (path-dependent)",
-    "target_layers": ["t_to_c"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/config-loader.js",
-      "description": "Add path resolution using __dirname that works locally but not in CI"
+      "type": "file-create",
+      "target_file": "bin/rf-stream-splitter.cjs",
+      "content": "'use strict';\nfunction splitStreams(combined) {\n  const lines = String(combined).split('\\n');\n  const stdout = [];\n  const stderr = [];\n  for (const line of lines) {\n    if (line.startsWith('[stderr] ')) stderr.push(line.slice(9));\n    else stdout.push(line);\n  }\n  return { stdout: stdout.join('\\n'), stderr: stderr.join('\\n') };\n}\nmodule.exports = { splitStreams };\n",
+      "description": "Create stream-splitter utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect path-dependent config issue",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "ci", "paths"]
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
+  },
+  {
+    "id": "BENCH-080",
+    "title": "Untraced path-normalizer utility (C->R)",
+    "category": "config-hooks",
+    "difficulty": "expert",
+    "description": "Add a CI-safe path normalizer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-path-normalizer.cjs",
+      "content": "'use strict';\nconst path = require('path');\nfunction toPortablePath(input) {\n  return String(input).split(path.sep).join('/');\n}\nfunction stripWorkspace(input, workspace) {\n  const abs = path.resolve(input);\n  return abs.startsWith(workspace) ? abs.slice(workspace.length).replace(/^\\/+/, '') : abs;\n}\nmodule.exports = { toPortablePath, stripWorkspace };\n",
+      "description": "Create path-normalizer utility with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": [
+      "config",
+      "c_to_r",
+      "code"
+    ]
   }
 ]
