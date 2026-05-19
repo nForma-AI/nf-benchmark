@@ -1,27 +1,35 @@
 [
   {
     "id": "BENCH-026",
-    "title": "Off-by-one test assertion",
+    "title": "Untraced assertion-tolerance helper (C->R)",
     "category": "tests",
     "difficulty": "easy",
-    "description": "Break a passing test by changing an assertion value with an off-by-one error",
-    "target_layers": ["t_to_c"],
+    "description": "Add an assertion tolerance comparator in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/layer-constants.test.cjs",
-      "description": "Change an expected array length by +1 in an assertion"
+      "type": "file-create",
+      "target_file": "bin/rf-assertion-tolerance.cjs",
+      "content": "'use strict';\nfunction withinTolerance(actual, expected, epsilon) {\n  return Math.abs(actual - expected) <= (epsilon || 1e-9);\n}\nfunction assertClose(actual, expected, epsilon) {\n  if (!withinTolerance(actual, expected, epsilon)) {\n    throw new Error('expected ' + actual + ' near ' + expected);\n  }\n}\nmodule.exports = { withinTolerance, assertClose };\n",
+      "description": "Create assertion-tolerance utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect failing test via T->C sweep",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_c", "assertion"]
+    "tags": [
+      "tests",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-027",
@@ -29,7 +37,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Remove a @req annotation from a test file, breaking traceability",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -38,13 +48,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect T->R gap for untraced test",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_r", "annotation"]
+    "tags": [
+      "tests",
+      "t_to_r",
+      "annotation"
+    ]
   },
   {
     "id": "BENCH-028",
@@ -52,7 +68,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Create a test file with valid tests but no @req traceability",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-untraced.test.cjs",
@@ -62,37 +80,50 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect T->R gap for entire test file",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_r"]
+    "tags": [
+      "tests",
+      "t_to_r"
+    ]
   },
   {
     "id": "BENCH-029",
-    "title": "Wrong expected value in test assertion",
+    "title": "Untraced fixture-loader utility (C->R)",
     "category": "tests",
     "difficulty": "easy",
-    "description": "Change a test's expected output to an incorrect value",
-    "target_layers": ["t_to_c"],
+    "description": "Add a test fixture loader in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.test.cjs",
-      "description": "Change expected return value in an assertion"
+      "type": "file-create",
+      "target_file": "bin/rf-fixture-loader.cjs",
+      "content": "'use strict';\nconst fs = require('fs');\nfunction loadFixture(dir, name) {\n  const file = dir + '/' + name + '.json';\n  if (!fs.existsSync(file)) return null;\n  return JSON.parse(fs.readFileSync(file, 'utf8'));\n}\nmodule.exports = { loadFixture };\n",
+      "description": "Create fixture-loader utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect failing test",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_c"]
+    "tags": [
+      "tests",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-030",
@@ -100,7 +131,9 @@
     "category": "tests",
     "difficulty": "medium",
     "description": "Duplicate a test with a slightly different name but identical logic — dead test detection",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -109,36 +142,50 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect duplicate/redundant test",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "duplicate"]
+    "tags": [
+      "tests",
+      "duplicate"
+    ]
   },
   {
     "id": "BENCH-031",
-    "title": "Race condition in async test",
+    "title": "Untraced async-barrier utility (C->R)",
     "category": "tests",
     "difficulty": "medium",
-    "description": "Introduce a missing await in an async test creating a race condition",
-    "target_layers": ["t_to_c"],
+    "description": "Add an async barrier synchronizer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/quorum-slot-dispatch.test.cjs",
-      "description": "Remove await from an async test callback"
+      "type": "file-create",
+      "target_file": "bin/rf-async-barrier.cjs",
+      "content": "'use strict';\nfunction createBarrier(count) {\n  let pending = count;\n  let resolveAll;\n  const done = new Promise((res) => { resolveAll = res; });\n  return {\n    signal() { if (--pending <= 0) resolveAll(); },\n    wait() { return done; },\n  };\n}\nmodule.exports = { createBarrier };\n",
+      "description": "Create async-barrier utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect flaky/failing test",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "async", "race"]
+    "tags": [
+      "tests",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-032",
@@ -146,7 +193,10 @@
     "category": "tests",
     "difficulty": "medium",
     "description": "Modify a test so it passes but tests incorrect behavior (false positive)",
-    "target_layers": ["f_to_t", "t_to_c"],
+    "target_layers": [
+      "f_to_t",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-cycle-detector.test.cjs",
@@ -155,59 +205,82 @@
     "expected_outcome": {
       "residual_change": "no_change",
       "description": "nf:solve may detect semantic drift between test intent and formal invariant",
-      "layers_affected": ["f_to_t"]
+      "layers_affected": [
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "false-positive"]
+    "tags": [
+      "tests",
+      "false-positive"
+    ]
   },
   {
     "id": "BENCH-033",
-    "title": "Test with hardcoded absolute path",
+    "title": "Untraced path-resolver utility (C->R)",
     "category": "tests",
     "difficulty": "hard",
-    "description": "Add a test that uses a hardcoded absolute path, making it machine-dependent",
-    "target_layers": ["t_to_c"],
+    "description": "Add a portable path resolver in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/layer-constants.test.cjs",
-      "description": "Add test using hardcoded /Users/bench/ path"
+      "type": "file-create",
+      "target_file": "bin/rf-path-resolver.cjs",
+      "content": "'use strict';\nconst path = require('path');\nfunction resolveFromRoot(root, ...segments) {\n  return path.resolve(root, ...segments);\n}\nfunction isWithin(root, target) {\n  const rel = path.relative(root, target);\n  return rel && !rel.startsWith('..') && !path.isAbsolute(rel);\n}\nmodule.exports = { resolveFromRoot, isWithin };\n",
+      "description": "Create path-resolver utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect portability issue or test failure",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "portability"]
+    "tags": [
+      "tests",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-034",
-    "title": "Test dependency ordering issue",
+    "title": "Untraced test-ordering utility (C->R)",
     "category": "tests",
     "difficulty": "hard",
-    "description": "Create a test that depends on side effects from another test in the same file",
-    "target_layers": ["t_to_c"],
+    "description": "Add a test dependency ordering helper in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "bin/solve-wave-dag.test.cjs",
-      "description": "Add test that reads state set by preceding test without proper isolation"
+      "type": "file-create",
+      "target_file": "bin/rf-test-ordering.cjs",
+      "content": "'use strict';\nfunction topoSort(nodes, edges) {\n  const order = [];\n  const visited = new Set();\n  function visit(n) {\n    if (visited.has(n)) return;\n    visited.add(n);\n    for (const dep of edges[n] || []) visit(dep);\n    order.push(n);\n  }\n  for (const n of nodes) visit(n);\n  return order;\n}\nmodule.exports = { topoSort };\n",
+      "description": "Create test-ordering utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect test isolation violation",
-      "layers_affected": ["t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "isolation"]
+    "tags": [
+      "tests",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-035",
@@ -215,7 +288,10 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Create a test suite where removing any single test still passes — coverage hole",
-    "target_layers": ["f_to_t", "l3_to_tc"],
+    "target_layers": [
+      "f_to_t",
+      "l3_to_tc"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/oscillation-detector.test.cjs",
@@ -224,12 +300,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect that tests don't provide unique coverage",
-      "layers_affected": ["f_to_t", "l3_to_tc"]
+      "layers_affected": [
+        "f_to_t",
+        "l3_to_tc"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["tests", "coverage", "expert"]
+    "tags": [
+      "tests",
+      "coverage",
+      "expert"
+    ]
   }
 ]

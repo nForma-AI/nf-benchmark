@@ -1,117 +1,162 @@
 [
   {
     "id": "BENCH-126",
-    "title": "Platform-specific path separator handling",
+    "title": "Untraced pathsep-adapter utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Use hardcoded Unix path separators that fail on Windows systems",
-    "target_layers": ["c_to_t"],
+    "description": "Add a platform path-separator adapter in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/file-ops.js",
-      "description": "Replace path.join with hardcoded '/' separators"
+      "type": "file-create",
+      "target_file": "bin/rf-pathsep-adapter.cjs",
+      "content": "'use strict';\nfunction toPosix(p) {\n  return String(p).replace(/\\\\/g, '/');\n}\nfunction toNative(p, sep) {\n  return String(p).split('/').join(sep || require('path').sep);\n}\nmodule.exports = { toPosix, toNative };\n",
+      "description": "Create pathsep-adapter utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect platform-specific path issues",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["edge-cases", "platform", "filesystem"]
+    "tags": [
+      "edge-cases",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-127",
-    "title": "Legacy API integration with deprecated endpoints",
+    "title": "Untraced endpoint-shim utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Integrate with third-party API that has deprecated methods causing future breakage",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a legacy API endpoint shim in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/api-integration.js",
-      "description": "Use deprecated API endpoint that will be removed"
+      "type": "file-create",
+      "target_file": "bin/rf-endpoint-shim.cjs",
+      "content": "'use strict';\nconst REMAP = { '/v1/users': '/v2/accounts', '/v1/orders': '/v2/orders' };\nfunction modernizeEndpoint(legacyPath) {\n  return REMAP[legacyPath] || legacyPath;\n}\nfunction isDeprecated(legacyPath) {\n  return Object.prototype.hasOwnProperty.call(REMAP, legacyPath);\n}\nmodule.exports = { modernizeEndpoint, isDeprecated };\n",
+      "description": "Create endpoint-shim utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect usage of deprecated APIs",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["edge-cases", "legacy", "api"]
+    "tags": [
+      "edge-cases",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-128",
-    "title": "Time zone handling bug in date calculations",
+    "title": "Untraced tz-converter utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Date arithmetic that doesn't account for daylight saving time transitions",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a timezone offset converter in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/date-utils.js",
-      "description": "Use naive date calculations ignoring DST transitions"
+      "type": "file-create",
+      "target_file": "bin/rf-tz-converter.cjs",
+      "content": "'use strict';\nfunction toUtc(epochMs, offsetMinutes) {\n  return epochMs - offsetMinutes * 60 * 1000;\n}\nfunction fromUtc(epochMs, offsetMinutes) {\n  return epochMs + offsetMinutes * 60 * 1000;\n}\nmodule.exports = { toUtc, fromUtc };\n",
+      "description": "Create tz-converter utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect timezone-related date calculation errors",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["edge-cases", "timezone", "datetime"]
+    "tags": [
+      "edge-cases",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-129",
-    "title": "Unicode handling in string processing",
+    "title": "Untraced unicode-normalizer utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "String operations that fail with multi-byte Unicode characters",
-    "target_layers": ["c_to_t"],
+    "description": "Add a Unicode string normalizer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/string-utils.js",
-      "description": "Use byte-based string operations on Unicode text"
+      "type": "file-create",
+      "target_file": "bin/rf-unicode-normalizer.cjs",
+      "content": "'use strict';\nfunction normalize(input) {\n  return String(input).normalize('NFC');\n}\nfunction codePointLength(input) {\n  return Array.from(String(input)).length;\n}\nmodule.exports = { normalize, codePointLength };\n",
+      "description": "Create unicode-normalizer utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect Unicode encoding issues",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["edge-cases", "unicode", "encoding"]
+    "tags": [
+      "edge-cases",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-130",
-    "title": "Browser compatibility issue with CSS flexbox",
+    "title": "Untraced feature-detector utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Use modern CSS features without fallbacks for older browsers",
-    "target_layers": ["c_to_t"],
+    "description": "Add a browser feature detector in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/styles.css",
-      "description": "Add CSS with unsupported properties in legacy browsers"
+      "type": "file-create",
+      "target_file": "bin/rf-feature-detector.cjs",
+      "content": "'use strict';\nfunction supportsFlexbox(featureMap) {\n  return Boolean(featureMap && featureMap.flexbox);\n}\nfunction pickLayout(featureMap) {\n  return supportsFlexbox(featureMap) ? 'flex' : 'float';\n}\nmodule.exports = { supportsFlexbox, pickLayout };\n",
+      "description": "Create feature-detector utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect browser compatibility issues",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["edge-cases", "browser", "compatibility"]
+    "tags": [
+      "edge-cases",
+      "c_to_r",
+      "code"
+    ]
   }
 ]

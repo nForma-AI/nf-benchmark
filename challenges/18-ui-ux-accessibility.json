@@ -1,117 +1,162 @@
 [
   {
     "id": "BENCH-141",
-    "title": "Missing alt text on images",
+    "title": "Untraced alt-text-checker utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "HTML images without alt attributes violating accessibility standards",
-    "target_layers": ["c_to_t"],
+    "description": "Add an image alt-text checker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/components/Image.js",
-      "description": "Remove alt prop from image component"
+      "type": "file-create",
+      "target_file": "bin/rf-alt-text-checker.cjs",
+      "content": "'use strict';\nfunction missingAltText(images) {\n  return images.filter((img) => !img.alt || img.alt.trim() === '').map((img) => img.src);\n}\nmodule.exports = { missingAltText };\n",
+      "description": "Create alt-text-checker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect missing accessibility attributes",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ui-ux", "accessibility", "images"]
+    "tags": [
+      "ui-ux",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-142",
-    "title": "Poor color contrast ratio",
+    "title": "Untraced contrast-evaluator utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "UI elements with insufficient color contrast for readability",
-    "target_layers": ["c_to_t"],
+    "description": "Add a color contrast evaluator in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/styles.css",
-      "description": "Set text color with low contrast against background"
+      "type": "file-create",
+      "target_file": "bin/rf-contrast-evaluator.cjs",
+      "content": "'use strict';\nfunction relativeLuminance(rgb) {\n  const channels = rgb.map((c) => {\n    const s = c / 255;\n    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);\n  });\n  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];\n}\nfunction contrastRatio(fg, bg) {\n  const l1 = relativeLuminance(fg);\n  const l2 = relativeLuminance(bg);\n  const lighter = Math.max(l1, l2);\n  const darker = Math.min(l1, l2);\n  return (lighter + 0.05) / (darker + 0.05);\n}\nmodule.exports = { relativeLuminance, contrastRatio };\n",
+      "description": "Create contrast-evaluator utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect WCAG contrast violations",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ui-ux", "accessibility", "contrast"]
+    "tags": [
+      "ui-ux",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-143",
-    "title": "Keyboard navigation not supported",
+    "title": "Untraced focus-order-checker utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Interactive elements that cannot be accessed via keyboard navigation",
-    "target_layers": ["c_to_t"],
+    "description": "Add a keyboard focus-order checker in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/components/Button.js",
-      "description": "Remove keyboard event handlers from interactive component"
+      "type": "file-create",
+      "target_file": "bin/rf-focus-order-checker.cjs",
+      "content": "'use strict';\nfunction tabbableOrder(elements) {\n  return elements\n    .filter((el) => (el.tabIndex || 0) >= 0 && !el.disabled)\n    .sort((a, b) => (a.tabIndex || 0) - (b.tabIndex || 0));\n}\nmodule.exports = { tabbableOrder };\n",
+      "description": "Create focus-order-checker utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect lack of keyboard accessibility",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ui-ux", "accessibility", "keyboard"]
+    "tags": [
+      "ui-ux",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-144",
-    "title": "Responsive design breakpoint failure",
+    "title": "Untraced breakpoint-resolver utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Layout that breaks on mobile devices due to fixed widths",
-    "target_layers": ["c_to_t"],
+    "description": "Add a responsive breakpoint resolver in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/styles.css",
-      "description": "Use fixed pixel widths instead of responsive units"
+      "type": "file-create",
+      "target_file": "bin/rf-breakpoint-resolver.cjs",
+      "content": "'use strict';\nconst BREAKPOINTS = [\n  { name: 'mobile', max: 640 },\n  { name: 'tablet', max: 1024 },\n  { name: 'desktop', max: Infinity },\n];\nfunction resolveBreakpoint(width) {\n  return (BREAKPOINTS.find((b) => width <= b.max) || BREAKPOINTS[BREAKPOINTS.length - 1]).name;\n}\nmodule.exports = { resolveBreakpoint, BREAKPOINTS };\n",
+      "description": "Create breakpoint-resolver utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect responsive design issues",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ui-ux", "responsive", "mobile"]
+    "tags": [
+      "ui-ux",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-145",
-    "title": "Poor user experience with slow loading states",
+    "title": "Untraced skeleton-state-manager utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "UI without loading indicators causing poor perceived performance",
-    "target_layers": ["c_to_t"],
+    "description": "Add a loading skeleton state manager in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/components/DataTable.js",
-      "description": "Remove loading spinner during data fetch"
+      "type": "file-create",
+      "target_file": "bin/rf-skeleton-state-manager.cjs",
+      "content": "'use strict';\nfunction loadingState(elapsedMs, thresholds) {\n  const t = thresholds || { skeleton: 200, spinner: 1000 };\n  if (elapsedMs < t.skeleton) return 'idle';\n  if (elapsedMs < t.spinner) return 'skeleton';\n  return 'spinner';\n}\nmodule.exports = { loadingState };\n",
+      "description": "Create skeleton-state-manager utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect lack of loading state UX",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ui-ux", "loading", "performance"]
+    "tags": [
+      "ui-ux",
+      "c_to_r",
+      "code"
+    ]
   }
 ]

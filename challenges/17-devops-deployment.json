@@ -1,72 +1,99 @@
 [
   {
     "id": "BENCH-136",
-    "title": "CI/CD pipeline with race condition in artifact deployment",
+    "title": "Untraced artifact-sequencer utility (C->R)",
     "category": "config-hooks",
     "difficulty": "expert",
-    "description": "Concurrent pipeline runs that overwrite each other's artifacts",
-    "target_layers": ["c_to_e"],
+    "description": "Add a deployment artifact sequencer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".github/workflows/deploy.yml",
-      "description": "Remove locking mechanism for deployment steps"
+      "type": "file-create",
+      "target_file": "bin/rf-artifact-sequencer.cjs",
+      "content": "'use strict';\nfunction sequenceArtifacts(artifacts) {\n  return artifacts\n    .slice()\n    .sort((a, b) => (a.priority || 0) - (b.priority || 0) || a.name.localeCompare(b.name));\n}\nmodule.exports = { sequenceArtifacts };\n",
+      "description": "Create artifact-sequencer utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect race condition in CI/CD pipeline",
-      "layers_affected": ["c_to_e"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["devops", "ci-cd", "race-condition"]
+    "tags": [
+      "devops",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-137",
-    "title": "Container with security vulnerabilities",
+    "title": "Untraced image-scanner utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Docker image built from base image with known CVEs",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a container image vulnerability scanner in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "Dockerfile",
-      "description": "Use outdated base image with security vulnerabilities"
+      "type": "file-create",
+      "target_file": "bin/rf-image-scanner.cjs",
+      "content": "'use strict';\nfunction countCritical(findings) {\n  return findings.filter((f) => f.severity === 'critical').length;\n}\nfunction passesGate(findings, maxCritical) {\n  return countCritical(findings) <= (maxCritical || 0);\n}\nmodule.exports = { countCritical, passesGate };\n",
+      "description": "Create image-scanner utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect container security vulnerabilities",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["devops", "containers", "security"]
+    "tags": [
+      "devops",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-138",
-    "title": "Infrastructure as code with resource conflicts",
+    "title": "Untraced resource-planner utility (C->R)",
     "category": "config-hooks",
     "difficulty": "expert",
-    "description": "Terraform configuration with conflicting resource definitions",
-    "target_layers": ["c_to_e"],
+    "description": "Add an IaC resource conflict planner in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "infrastructure/main.tf",
-      "description": "Add duplicate resource definitions causing conflicts"
+      "type": "file-create",
+      "target_file": "bin/rf-resource-planner.cjs",
+      "content": "'use strict';\nfunction findConflicts(resources) {\n  const seen = {};\n  const conflicts = [];\n  for (const r of resources) {\n    if (seen[r.id]) conflicts.push(r.id);\n    else seen[r.id] = true;\n  }\n  return conflicts;\n}\nmodule.exports = { findConflicts };\n",
+      "description": "Create resource-planner utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect IaC resource conflicts",
-      "layers_affected": ["c_to_e"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["devops", "iac", "terraform"]
+    "tags": [
+      "devops",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-139",
@@ -74,7 +101,9 @@
     "category": "reverse-flow",
     "difficulty": "expert",
     "description": "Add a deployment orchestrator module in bin/ with rollout strategy logic but no @req traceability — solver discovers C->R candidate",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/rf-deploy-orchestrator.cjs",
@@ -84,13 +113,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should discover C->R candidate for untraced deployment orchestrator",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["devops", "reverse-flow", "c_to_r", "deployment"]
+    "tags": [
+      "devops",
+      "reverse-flow",
+      "c_to_r",
+      "deployment"
+    ]
   },
   {
     "id": "BENCH-140",
@@ -98,7 +134,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Cloud infrastructure configured with excessive resources causing cost waste",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "infrastructure/cloud-config.json",
@@ -109,12 +147,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect resource over-provisioning",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "cloud", "cost-optimization"]
+    "tags": [
+      "devops",
+      "cloud",
+      "cost-optimization"
+    ]
   }
 ]

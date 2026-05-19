@@ -1,119 +1,162 @@
 [
   {
     "id": "BENCH-131",
-    "title": "Overfitting in ML model training",
+    "title": "Untraced regularization-tuner utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Train ML model with insufficient validation data leading to overfitting",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a model regularization tuner in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/ml-training.js",
-      "description": "Use same dataset for training and validation"
+      "type": "file-create",
+      "target_file": "bin/rf-regularization-tuner.cjs",
+      "content": "'use strict';\nfunction overfitGap(trainScore, valScore) {\n  return trainScore - valScore;\n}\nfunction suggestLambda(gap) {\n  if (gap > 0.2) return 0.1;\n  if (gap > 0.1) return 0.01;\n  return 0.001;\n}\nmodule.exports = { overfitGap, suggestLambda };\n",
+      "description": "Create regularization-tuner utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect overfitting through validation metrics analysis",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ai-ml", "overfitting", "training"]
+    "tags": [
+      "ai-ml",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-132",
-    "title": "Data poisoning in training dataset",
+    "title": "Untraced sample-screener utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Introduce adversarial examples in training data that compromise model accuracy",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a training-sample screener in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "data/train.csv",
-      "description": "Add poisoned samples that bias model predictions"
+      "type": "file-create",
+      "target_file": "bin/rf-sample-screener.cjs",
+      "content": "'use strict';\nfunction screenSample(sample, bounds) {\n  return Object.keys(bounds).every((key) => {\n    const v = sample[key];\n    return typeof v === 'number' && v >= bounds[key][0] && v <= bounds[key][1];\n  });\n}\nmodule.exports = { screenSample };\n",
+      "description": "Create sample-screener utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect data poisoning through anomaly detection",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ai-ml", "data-poisoning", "adversarial"]
+    "tags": [
+      "ai-ml",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-133",
-    "title": "ML pipeline with data leakage",
+    "title": "Untraced split-validator utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Preprocessing pipeline that leaks future information into training data",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a train/test split leakage validator in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/pipeline.js",
-      "description": "Include target variable in feature engineering for training"
+      "type": "file-create",
+      "target_file": "bin/rf-split-validator.cjs",
+      "content": "'use strict';\nfunction hasLeakage(trainIds, testIds) {\n  const train = new Set(trainIds);\n  return testIds.some((id) => train.has(id));\n}\nfunction overlapCount(trainIds, testIds) {\n  const train = new Set(trainIds);\n  return testIds.filter((id) => train.has(id)).length;\n}\nmodule.exports = { hasLeakage, overlapCount };\n",
+      "description": "Create split-validator utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect data leakage in ML pipeline",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ai-ml", "data-leakage", "pipeline"]
+    "tags": [
+      "ai-ml",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-134",
-    "title": "Model deployment without monitoring",
+    "title": "Untraced inference-monitor utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Deploy ML model without performance monitoring or drift detection",
-    "target_layers": ["c_to_r"],
+    "description": "Add a model inference monitor in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-delete",
-      "target_file": "src/monitoring.js",
-      "description": "Remove model performance tracking code"
+      "type": "file-create",
+      "target_file": "bin/rf-inference-monitor.cjs",
+      "content": "'use strict';\nfunction recordPrediction(stats, latencyMs, confidence) {\n  stats.count = (stats.count || 0) + 1;\n  stats.totalLatency = (stats.totalLatency || 0) + latencyMs;\n  stats.lowConfidence = (stats.lowConfidence || 0) + (confidence < 0.5 ? 1 : 0);\n  return stats;\n}\nfunction avgLatency(stats) {\n  return stats.count ? stats.totalLatency / stats.count : 0;\n}\nmodule.exports = { recordPrediction, avgLatency };\n",
+      "description": "Create inference-monitor utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect lack of ML model monitoring",
-      "layers_affected": ["c_to_r"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ai-ml", "monitoring", "deployment"]
+    "tags": [
+      "ai-ml",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-135",
-    "title": "Bias in ML training data",
+    "title": "Untraced fairness-auditor utility (C->R)",
     "category": "formal-models",
     "difficulty": "expert",
-    "description": "Training data with systematic bias leading to discriminatory model predictions",
-    "target_layers": ["f_to_c", "c_to_t"],
+    "description": "Add a training-data fairness auditor in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": ".planning/formal/model-bias.json",
-      "json_path": "$.bias_check",
-      "value": false,
-      "description": "Disable bias detection in formal model"
+      "type": "file-create",
+      "target_file": "bin/rf-fairness-auditor.cjs",
+      "content": "'use strict';\nfunction groupCounts(samples, attr) {\n  const counts = {};\n  for (const s of samples) counts[s[attr]] = (counts[s[attr]] || 0) + 1;\n  return counts;\n}\nfunction imbalanceRatio(counts) {\n  const vals = Object.values(counts);\n  if (!vals.length) return 0;\n  return Math.max(...vals) / Math.min(...vals);\n}\nmodule.exports = { groupCounts, imbalanceRatio };\n",
+      "description": "Create fairness-auditor utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect bias in ML training through fairness metrics",
-      "layers_affected": ["f_to_c", "c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["ai-ml", "bias", "fairness"]
+    "tags": [
+      "ai-ml",
+      "c_to_r",
+      "code"
+    ]
   }
 ]

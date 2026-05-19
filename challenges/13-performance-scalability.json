@@ -1,117 +1,162 @@
 [
   {
     "id": "BENCH-116",
-    "title": "Memory leak in long-running process",
+    "title": "Untraced heap-sampler utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Introduce memory leak by not releasing event listeners or cached objects over time",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a heap-usage sampler in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/cache.js",
-      "description": "Add code that accumulates references without cleanup"
+      "type": "file-create",
+      "target_file": "bin/rf-heap-sampler.cjs",
+      "content": "'use strict';\nfunction sampleHeap() {\n  const m = process.memoryUsage();\n  return { heapUsed: m.heapUsed, heapTotal: m.heapTotal, rss: m.rss };\n}\nfunction growthRate(samples) {\n  if (samples.length < 2) return 0;\n  return samples[samples.length - 1].heapUsed - samples[0].heapUsed;\n}\nmodule.exports = { sampleHeap, growthRate };\n",
+      "description": "Create heap-sampler utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect memory leak through heap analysis or profiling",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["performance", "memory-leak", "scalability"]
+    "tags": [
+      "performance",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-117",
-    "title": "Inefficient algorithm with O(n²) complexity",
+    "title": "Untraced complexity-profiler utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Replace efficient O(n) algorithm with nested loops causing quadratic time complexity",
-    "target_layers": ["c_to_t"],
+    "description": "Add an algorithmic complexity profiler in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/algorithm.js",
-      "description": "Change sorting/search to use nested loops instead of optimized methods"
+      "type": "file-create",
+      "target_file": "bin/rf-complexity-profiler.cjs",
+      "content": "'use strict';\nfunction estimateComplexity(sizes, timings) {\n  const ratios = [];\n  for (let i = 1; i < sizes.length; i += 1) {\n    const sizeR = sizes[i] / sizes[i - 1];\n    const timeR = timings[i] / timings[i - 1];\n    ratios.push(Math.log(timeR) / Math.log(sizeR));\n  }\n  const exp = ratios.reduce((s, r) => s + r, 0) / ratios.length;\n  return { exponent: exp, quadratic: exp >= 1.8 };\n}\nmodule.exports = { estimateComplexity };\n",
+      "description": "Create complexity-profiler utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect algorithmic inefficiency through complexity analysis",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["performance", "algorithm", "complexity"]
+    "tags": [
+      "performance",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-118",
-    "title": "Database query without proper indexing",
+    "title": "Untraced index-advisor utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Execute expensive database queries on unindexed columns causing slow performance",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a database index advisor in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/queries.js",
-      "description": "Add query that scans entire table without indexes"
+      "type": "file-create",
+      "target_file": "bin/rf-index-advisor.cjs",
+      "content": "'use strict';\nfunction suggestIndexes(queries) {\n  const counts = {};\n  for (const q of queries) {\n    for (const col of q.where || []) counts[col] = (counts[col] || 0) + 1;\n  }\n  return Object.keys(counts).filter((c) => counts[c] >= 2).sort();\n}\nmodule.exports = { suggestIndexes };\n",
+      "description": "Create index-advisor utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect missing database indexes",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["performance", "database", "indexing"]
+    "tags": [
+      "performance",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-119",
-    "title": "Scalability bottleneck at 10k concurrent users",
+    "title": "Untraced load-shedder utility (C->R)",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Implement synchronous processing that blocks under high concurrency load",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a concurrency load-shedder in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/handler.js",
-      "description": "Make request handler synchronous, blocking concurrent requests"
+      "type": "file-create",
+      "target_file": "bin/rf-load-shedder.cjs",
+      "content": "'use strict';\nfunction createLoadShedder(maxConcurrent) {\n  let inFlight = 0;\n  return {\n    admit() {\n      if (inFlight >= maxConcurrent) return false;\n      inFlight += 1;\n      return true;\n    },\n    complete() { if (inFlight > 0) inFlight -= 1; },\n    saturated() { return inFlight >= maxConcurrent; },\n  };\n}\nmodule.exports = { createLoadShedder };\n",
+      "description": "Create load-shedder utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect concurrency bottleneck and recommend async processing",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["performance", "concurrency", "scalability"]
+    "tags": [
+      "performance",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-120",
-    "title": "Excessive API calls in tight loop",
+    "title": "Untraced request-coalescer utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Make redundant API calls within nested loops causing network overhead",
-    "target_layers": ["c_to_t"],
+    "description": "Add an API request coalescer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/api-client.js",
-      "description": "Move API call inside loop that executes multiple times per iteration"
+      "type": "file-create",
+      "target_file": "bin/rf-request-coalescer.cjs",
+      "content": "'use strict';\nfunction coalesce(requests, keyFn) {\n  const seen = new Map();\n  for (const req of requests) {\n    const key = keyFn(req);\n    if (!seen.has(key)) seen.set(key, req);\n  }\n  return Array.from(seen.values());\n}\nmodule.exports = { coalesce };\n",
+      "description": "Create request-coalescer utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect excessive network calls and recommend caching/batching",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["performance", "api", "network"]
+    "tags": [
+      "performance",
+      "c_to_r",
+      "code"
+    ]
   }
 ]
