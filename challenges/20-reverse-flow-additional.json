@@ -1,232 +1,242 @@
 [
   {
     "id": "BENCH-156",
-    "title": "Reverse flow with corrupted backup data",
+    "title": "Untraced data export module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Backup data corrupted during creation preventing successful rollback",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "description": "Add a data export module in bin/ with no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/backup.js",
-      "description": "Introduce corruption in backup creation process"
+      "type": "file-create",
+      "target_file": "bin/rf-data-export-v2.cjs",
+      "content": "'use strict';\nconst fs = require('fs');\nconst path = require('path');\nfunction exportData(data, outputPath) {\n  const serialized = JSON.stringify(data, null, 2);\n  fs.writeFileSync(outputPath, serialized, 'utf8');\n  return { bytesWritten: Buffer.byteLength(serialized), path: outputPath };\n}\nfunction importData(inputPath) {\n  const raw = fs.readFileSync(inputPath, 'utf8');\n  return JSON.parse(raw);\n}\nmodule.exports = { exportData, importData };",
+      "description": "Create data export module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect corrupted backup in reverse flow",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced data export module",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "corruption", "backup"]
+    "tags": ["reverse-flow", "c_to_r", "export"]
   },
   {
     "id": "BENCH-157",
-    "title": "Rollback with dependency ordering issues",
+    "title": "Orphan test for data export without requirement mapping",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Rollback operations performed in wrong order causing failures",
+    "description": "Create a test file for the data export module with no @req or formal-test-sync mapping — T->R discovery",
     "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/rollback.js",
-      "description": "Reverse dependency order in rollback script"
+      "type": "file-create",
+      "target_file": "bin/rf-data-export-v2.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-data-export-v2.cjs'); } catch (e) { mod = null; }\n\ntest('exportData produces valid JSON output', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.exportData({ key: 'value' }, '/tmp/rf-test-export.json');\n  assert.strictEqual(typeof result.bytesWritten, 'number');\n});\n\ntest('importData reads back exported data', () => {\n  assert.ok(mod, 'module should load');\n  const data = mod.importData('/tmp/rf-test-export.json');\n  assert.strictEqual(data.key, 'value');\n});",
+      "description": "Create test file with no @req or formal sync mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect incorrect rollback ordering",
+      "description": "nf:solve should discover T->R candidate for orphan test",
       "layers_affected": ["t_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "ordering", "dependencies"]
+    "tags": ["reverse-flow", "t_to_r", "orphan"]
   },
   {
     "id": "BENCH-158",
-    "title": "Reverse flow timeout during large data restoration",
+    "title": "Untraced batch processing module with complex logic",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Restoration of large datasets exceeds timeout limits",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "description": "Add a batch processing module in bin/ that performs multi-step transformations — solver should flag as C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/restore.js",
-      "description": "Add large data set that exceeds timeout"
+      "type": "file-create",
+      "target_file": "bin/rf-batch-processor.cjs",
+      "content": "'use strict';\nfunction transformBatch(items) {\n  return items.map(item => {\n    if (!item.id) throw new Error('item.id required');\n    return { ...item, processed: true, timestamp: Date.now() };\n  });\n}\nfunction validateBatch(items) {\n  const errors = [];\n  for (const item of items) {\n    if (!item.processed) errors.push({ id: item.id, error: 'not processed' });\n  }\n  return { valid: errors.length === 0, errors };\n}\nmodule.exports = { transformBatch, validateBatch };",
+      "description": "Create batch processor module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect timeout in reverse flow operations",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced batch processor",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "timeout", "large-data"]
+    "tags": ["reverse-flow", "c_to_r", "batch"]
   },
   {
     "id": "BENCH-159",
-    "title": "Reverse migration with schema incompatibilities",
+    "title": "Orphan test for batch processor without requirement mapping",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Database migration rollback fails due to schema changes",
-    "target_layers": ["c_to_r", "t_to_r"],
+    "description": "Create test for batch processor with no @req annotation — T->R discovery",
+    "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "migrations/down.sql",
-      "description": "Create incompatible schema rollback"
+      "type": "file-create",
+      "target_file": "bin/rf-batch-processor.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet mod;\ntry { mod = require('./rf-batch-processor.cjs'); } catch (e) { mod = null; }\n\ntest('transformBatch adds processed flag', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.transformBatch([{ id: 1 }, { id: 2 }]);\n  assert.strictEqual(result.length, 2);\n  assert.ok(result[0].processed);\n});\n\ntest('validateBatch detects unprocessed items', () => {\n  assert.ok(mod, 'module should load');\n  const result = mod.validateBatch([{ id: 1, processed: false }]);\n  assert.strictEqual(result.valid, false);\n});",
+      "description": "Create test for batch processor with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect schema incompatibility in reverse migration",
-      "layers_affected": ["c_to_r", "t_to_r"]
+      "description": "nf:solve should discover T->R candidate for orphan batch test",
+      "layers_affected": ["t_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "migration", "schema"]
+    "tags": ["reverse-flow", "t_to_r", "orphan"]
   },
   {
     "id": "BENCH-160",
-    "title": "Reverse flow with external service unavailability",
+    "title": "Untraced event scheduler module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Rollback fails because external services are unavailable",
-    "target_layers": ["t_to_r"],
+    "description": "Add an event scheduling module in bin/ with timing and priority logic — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/external-rollback.js",
-      "description": "Depend on unavailable external service for rollback"
+      "type": "file-create",
+      "target_file": "bin/rf-event-scheduler.cjs",
+      "content": "'use strict';\nconst scheduledEvents = [];\nfunction scheduleEvent(event, delayMs, priority) {\n  if (!event.name) throw new Error('event.name required');\n  const entry = { event, delayMs, priority: priority || 5, createdAt: Date.now() };\n  scheduledEvents.push(entry);\n  scheduledEvents.sort((a, b) => a.priority - b.priority);\n  return entry;\n}\nfunction cancelEvent(eventName) {\n  const idx = scheduledEvents.findIndex(e => e.event.name === eventName);\n  if (idx === -1) return false;\n  scheduledEvents.splice(idx, 1);\n  return true;\n}\nfunction getScheduled() { return [...scheduledEvents]; }\nmodule.exports = { scheduleEvent, cancelEvent, getScheduled };",
+      "description": "Create event scheduler module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect external dependency in reverse flow",
-      "layers_affected": ["t_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced event scheduler",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "external", "unavailable"]
+    "tags": ["reverse-flow", "c_to_r", "scheduler"]
   },
   {
     "id": "BENCH-161",
-    "title": "Partial rollback leaving system in inconsistent state",
+    "title": "Untraced rate limiter module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Rollback succeeds partially but leaves system inconsistent",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "description": "Add a rate limiting module in bin/ with token bucket logic — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/partial-rollback.js",
-      "description": "Implement rollback that fails midway"
+      "type": "file-create",
+      "target_file": "bin/rf-rate-limiter.cjs",
+      "content": "'use strict';\nfunction createLimiter(maxTokens, refillMs) {\n  let tokens = maxTokens;\n  let lastRefill = Date.now();\n  return {\n    tryAcquire() {\n      const now = Date.now();\n      const elapsed = now - lastRefill;\n      tokens = Math.min(maxTokens, tokens + Math.floor(elapsed / refillMs));\n      lastRefill = now;\n      if (tokens > 0) { tokens--; return true; }\n      return false;\n    },\n    available() { return tokens; }\n  };\n}\nmodule.exports = { createLimiter };",
+      "description": "Create rate limiter module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect partial rollback inconsistency",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced rate limiter",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "partial", "inconsistent"]
+    "tags": ["reverse-flow", "c_to_r", "rate-limit"]
   },
   {
     "id": "BENCH-162",
-    "title": "Reverse flow with concurrent modifications",
+    "title": "Orphan integration test without requirement mapping",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Concurrent changes during rollback cause conflicts",
+    "description": "Create an integration test covering event scheduler and rate limiter with no @req mapping — T->R discovery",
     "target_layers": ["t_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/concurrent-rollback.js",
-      "description": "Allow concurrent modifications during rollback"
+      "type": "file-create",
+      "target_file": "bin/rf-integration.test.cjs",
+      "content": "const { test, assert } = require('node:test');\nlet scheduler, limiter;\ntry { scheduler = require('./rf-event-scheduler.cjs'); } catch (e) {}\ntry { limiter = require('./rf-rate-limiter.cjs'); } catch (e) {}\n\ntest('scheduler and limiter work together', () => {\n  const lim = limiter ? limiter.createLimiter(5, 100) : null;\n  if (!lim || !scheduler) { assert.ok(true, 'modules optional'); return; }\n  assert.ok(lim.tryAcquire());\n  scheduler.scheduleEvent({ name: 'test' }, 1000, 1);\n  assert.strictEqual(scheduler.getScheduled().length, 1);\n});",
+      "description": "Create integration test with no requirement mapping"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect concurrent modification conflicts in reverse flow",
+      "description": "nf:solve should discover T->R candidate for orphan integration test",
       "layers_affected": ["t_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "concurrent", "conflicts"]
+    "tags": ["reverse-flow", "t_to_r", "integration"]
   },
   {
     "id": "BENCH-163",
-    "title": "Reverse flow with encrypted data loss",
+    "title": "Untraced encryption helper module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Rollback loses encryption keys preventing data restoration",
-    "target_layers": ["t_to_r", "c_to_r"],
+    "description": "Add a crypto helper module in bin/ with hash and verify functions — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/encrypted-rollback.js",
-      "description": "Lose encryption keys during rollback"
+      "type": "file-create",
+      "target_file": "bin/rf-crypto-helper.cjs",
+      "content": "'use strict';\nconst crypto = require('crypto');\nfunction hashPayload(payload, algorithm) {\n  const algo = algorithm || 'sha256';\n  return crypto.createHash(algo).update(JSON.stringify(payload)).digest('hex');\n}\nfunction verifyHash(payload, expectedHash, algorithm) {\n  return hashPayload(payload, algorithm) === expectedHash;\n}\nmodule.exports = { hashPayload, verifyHash };",
+      "description": "Create crypto helper module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect encryption key loss in reverse flow",
-      "layers_affected": ["t_to_r", "c_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced crypto helper",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "encryption", "keys"]
+    "tags": ["reverse-flow", "c_to_r", "crypto"]
   },
   {
     "id": "BENCH-164",
-    "title": "Reverse flow with network partition",
+    "title": "Untraced metrics collector module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Network partition during distributed rollback causes failure",
-    "target_layers": ["t_to_r"],
+    "description": "Add a metrics collection module in bin/ with counter and gauge logic — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/distributed-rollback.js",
-      "description": "Add network partition simulation in rollback"
+      "type": "file-create",
+      "target_file": "bin/rf-metrics-collector.cjs",
+      "content": "'use strict';\nconst counters = {};\nconst gauges = {};\nfunction incrementCounter(name, value) {\n  if (!counters[name]) counters[name] = 0;\n  counters[name] += (value || 1);\n}\nfunction setGauge(name, value) {\n  gauges[name] = value;\n}\nfunction snapshot() {\n  return { counters: { ...counters }, gauges: { ...gauges }, capturedAt: Date.now() };\n}\nmodule.exports = { incrementCounter, setGauge, snapshot };",
+      "description": "Create metrics collector module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect network partition affecting reverse flow",
-      "layers_affected": ["t_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced metrics collector",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "network", "partition"]
+    "tags": ["reverse-flow", "c_to_r", "metrics"]
   },
   {
     "id": "BENCH-165",
-    "title": "Reverse flow with resource exhaustion",
+    "title": "Untraced health checker module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Rollback exhausts system resources preventing completion",
-    "target_layers": ["t_to_r", "c_to_t"],
+    "description": "Add a health checking module in bin/ with probe and status logic — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/resource-intensive-rollback.js",
-      "description": "Make rollback consume excessive resources"
+      "type": "file-create",
+      "target_file": "bin/rf-health-checker.cjs",
+      "content": "'use strict';\nfunction checkHealth(services) {\n  const results = [];\n  for (const svc of services) {\n    const isHealthy = svc.healthy !== false && svc.latencyMs < 5000;\n    results.push({ name: svc.name, healthy: isHealthy, latencyMs: svc.latencyMs || 0 });\n  }\n  const allHealthy = results.every(r => r.healthy);\n  return { status: allHealthy ? 'healthy' : 'degraded', checks: results, checkedAt: Date.now() };\n}\nmodule.exports = { checkHealth };",
+      "description": "Create health checker module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect resource exhaustion in reverse flow",
-      "layers_affected": ["t_to_r", "c_to_t"]
+      "description": "nf:solve should discover C->R candidate for untraced health checker",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "resources", "exhaustion"]
+    "tags": ["reverse-flow", "c_to_r", "health"]
   }
 ]

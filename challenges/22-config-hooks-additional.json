@@ -1,232 +1,82 @@
 [
   {
-    "id": "BENCH-176",
-    "title": "Config hook with circular dependency",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Configuration hooks create circular dependency causing infinite loop",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/config-a.js",
-      "description": "Create circular dependency between config hooks"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect circular dependency in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "circular", "dependency"]
+    "id": "BENCH-176", "title": "Untraced hook config validator as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook config validator in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-config-validator.cjs", "content": "'use strict';\nfunction validateHookConfig(config) {\n  const errors = [];\n  if (!config.name) errors.push('missing name');\n  if (!config.event) errors.push('missing event');\n  return { valid: errors.length === 0, errors };\n}\nmodule.exports = { validateHookConfig };", "description": "Create hook config validator with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-177",
-    "title": "Hook execution order dependency violation",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Hooks execute in wrong order violating dependencies",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/order.js",
-      "description": "Reverse execution order of dependent hooks"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect incorrect hook execution order",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "order", "dependency"]
+    "id": "BENCH-177", "title": "Untraced hook execution tracker as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook execution tracker in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-exec-tracker.cjs", "content": "'use strict';\nfunction createTracker() {\n  const log = [];\n  return {\n    record(hookName, duration) { log.push({ hookName, duration, timestamp: Date.now() }); },\n    getLog() { return [...log]; },\n    average() { return log.length ? log.reduce((s, e) => s + e.duration, 0) / log.length : 0; }\n  };\n}\nmodule.exports = { createTracker };", "description": "Create hook execution tracker with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-178",
-    "title": "Config hook with race condition on shared state",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Multiple hooks accessing shared configuration state concurrently",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/shared-state.js",
-      "description": "Add unsynchronized access to shared config state"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect race condition in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "race-condition", "shared-state"]
+    "id": "BENCH-178", "title": "Untraced hook dependency resolver as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook dependency resolver in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-dep-resolver.cjs", "content": "'use strict';\nfunction resolveOrder(hooks) {\n  const sorted = [...hooks].sort((a, b) => (a.priority || 5) - (b.priority || 5));\n  return sorted.map(h => h.name);\n}\nmodule.exports = { resolveOrder };", "description": "Create hook dependency resolver with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-179",
-    "title": "Hook failure causing cascading config errors",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Single hook failure propagates causing system-wide config issues",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/cascading.js",
-      "description": "Make hook throw exception affecting downstream config"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect cascading config hook failures",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "cascading", "failure"]
+    "id": "BENCH-179", "title": "Untraced hook error aggregator as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook error aggregator in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-error-aggregator.cjs", "content": "'use strict';\nfunction createErrorAggregator() {\n  const errors = [];\n  return {\n    add(hookName, error) { errors.push({ hookName, message: error.message, timestamp: Date.now() }); },\n    getByHook(name) { return errors.filter(e => e.hookName === name); },\n    count() { return errors.length; }\n  };\n}\nmodule.exports = { createErrorAggregator };", "description": "Create hook error aggregator with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-180",
-    "title": "Config hook with external dependency timeout",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Configuration hook times out waiting for external service",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/external.js",
-      "description": "Add blocking call to slow external service"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect timeout in config hook",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "timeout", "external"]
+    "id": "BENCH-180", "title": "Untraced hook timeout manager as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook timeout manager in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-timeout-manager.cjs", "content": "'use strict';\nfunction createTimeoutManager(defaultMs) {\n  const timeouts = {};\n  return {\n    set(hookName, ms) { timeouts[hookName] = ms || defaultMs; },\n    get(hookName) { return timeouts[hookName] || defaultMs; },\n    all() { return { ...timeouts }; }\n  };\n}\nmodule.exports = { createTimeoutManager };", "description": "Create hook timeout manager with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-181",
-    "title": "Hook with side effects modifying global state",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Configuration hooks have unintended side effects on global state",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/side-effects.js",
-      "description": "Add global state modifications in hook"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect side effects in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "side-effects", "global-state"]
+    "id": "BENCH-181", "title": "Untraced hook side-effect logger as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook side-effect logger in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-sideeffect-logger.cjs", "content": "'use strict';\nfunction createSideEffectLogger() {\n  const effects = [];\n  return {\n    log(hookName, type, detail) { effects.push({ hookName, type, detail, timestamp: Date.now() }); },\n    getEffects() { return [...effects]; },\n    hasSideEffects(hookName) { return effects.some(e => e.hookName === hookName); }\n  };\n}\nmodule.exports = { createSideEffectLogger };", "description": "Create hook side-effect logger with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-182",
-    "title": "Config hook with memory leak accumulation",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Hooks accumulate memory over time without cleanup",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/memory-leak.js",
-      "description": "Add memory accumulation in hook execution"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect memory leak in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "memory-leak", "accumulation"]
+    "id": "BENCH-182", "title": "Untraced hook memory monitor as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook memory monitor in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-memory-monitor.cjs", "content": "'use strict';\nfunction createMemoryMonitor() {\n  const snapshots = [];\n  return {\n    snapshot(hookName) { snapshots.push({ hookName, rss: process.memoryUsage().rss, timestamp: Date.now() }); },\n    getLeakCandidates(threshold) { return snapshots.filter(s => s.rss > (threshold || 50 * 1024 * 1024)); }\n  };\n}\nmodule.exports = { createMemoryMonitor };", "description": "Create hook memory monitor with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-183",
-    "title": "Hook execution bypassing security checks",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Configuration hooks bypass security validation",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/security-bypass.js",
-      "description": "Skip security validation in hook"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect security bypass in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "security", "bypass"]
+    "id": "BENCH-183", "title": "Untraced hook security scanner as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook security scanner in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-security-scanner.cjs", "content": "'use strict';\nfunction scanHook(hookCode) {\n  const issues = [];\n  if (hookCode.includes('eval(')) issues.push('eval usage');\n  if (hookCode.includes('child_process')) issues.push('child_process usage');\n  return { safe: issues.length === 0, issues };\n}\nmodule.exports = { scanHook };", "description": "Create hook security scanner with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-184",
-    "title": "Config hook with version compatibility issues",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Hooks incompatible with current system version",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/version.js",
-      "description": "Use deprecated hook API"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect version compatibility issues in hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "version", "compatibility"]
+    "id": "BENCH-184", "title": "Untraced hook version checker as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook version checker in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-version-checker.cjs", "content": "'use strict';\nfunction checkVersion(hookName, minVersion, currentVersion) {\n  return { hookName, compatible: currentVersion >= minVersion, current: currentVersion, minimum: minVersion };\n}\nmodule.exports = { checkVersion };", "description": "Create hook version checker with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   },
   {
-    "id": "BENCH-185",
-    "title": "Hook with infinite recursion on config changes",
-    "category": "config-hooks",
-    "difficulty": "expert",
-    "description": "Configuration hook triggers itself recursively",
-    "target_layers": ["c_to_e"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "hooks/recursive.js",
-      "description": "Make hook modify config that triggers itself"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect infinite recursion in config hooks",
-      "layers_affected": ["c_to_e"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["config-hooks", "recursion", "infinite"]
+    "id": "BENCH-185", "title": "Untraced hook recursion guard as C->R", "category": "config-hooks", "difficulty": "expert",
+    "description": "Add a hook recursion guard in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": { "type": "file-create", "target_file": "bin/rf-hook-recursion-guard.cjs", "content": "'use strict';\nfunction createRecursionGuard(maxDepth) {\n  const depth = { current: 0 };\n  return {\n    enter() { depth.current++; if (depth.current > (maxDepth || 10)) throw new Error('recursion limit'); },\n    exit() { depth.current = Math.max(0, depth.current - 1); },\n    depth() { return depth.current; }\n  };\n}\nmodule.exports = { createRecursionGuard };", "description": "Create hook recursion guard with no requirement tracing" },
+    "expected_outcome": { "residual_change": "increase", "description": "C->R candidate", "layers_affected": ["c_to_r"] },
+    "scoring": { "method": "detection_only", "timeout_seconds": 300 }, "tags": ["config-hooks", "c_to_r"]
   }
 ]

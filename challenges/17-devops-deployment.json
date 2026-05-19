@@ -70,26 +70,27 @@
   },
   {
     "id": "BENCH-139",
-    "title": "Deployment rollback failure",
+    "title": "Untraced deployment orchestrator module discovered as C->R",
     "category": "reverse-flow",
     "difficulty": "expert",
-    "description": "Deployment process that cannot rollback gracefully on failure",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "description": "Add a deployment orchestrator module in bin/ with rollout strategy logic but no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "scripts/deploy.sh",
-      "description": "Remove rollback logic from deployment script"
+      "type": "file-create",
+      "target_file": "bin/rf-deploy-orchestrator.cjs",
+      "content": "'use strict';\nfunction createDeployment(config) {\n  const state = { phase: 'pending', version: config.version, canaries: [] };\n  return {\n    promote(target) {\n      if (state.phase !== 'pending') throw new Error('already promoted');\n      state.phase = 'canary';\n      state.canaries.push({ target, deployedAt: Date.now() });\n      return state;\n    },\n    fullRollout() {\n      if (state.phase !== 'canary') throw new Error('must promote first');\n      state.phase = 'full';\n      state.rolloutAt = Date.now();\n      return state;\n    },\n    getStatus() { return { ...state }; }\n  };\n}\nmodule.exports = { createDeployment };",
+      "description": "Create deployment orchestrator module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect lack of rollback capability",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "description": "nf:solve should discover C->R candidate for untraced deployment orchestrator",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["devops", "rollback", "deployment"]
+    "tags": ["devops", "reverse-flow", "c_to_r", "deployment"]
   },
   {
     "id": "BENCH-140",

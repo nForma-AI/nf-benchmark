@@ -1,234 +1,242 @@
 [
   {
     "id": "BENCH-166",
-    "title": "Integration with API rate limiting",
+    "title": "Untraced API client module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "External API with strict rate limits causing integration failures",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add an API client module in bin/ with no @req traceability — solver discovers C->R candidate",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/api-client.js",
-      "description": "Exceed rate limits in API integration"
+      "type": "file-create",
+      "target_file": "bin/rf-api-client.cjs",
+      "content": "'use strict';\nfunction createClient(baseUrl, timeout) {\n  return {\n    async get(path) { return { url: baseUrl + path, status: 200, data: {} }; },\n    async post(path, body) { return { url: baseUrl + path, status: 201, data: body }; },\n    async delete(path) { return { url: baseUrl + path, status: 204 }; }\n  };\n}\nmodule.exports = { createClient };",
+      "description": "Create API client module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect rate limiting issues in integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "nf:solve should discover C->R candidate for untraced API client",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "rate-limiting", "api"]
+    "tags": ["integration", "c_to_r", "api"]
   },
   {
     "id": "BENCH-167",
-    "title": "Third-party library version incompatibility",
+    "title": "Untraced schema validator module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Integration fails due to incompatible library versions",
+    "description": "Add a schema validator module in bin/ with no @req traceability — solver discovers C->R candidate",
     "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "json-field-modify",
-      "target_file": "package.json",
-      "json_path": "$.dependencies.lib",
-      "value": "incompatible_version",
-      "description": "Set incompatible version for dependency"
+      "type": "file-create",
+      "target_file": "bin/rf-schema-validator.cjs",
+      "content": "'use strict';\nfunction validateSchema(data, schema) {\n  const errors = [];\n  for (const [key, rule] of Object.entries(schema)) {\n    if (rule.required && data[key] === undefined) errors.push({ field: key, error: 'required' });\n    if (rule.type && typeof data[key] !== rule.type) errors.push({ field: key, error: 'type mismatch' });\n  }\n  return { valid: errors.length === 0, errors };\n}\nmodule.exports = { validateSchema };",
+      "description": "Create schema validator module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect version incompatibility in integration",
+      "description": "nf:solve should discover C->R candidate for untraced schema validator",
       "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "version", "compatibility"]
+    "tags": ["integration", "c_to_r"]
   },
   {
     "id": "BENCH-168",
-    "title": "Integration with legacy system encoding mismatch",
+    "title": "Untraced legacy adapter module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Data encoding mismatch between modern and legacy systems",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a legacy adapter module in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/legacy-integration.js",
-      "description": "Use different encoding for data exchange"
+      "type": "file-create",
+      "target_file": "bin/rf-legacy-adapter.cjs",
+      "content": "'use strict';\nfunction adaptLegacyFormat(legacyData) {\n  return {\n    id: legacyData.ID || legacyData.id,\n    name: legacyData.NAME || legacyData.name,\n    status: legacyData.STAT || legacyData.status || 'unknown'\n  };\n}\nfunction convertToLegacy(modernData) {\n  return { ID: modernData.id, NAME: modernData.name, STAT: modernData.status };\n}\nmodule.exports = { adaptLegacyFormat, convertToLegacy };",
+      "description": "Create legacy adapter module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect encoding mismatch in integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "nf:solve should discover C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "encoding", "legacy"]
+    "tags": ["integration", "c_to_r", "legacy"]
   },
   {
     "id": "BENCH-169",
-    "title": "Webhook integration with signature verification failure",
+    "title": "Untraced webhook handler module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Webhook payloads fail signature verification",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a webhook handler module in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/webhook-handler.js",
-      "description": "Disable signature verification for webhooks"
+      "type": "file-create",
+      "target_file": "bin/rf-webhook-handler.cjs",
+      "content": "'use strict';\nconst crypto = require('crypto');\nfunction verifySignature(payload, signature, secret) {\n  const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');\n  return expected === signature;\n}\nfunction parseWebhook(rawBody, headers) {\n  const event = headers['x-event-type'] || 'unknown';\n  const data = JSON.parse(rawBody);\n  return { event, data, receivedAt: Date.now() };\n}\nmodule.exports = { verifySignature, parseWebhook };",
+      "description": "Create webhook handler module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect webhook signature verification issues",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "nf:solve should discover C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "webhook", "signature"]
+    "tags": ["integration", "c_to_r", "webhook"]
   },
   {
     "id": "BENCH-170",
-    "title": "Database integration with connection pool exhaustion",
+    "title": "Untraced connection pool module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Database connections exhausted during high load integration",
+    "description": "Add a connection pool module in bin/ with no @req traceability",
     "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/db-integration.js",
-      "description": "Reduce connection pool size below requirements"
+      "type": "file-create",
+      "target_file": "bin/rf-connection-pool.cjs",
+      "content": "'use strict';\nfunction createPool(maxConnections) {\n  const pool = { active: 0, waiting: [], max: maxConnections };\n  return {\n    acquire() {\n      if (pool.active < pool.max) { pool.active++; return Promise.resolve({ id: pool.active }); }\n      return new Promise(resolve => pool.waiting.push(resolve));\n    },\n    release(conn) { pool.active--; if (pool.waiting.length > 0) { pool.active++; pool.waiting.shift()({ id: pool.active }); } },\n    stats() { return { active: pool.active, waiting: pool.waiting.length, max: pool.max }; }\n  };\n}\nmodule.exports = { createPool };",
+      "description": "Create connection pool module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect connection pool exhaustion",
+      "description": "nf:solve should discover C->R candidate",
       "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "database", "connections"]
+    "tags": ["integration", "c_to_r"]
   },
   {
     "id": "BENCH-171",
-    "title": "Message queue integration with ordering guarantees",
+    "title": "Untraced message queue module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Message processing violates ordering requirements",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a message queue module in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/message-queue.js",
-      "description": "Process messages out of order"
+      "type": "file-create",
+      "target_file": "bin/rf-message-queue.cjs",
+      "content": "'use strict';\nfunction createQueue() {\n  const queue = [];\n  const subscribers = {};\n  return {\n    publish(topic, message) { queue.push({ topic, message, enqueuedAt: Date.now() }); },\n    subscribe(topic, handler) { if (!subscribers[topic]) subscribers[topic] = []; subscribers[topic].push(handler); },\n    process() { let count = 0; while (queue.length > 0) { const item = queue.shift(); const handlers = subscribers[item.topic] || []; handlers.forEach(h => h(item.message)); count++; } return count; }\n  };\n}\nmodule.exports = { createQueue };",
+      "description": "Create message queue module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect message ordering violations",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "nf:solve should discover C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "message-queue", "ordering"]
+    "tags": ["integration", "c_to_r", "queue"]
   },
   {
     "id": "BENCH-172",
-    "title": "OAuth integration with expired tokens",
+    "title": "Untraced OAuth client module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Integration fails due to expired OAuth tokens",
+    "description": "Add an OAuth client module in bin/ with no @req traceability",
     "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/oauth-client.js",
-      "description": "Use expired tokens in OAuth integration"
+      "type": "file-create",
+      "target_file": "bin/rf-oauth-client.cjs",
+      "content": "'use strict';\nfunction createOAuthClient(config) {\n  return {\n    getAuthUrl(state) { return config.authEndpoint + '?client_id=' + config.clientId + '&state=' + state; },\n    exchangeCode(code) { return { access_token: 'mock_token_' + code, expires_in: 3600 }; },\n    refreshToken(token) { return { access_token: 'refreshed_' + token, expires_in: 3600 }; }\n  };\n}\nmodule.exports = { createOAuthClient };",
+      "description": "Create OAuth client module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect expired OAuth tokens",
+      "description": "nf:solve should discover C->R candidate",
       "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "oauth", "tokens"]
+    "tags": ["integration", "c_to_r", "oauth"]
   },
   {
     "id": "BENCH-173",
-    "title": "File system integration with permission issues",
+    "title": "Untraced file watcher module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Integration fails due to insufficient file system permissions",
-    "target_layers": ["c_to_r", "t_to_c"],
-    "mutation": {
-      "type": "file-modify",
-      "target_file": "src/file-integration.js",
-      "description": "Attempt operations without proper permissions"
-    },
-    "expected_outcome": {
-      "residual_change": "increase",
-      "description": "nf:solve should detect permission issues in file integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
-    },
-    "scoring": {
-      "method": "detection_only",
-      "timeout_seconds": 900
-    },
-    "tags": ["integration", "permissions", "filesystem"]
-  },
-  {
-    "id": "BENCH-174",
-    "title": "Cache integration with stale data issues",
-    "category": "integration",
-    "difficulty": "expert",
-    "description": "Caching layer serves stale data causing inconsistencies",
+    "description": "Add a file watcher module in bin/ with no @req traceability",
     "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/cache-integration.js",
-      "description": "Disable cache invalidation logic"
+      "type": "file-create",
+      "target_file": "bin/rf-file-watcher.cjs",
+      "content": "'use strict';\nfunction createWatcher(paths) {\n  const watchers = paths.map(p => ({ path: p, active: true, lastEvent: null }));\n  return {\n    watch(callback) { watchers.forEach(w => { w.lastEvent = { type: 'watch', timestamp: Date.now() }; }); },\n    unwatch(path) { const w = watchers.find(w => w.path === path); if (w) w.active = false; },\n    getActive() { return watchers.filter(w => w.active).map(w => w.path); }\n  };\n}\nmodule.exports = { createWatcher };",
+      "description": "Create file watcher module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect stale cache data issues",
+      "description": "nf:solve should discover C->R candidate",
       "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "cache", "stale-data"]
+    "tags": ["integration", "c_to_r"]
   },
   {
-    "id": "BENCH-175",
-    "title": "Monitoring integration with false positives",
+    "id": "BENCH-174",
+    "title": "Untraced cache layer module discovered as C->R",
     "category": "integration",
     "difficulty": "expert",
-    "description": "Monitoring system generates excessive false positive alerts",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "description": "Add a cache layer module in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/monitoring-integration.js",
-      "description": "Lower alert thresholds causing false positives"
+      "type": "file-create",
+      "target_file": "bin/rf-cache-layer.cjs",
+      "content": "'use strict';\nfunction createCache(ttlMs) {\n  const store = {};\n  return {\n    get(key) { const entry = store[key]; if (!entry) return null; if (Date.now() - entry.cachedAt > ttlMs) { delete store[key]; return null; } return entry.value; },\n    set(key, value) { store[key] = { value, cachedAt: Date.now() }; },\n    invalidate(key) { delete store[key]; },\n    size() { return Object.keys(store).length; }\n  };\n}\nmodule.exports = { createCache };",
+      "description": "Create cache layer module with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect monitoring false positives",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "description": "nf:solve should discover C->R candidate",
+      "layers_affected": ["c_to_r"]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["integration", "monitoring", "false-positives"]
+    "tags": ["integration", "c_to_r", "cache"]
+  },
+  {
+    "id": "BENCH-175",
+    "title": "Untraced monitoring reporter module discovered as C->R",
+    "category": "integration",
+    "difficulty": "expert",
+    "description": "Add a monitoring reporter module in bin/ with no @req traceability",
+    "target_layers": ["c_to_r"],
+    "mutation": {
+      "type": "file-create",
+      "target_file": "bin/rf-monitoring-reporter.cjs",
+      "content": "'use strict';\nfunction createReporter(endpoint) {\n  const buffer = [];\n  return {\n    report(metric, value, tags) { buffer.push({ metric, value, tags: tags || {}, timestamp: Date.now() }); },\n    flush() { const batch = buffer.splice(0); return { endpoint, count: batch.length, sentAt: Date.now() }; },\n    pending() { return buffer.length; }\n  };\n}\nmodule.exports = { createReporter };",
+      "description": "Create monitoring reporter module with no requirement tracing"
+    },
+    "expected_outcome": {
+      "residual_change": "increase",
+      "description": "nf:solve should discover C->R candidate",
+      "layers_affected": ["c_to_r"]
+    },
+    "scoring": {
+      "method": "detection_only",
+      "timeout_seconds": 300
+    },
+    "tags": ["integration", "c_to_r", "monitoring"]
   }
 ]
