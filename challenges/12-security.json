@@ -1,72 +1,99 @@
 [
   {
     "id": "BENCH-111",
-    "title": "SQL injection vulnerability in data access layer",
+    "title": "Untraced query-sanitizer utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Inject SQL injection vulnerability by concatenating user input directly into SQL queries without parameterization",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a query-input sanitizer in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/database.js",
-      "description": "Replace parameterized query with string concatenation"
+      "type": "file-create",
+      "target_file": "bin/rf-query-sanitizer.cjs",
+      "content": "'use strict';\n// Escapes characters that could break out of a parameterized query.\nfunction sanitizeQueryInput(value) {\n  if (typeof value !== 'string') return value;\n  return value.replace(/['\";\\\\]/g, (ch) => '\\\\' + ch);\n}\nfunction isSafeIdentifier(name) {\n  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(name);\n}\nmodule.exports = { sanitizeQueryInput, isSafeIdentifier };\n",
+      "description": "Create query-sanitizer utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect SQL injection vulnerability and recommend parameterized queries",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["security", "sql-injection", "code"]
+    "tags": [
+      "security",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-112",
-    "title": "Cross-site scripting in user input rendering",
+    "title": "Untraced HTML-escaper utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Allow unescaped user input to be rendered in HTML without proper sanitization",
-    "target_layers": ["c_to_t"],
+    "description": "Add an HTML-escaping helper in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/renderer.js",
-      "description": "Remove HTML escaping from user input display"
+      "type": "file-create",
+      "target_file": "bin/rf-html-escaper.cjs",
+      "content": "'use strict';\nconst ENTITIES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;' };\nfunction escapeHtml(input) {\n  return String(input).replace(/[&<>\"']/g, (ch) => ENTITIES[ch]);\n}\nmodule.exports = { escapeHtml };\n",
+      "description": "Create HTML-escaper utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect XSS vulnerability and recommend input sanitization",
-      "layers_affected": ["c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["security", "xss", "frontend"]
+    "tags": [
+      "security",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-113",
-    "title": "Authentication bypass through session management flaw",
+    "title": "Untraced session-validator utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Implement flawed session validation that allows bypassing authentication checks",
-    "target_layers": ["c_to_f", "c_to_t"],
+    "description": "Add a session-token validator in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/auth.js",
-      "description": "Introduce logic error in session validation that accepts invalid tokens"
+      "type": "file-create",
+      "target_file": "bin/rf-session-validator.cjs",
+      "content": "'use strict';\nfunction validateSession(token, now) {\n  if (!token || typeof token.expires !== 'number') return false;\n  return token.expires > (now || Date.now());\n}\nmodule.exports = { validateSession };\n",
+      "description": "Create session-validator utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect authentication bypass vulnerability",
-      "layers_affected": ["c_to_f", "c_to_t"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["security", "authentication", "session"]
+    "tags": [
+      "security",
+      "c_to_r",
+      "code"
+    ]
   },
   {
     "id": "BENCH-114",
@@ -74,46 +101,66 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Store cryptographic keys in plaintext configuration files instead of secure vaults",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "json-field-add",
       "target_file": "config/app.json",
       "json_path": "$.secrets",
-      "value": { "api_key": "plaintext_secret_123", "private_key": "unencrypted_key_data" },
+      "value": {
+        "api_key": "plaintext_secret_123",
+        "private_key": "unencrypted_key_data"
+      },
       "description": "Add plaintext secrets to configuration"
     },
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect exposed cryptographic materials",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["security", "cryptography", "secrets"]
+    "tags": [
+      "security",
+      "cryptography",
+      "secrets"
+    ]
   },
   {
     "id": "BENCH-115",
-    "title": "Insecure deserialization vulnerability",
+    "title": "Untraced safe-deserializer utility (C->R)",
     "category": "code",
     "difficulty": "expert",
-    "description": "Use unsafe deserialization that allows code execution through crafted input",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "description": "Add a safe deserialization helper in bin/ with no @req traceability",
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": "src/serializer.js",
-      "description": "Replace safe deserialization with eval-based parsing"
+      "type": "file-create",
+      "target_file": "bin/rf-safe-deserializer.cjs",
+      "content": "'use strict';\nfunction safeDeserialize(raw) {\n  try {\n    return { ok: true, value: JSON.parse(raw) };\n  } catch (err) {\n    return { ok: false, error: err.message };\n  }\n}\nmodule.exports = { safeDeserialize };\n",
+      "description": "Create safe-deserializer utility with no requirement tracing"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect insecure deserialization vulnerability",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "description": "C->R candidate: untraced code symbol with no requirement link",
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "timeout_seconds": 300
     },
-    "tags": ["security", "deserialization", "code-execution"]
+    "tags": [
+      "security",
+      "c_to_r",
+      "code"
+    ]
   }
 ]
