@@ -1,0 +1,35 @@
+name: Decoupled fixtures (no host repo)
+
+# Proves the benchmark runs entirely from nf-benchmark + npm, with NO nForma/QGSD
+# checkout: the corpus is self-contained fixtures, and the SUT is the pinned published
+# @nforma.ai/nforma package. This is the decoupled replacement for the legacy
+# benchmark.yml job that checks out ../nforma and mutates it.
+
+on:
+  push:
+  pull_request:
+
+env:
+  # The published nForma version to benchmark. Bump as releases land.
+  NF_VERSION: "0.43.1"
+
+jobs:
+  fixtures:
+    name: Fixture corpus vs npm SUT
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout nf-benchmark only   # ← no second checkout of nForma/QGSD
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install nf-benchmark deps
+        run: npm ci || npm install
+
+      - name: Deterministic unit tests (harness)
+        run: node --test test/fixture-runner.test.cjs test/sut-resolution.test.cjs
+
+      - name: Run fixture corpus against the pinned npm SUT (zero QGSD)
+        run: node bin/run-fixtures.cjs --sut "npm:@nforma.ai/nforma@${NF_VERSION}"

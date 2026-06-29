@@ -1,0 +1,9 @@
+{
+  "id": "FIX-orphaned-formal-model",
+  "title": "A formal model exists with no backing requirement (orphan spec)",
+  "category": "requirements",
+  "difficulty": "easy",
+  "defect": "OrphanSpec.tla is present but no requirement references it — a formal model with no provenance, which nf-solve scores on the formal_lint layer",
+  "scoring": { "method": "residual_reduction", "target_layer": "formal_lint" },
+  "self_contained": true
+}

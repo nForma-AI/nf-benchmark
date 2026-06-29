@@ -10,3 +10,12 @@ baseline.json
 
 # Local tool artifacts
 .claude/
+
+# Fixtures are minimal nForma projects, so this repo's own nForma hooks try to
+# autocommit solve-runtime output into them. Those are NOT fixture content — a
+# fixture's project/ must hold only the clean seeded-defect state. Ignore the
+# runtime artifacts (keep requirements.json / model specs, which ARE content).
+fixtures/*/project/.planning/formal/solve-state.json
+fixtures/*/project/.planning/formal/solve-trend.jsonl
+fixtures/*/project/.planning/formal/solve-sessions/
+fixtures/*/project/.planning/formal/solve-report*.json
