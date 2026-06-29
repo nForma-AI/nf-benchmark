@@ -64,6 +64,13 @@ test('runFixture (residual_reduction): nf-solve detects the seeded r_to_f gap', 
   assert.equal(r.passed, null, 'repair half is gated behind RUN_LIVE_SOLVE');
 });
 
+test('runFixture (reproduceOnly): validates the defect is present without running a SUT', () => {
+  const r = runFixture(SORT_FIXTURE, { reproduceOnly: true });
+  assert.equal(r.passed, true, 'defect must be present (verify fails)');
+  assert.equal(r.post_status, null, 'no SUT/post phase in reproduceOnly');
+  assert.equal(r.sut, null);
+});
+
 test('discoverFixtures: finds the exemplar; loadFixture validates it', () => {
   const dirs = discoverFixtures();
   assert.ok(dirs.some(d => d.endsWith('sort-ascending')), 'sort-ascending fixture discovered');

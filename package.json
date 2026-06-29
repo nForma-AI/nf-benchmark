@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node --test test/*.test.cjs",
     "run": "node bin/nf-benchmark.cjs",
+    "fixtures": "node bin/run-fixtures.cjs",
     "run:single": "node bin/nf-benchmark.cjs --single",
     "run:category": "node bin/nf-benchmark.cjs --category",
     "report": "node bin/nf-benchmark.cjs --report",
