@@ -71,6 +71,32 @@ repaired). `no_regression` passes iff verify passes post (no defect introduced).
   defect rather than the empty scaffold. The two exemplars above pin one controllable
   layer each.
 
+## Repair-validation taxonomy (what `--live` can and cannot prove)
+Detection is always headless and deterministic — every fixture's gap is measured by the
+pinned SUT with no LLM, and that is what CI gates on. **Repair** is not uniformly
+headless, because the pinned `nf-solve` binary is a *diagnostic/residual* tool, not a
+universal fixer. Validated against `@nforma.ai/nforma@0.43.1` by reading its layer
+handlers and a full 20-minute live solve:
+
+- **Code defects** (`fix_and_verify`) — `nf-solve` is residual-driven and does **not**
+  edit source, so it cannot repair `sort.cjs` et al. Their repair is proven by a **stub
+  code-fixer SUT** in `test/code-fixtures.test.cjs` (a stand-in for a real code-repair
+  SUT), not by a live solve.
+- **Mechanically-automatable layers** (e.g. `f_to_t` test-stub generation) — the
+  `nf-solve` handler *does* spawn a generator (`formal-test-sync.cjs`), so a live solve
+  can drive these to zero headlessly.
+- **Manual-modeling layers** (`r_to_f`) — the handler only emits an advisory
+  (`"N requirement(s) lack formal model coverage — manual modeling required"`) and writes
+  nothing. Closing `r_to_f` means *authoring a formal model*, which is the
+  `/nf:close-formal-gaps` LLM skill's job (Claude + quorum), **not** a pinnable headless
+  artifact. A live solve on `req-coverage-gap` therefore correctly leaves the gap at 1 —
+  this is the SUT's documented behavior, not a harness failure. Such fixtures stay
+  **detection-only** in CI; their repair half is inherently skill-orchestrated.
+
+Bottom line: gate CI on **detection + reproduce** (deterministic, pinnable). Treat the
+`--live`/`RUN_LIVE_SOLVE` repair pass as a separate, layer-dependent capability check —
+green only for the mechanically-automatable layers.
+
 ## Adding a fixture
 Create `fixtures/<name>/{fixture.json, project/...}` with a `verify` that fails on the
 seeded defect. That's it — `discoverFixtures()` finds it and the runner handles the
