@@ -155,6 +155,7 @@ function getFilterOptions() {
     if (args[i] === '--difficulty' && args[i + 1]) opts.difficulty = args[++i];
     if (args[i] === '--tags' && args[i + 1]) opts.tags = args[++i].split(',');
     if (args[i] === '--project-root' && args[i + 1]) opts.projectRoot = args[++i];
+    if (args[i] === '--sut' && args[i + 1]) opts.sut = args[++i];
     if (args[i] === '--timeout' && args[i + 1]) opts.timeout = parseInt(args[++i], 10);
     if (args[i] === '--dry-run') opts.dryRun = true;
     if (args[i] === '--parallel' && args[i + 1]) opts.parallel = parseInt(args[++i], 10);
@@ -288,8 +289,21 @@ async function runBenchmark() {
   const baselineTolerance = opts.baselineTolerance !== undefined ? opts.baselineTolerance : 5.0;
   const timeout = opts.timeout || 300;
 
-  if (!fs.existsSync(path.join(projectRoot, 'bin', 'nf-solve.cjs'))) {
-    console.error(`Error: ${projectRoot} does not appear to be a valid nForma project`);
+  // SUT pinning: --sut <path> (or NF_SUT) pins the nf-solve under test so scores are
+  // reproducible and comparable across nForma versions. Propagated via env so worker
+  // threads inherit it. Resolve+print provenance once up front.
+  if (opts.sut) process.env.NF_SUT = opts.sut;
+  const { resolveSut } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
+  try {
+    const sut = resolveSut(projectRoot, {});
+    console.log(`SUT: ${sut.bin}  [source=${sut.source}, version=${sut.version}]`);
+  } catch (e) {
+    console.error(`Error resolving SUT: ${e.message}`);
+    process.exit(1);
+  }
+
+  if (!fs.existsSync(path.join(projectRoot, 'bin', 'nf-solve.cjs')) && !(opts.sut || process.env.NF_SUT)) {
+    console.error(`Error: ${projectRoot} does not appear to be a valid nForma project (and no --sut/NF_SUT pin given)`);
     process.exit(1);
   }
 
