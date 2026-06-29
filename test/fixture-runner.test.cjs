@@ -49,6 +49,21 @@ test('runFixture: the SOURCE fixture is never mutated (isolation)', () => {
   assert.ok(before.includes('a[i] < a[j]'), 'source still carries the seeded defect');
 });
 
+// Residual-based fixture: requires a resolvable nf-solve SUT. Skipped (not failed)
+// when no SUT is installed, so this passes in a bare CI without nForma.
+const REQ_FIXTURE = path.join(__dirname, '..', 'fixtures', 'req-coverage-gap');
+let sutAvailable = false;
+try { require('../lib/runner.cjs').resolveSut(path.join(REQ_FIXTURE, 'project'), {}); sutAvailable = true; } catch (_) { sutAvailable = false; }
+
+test('runFixture (residual_reduction): nf-solve detects the seeded r_to_f gap', { skip: !sutAvailable }, () => {
+  const r = runFixture(REQ_FIXTURE, {}); // no sutRun + no RUN_LIVE_SOLVE → detection only
+  assert.equal(r.method, 'residual_reduction');
+  assert.equal(r.target_layer, 'r_to_f');
+  assert.equal(r.detected, true, 'nf-solve must see a positive r_to_f residual for the uncovered requirement');
+  assert.ok(r.pre_residual > 0);
+  assert.equal(r.passed, null, 'repair half is gated behind RUN_LIVE_SOLVE');
+});
+
 test('discoverFixtures: finds the exemplar; loadFixture validates it', () => {
   const dirs = discoverFixtures();
   assert.ok(dirs.some(d => d.endsWith('sort-ascending')), 'sort-ascending fixture discovered');

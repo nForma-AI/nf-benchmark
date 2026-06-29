@@ -1,0 +1,9 @@
+{
+  "id": "FIX-req-coverage-gap",
+  "title": "A requirement has no formal model / test coverage (r_to_f residual)",
+  "category": "requirements",
+  "difficulty": "easy",
+  "defect": "REQ-01 is declared but uncovered — nf-solve sees a positive r_to_f residual",
+  "scoring": { "method": "residual_reduction", "target_layer": "r_to_f" },
+  "self_contained": true
+}

@@ -47,6 +47,19 @@ fixtures/<name>/
 `fix_and_verify` passes iff verify failed pre AND passed post (defect reproduced then
 repaired). `no_regression` passes iff verify passes post (no defect introduced).
 
+### Two fixture flavors
+- **`fix_and_verify`** (code-level) — `project/` is plain code + a `verify.cjs`. Use for
+  defects a verify test can catch directly (sort/filter exemplars). Validated end-to-end
+  with a stub SUT.
+- **`residual_reduction`** (nForma-layer) — `project/` is a *minimal nForma project*
+  (`.planning/formal/requirements.json`, etc.) with a seeded layer gap. Scored by
+  `nf-solve`'s `residual_vector`: the runner measures residual via `nf-solve --report-only
+  --json` (fast, no LLM) before and after the solve. Set `scoring.target_layer` (e.g.
+  `r_to_f`) to score one seeded gap rather than every layer. **Validated:** `nf-solve`
+  detects the seeded `r_to_f` gap on the `req-coverage-gap` exemplar (residual 1). The
+  *repair* half (driving the residual to 0) runs a full solve and is gated behind
+  `RUN_LIVE_SOLVE` (needs the live quorum toolchain).
+
 ## Adding a fixture
 Create `fixtures/<name>/{fixture.json, project/...}` with a `verify` that fails on the
 seeded defect. That's it — `discoverFixtures()` finds it and the runner handles the
@@ -63,11 +76,16 @@ is recorded on every run.
 and an end-to-end test that runs fixtures through the runner with a stub SUT (proving
 defect→repair discrimination and that the fixture source is never mutated).
 
+**Resolved (the open design question):** `nf-solve` is residual/formal-driven — it needs
+an nForma-shaped project and has no "repair a file until a test passes" mode. So the real
+fixture format is a **minimal nForma project + a seeded layer gap, scored by residual
+reduction** (the `residual_reduction` flavor above), validated for detection. The
+`fix_and_verify` flavor remains for pure code defects.
+
 **Next phase (follow-on):**
-1. **Real-SUT adapter.** `defaultSutRun` invokes `nf-solve` against the temp project.
-   Wire/validate it end-to-end (a self-contained fixture may need minimal nForma
-   scaffolding, or nf-solve a "repair file(s) until `verify` passes" mode). This is the
-   one open design question.
+1. **Live repair validation.** Run `RUN_LIVE_SOLVE=1` (with the quorum toolchain) so the
+   runner drives the seeded residual to 0 and scores `passed`. Wire this into a gated CI
+   job separate from the fast unit tests.
 2. **Migrate the 230 challenges.** Convert each existing mutation-spec challenge into a
    self-contained fixture (by category, in waves). Where a challenge mutated a QGSD
    file, capture the minimal code + a `verify` that encodes the same property.
