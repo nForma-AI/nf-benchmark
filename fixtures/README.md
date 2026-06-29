@@ -66,10 +66,29 @@ seeded defect. That's it — `discoverFixtures()` finds it and the runner handle
 rest. The exemplars `sort-ascending` and `filter-threshold` are the reference shape.
 
 ## SUT (system under test)
-Resolved by `resolveSut()` (lib/runner.cjs): `--sut <path>` / `NF_SUT` (pinned) →
-installed `~/.claude/nf-bin/nf-solve.cjs` → dev checkout (warned, not version-pinned).
-Pin it for reproducible, version-comparable scores. The provenance (source+version)
-is recorded on every run.
+Resolved by `resolveSut()` (lib/runner.cjs). `--sut` / `NF_SUT` accepts either a path
+OR an `npm:` spec; resolution order: explicit pin → installed `~/.claude/nf-bin` copy →
+dev checkout (warned, not version-pinned). Provenance (source+version) is recorded on
+every run.
+
+### Complete decoupling from the product repo (npm SUT)
+The published `@nforma.ai/nforma` package ships the whole `bin/` (including
+`bin/nf-solve.cjs`), so the SUT can come entirely from **npm** — no QGSD checkout:
+
+```
+node bin/nf-benchmark.cjs run --sut npm:@nforma.ai/nforma@0.43.1 ...
+```
+
+`resolveNpmSut` installs the pinned package once into `~/.cache/nf-benchmark-sut/<spec>`
+(`--ignore-scripts`, just the files), and uses its bundled `nf-solve.cjs`. Combined with
+self-contained fixtures (corpus with no host-repo dependency), **the entire benchmark
+runs from `nf-benchmark` + npm alone** — it never needs the QGSD source. Proven: an
+`npm:@nforma.ai/nforma@0.43.1` SUT detects the seeded `r_to_f` gap on `req-coverage-gap`
+with zero QGSD present.
+
+**CI cutover (the full decoupling):** replace the `benchmark.yml` "checkout nForma into
+../nforma + --project-root ../nforma" steps with `--sut npm:@nforma.ai/nforma@<ver>` over
+the fixture corpus. No second checkout, version-pinned, reproducible.
 
 ## Status & migration plan
 **Landed (this branch):** the fixture format, `lib/fixture-runner.cjs`, two exemplars,

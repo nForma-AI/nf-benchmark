@@ -51,6 +51,26 @@ test('resolveSut: a non-existent pin throws (no silent fallback)', () => {
   assert.throws(() => resolveSut('/x', { sut: '/no/such/nf-solve.cjs' }), /SUT not found/);
 });
 
+test('resolveSut: an "npm:" spec resolves the cached bundled nf-solve (complete decoupling, no QGSD)', () => {
+  // Pre-populate the cache so this is a no-network cache-hit (the install path is
+  // exercised live elsewhere). Mirrors resolveNpmSut's content-addressed layout.
+  const spec = '@nforma.ai/nforma@0.0.0-test';
+  const cacheDir = path.join(os.homedir(), '.cache', 'nf-benchmark-sut', spec.replace(/[^a-zA-Z0-9._@-]/g, '_'));
+  const pkgDir = path.join(cacheDir, 'node_modules', '@nforma.ai', 'nforma', 'bin');
+  fs.mkdirSync(pkgDir, { recursive: true });
+  const bin = path.join(pkgDir, 'nf-solve.cjs');
+  fs.writeFileSync(bin, '#!/usr/bin/env node\n');
+  fs.writeFileSync(path.join(pkgDir, '..', 'package.json'), JSON.stringify({ version: '0.0.0-test' }));
+  try {
+    const r = resolveSut('/anything', { sut: 'npm:' + spec });
+    assert.strictEqual(r.bin, bin, 'resolves the npm-bundled nf-solve, not a source checkout');
+    assert.strictEqual(r.source, 'npm:' + spec);
+    assert.strictEqual(r.version, '0.0.0-test');
+  } finally {
+    fs.rmSync(cacheDir, { recursive: true, force: true });
+  }
+});
+
 test('readSutVersion: finds the nearest package.json version, else "unknown"', () => {
   const { bin } = tmpSut('4.5.6');
   assert.strictEqual(readSutVersion(bin), '4.5.6');
