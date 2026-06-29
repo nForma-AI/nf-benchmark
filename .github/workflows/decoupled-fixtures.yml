@@ -29,7 +29,7 @@ jobs:
         run: npm ci || npm install
 
       - name: Deterministic unit tests (harness)
-        run: node --test test/fixture-runner.test.cjs test/sut-resolution.test.cjs
+        run: node --test test/fixture-runner.test.cjs test/sut-resolution.test.cjs test/code-fixtures.test.cjs
 
       - name: Run fixture corpus against the pinned npm SUT (zero QGSD)
         run: node bin/run-fixtures.cjs --sut "npm:@nforma.ai/nforma@${NF_VERSION}"
