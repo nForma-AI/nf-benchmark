@@ -1,0 +1,56 @@
+{
+  "last_run": "2026-06-29T10:41:44.926Z",
+  "converged": false,
+  "iteration_count": 1,
+  "final_residual_total": 1,
+  "reverse_discovery_total": 0,
+  "heatmap_total": 0,
+  "real_impact": {
+    "bugs_fixed": 0,
+    "tests_added": 0,
+    "docs_fixed": 0,
+    "dead_code_removed": 0
+  },
+  "real_impact_iterations": [
+    {
+      "iteration": 1,
+      "real_impact": {
+        "bugs_fixed": 0,
+        "tests_added": 0,
+        "docs_fixed": 0,
+        "dead_code_removed": 0
+      }
+    }
+  ],
+  "known_issues": [
+    {
+      "layer": "r_to_f",
+      "residual": 1
+    },
+    {
+      "layer": "l1_to_l3",
+      "residual": 10
+    },
+    {
+      "layer": "l3_to_tc",
+      "residual": 10
+    },
+    {
+      "layer": "formal_lint",
+      "residual": 1
+    }
+  ],
+  "r_to_f_progress": {
+    "total": 1,
+    "covered": 0,
+    "percentage": "0.0"
+  },
+  "focus": null,
+  "capped_layers": [],
+  "baseline_drift": {
+    "detected": false,
+    "layers": [],
+    "warning": null
+  },
+  "consecutive_clean_sessions": 0
+}
