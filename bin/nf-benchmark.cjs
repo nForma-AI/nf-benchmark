@@ -158,6 +158,7 @@ function getFilterOptions() {
     if (args[i] === '--sut' && args[i + 1]) opts.sut = args[++i];
     if (args[i] === '--timeout' && args[i + 1]) opts.timeout = parseInt(args[++i], 10);
     if (args[i] === '--dry-run') opts.dryRun = true;
+    if (args[i] === '--isolate') opts.isolate = true;
     if (args[i] === '--parallel' && args[i + 1]) opts.parallel = parseInt(args[++i], 10);
     if (args[i] === '--save-baseline') opts.saveBaseline = true;
     if (args[i] === '--compare-baseline') opts.compareBaseline = true;
@@ -405,22 +406,26 @@ async function runBenchmark() {
       }
     }
   } else {
-    // Serial execution — each challenge runs in its OWN ephemeral isolated root so
-    // the live project repo is NEVER mutated and challenges cannot contaminate each
-    // other. (Previously the serial path mutated projectRoot in place and relied on a
-    // partial snapshot/restore — unsafe, and at risk of being auto-committed by the
-    // project's Stop hook.)
+    // Serial execution.
+    // --isolate runs each challenge in its OWN ephemeral isolated root so a LOCAL
+    // dev run can never mutate/auto-commit the developer's working repo. It is
+    // OPT-IN because the legacy mutation-challenges are substrate-coupled — they
+    // measure residual deltas against the live repo's exact state, so isolating a
+    // copy changes their baselines (that coupling is what the self-contained fixture
+    // model replaces). Default stays in-place (CI runs against a throwaway checkout,
+    // so the live-mutation risk there is nil).
     for (let i = 0; i < challenges.length; i++) {
       const challenge = challenges[i];
       const progress = `[${i + 1}/${challenges.length}]`;
       process.stdout.write(`${progress} ${challenge.id} ${challenge.title}... `);
 
-      const runRoot = createIsolatedRoot(projectRoot);
       let result;
-      try {
-        result = await runChallengeSerial(challenge, runRoot, timeout);
-      } finally {
-        cleanupIsolatedRoot(runRoot);
+      if (opts.isolate) {
+        const runRoot = createIsolatedRoot(projectRoot);
+        try { result = await runChallengeSerial(challenge, runRoot, timeout); }
+        finally { cleanupIsolatedRoot(runRoot); }
+      } else {
+        result = await runChallengeSerial(challenge, projectRoot, timeout);
       }
       results.push(result);
       saveResult(challenge.id, result);
