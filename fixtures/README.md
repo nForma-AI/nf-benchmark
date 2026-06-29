@@ -56,9 +56,20 @@ repaired). `no_regression` passes iff verify passes post (no defect introduced).
   `nf-solve`'s `residual_vector`: the runner measures residual via `nf-solve --report-only
   --json` (fast, no LLM) before and after the solve. Set `scoring.target_layer` (e.g.
   `r_to_f`) to score one seeded gap rather than every layer. **Validated:** `nf-solve`
-  detects the seeded `r_to_f` gap on the `req-coverage-gap` exemplar (residual 1). The
+  detects the seeded `r_to_f` gap on the `req-coverage-gap` exemplar (residual 1) and the
+  `formal_lint` gap on the `orphaned-formal-model` exemplar (residual 1). The
   *repair* half (driving the residual to 0) runs a full solve and is gated behind
   `RUN_LIVE_SOLVE` (needs the live quorum toolchain).
+
+  **Layer controllability (migration constraint).** A doc-only minimal project always
+  carries nonzero `l1_to_l3` / `l3_to_tc` residual (there is no implementation or test
+  layer to satisfy), so those layers cannot *discriminate* a seeded defect — they are
+  positive for any minimal project. Only `r_to_f` (requirement→formal coverage) and
+  `formal_lint` (orphan/ill-formed models) are cleanly controllable in a doc-only fixture.
+  A residual_reduction fixture must therefore target one of those two layers, or add a
+  real code/test layer to the `project/` so the L1/L3/TC residual reflects the seeded
+  defect rather than the empty scaffold. The two exemplars above pin one controllable
+  layer each.
 
 ## Adding a fixture
 Create `fixtures/<name>/{fixture.json, project/...}` with a `verify` that fails on the

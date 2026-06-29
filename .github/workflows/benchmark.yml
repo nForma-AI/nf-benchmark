@@ -81,9 +81,20 @@ jobs:
         env:
           CI: true
 
-      # PR run: compare against main baseline; fail if pass rate drops > 2pp
+      # PR run: compare against main baseline — INFORMATIONAL ONLY.
+      # This legacy job runs a non-deterministic LLM solver against a coupled
+      # ../nforma checkout and compares to a GitHub-cache baseline with a hardcoded
+      # zero-tolerance per-category gate. The "stability"/null-mutation category is
+      # structurally flaky because nf-solve is not idempotent on no-op runs (it
+      # rewrites .planning/formal/solve-state.json, so residual drifts 348→340
+      # between the two identical runs) — see follow-up issue. As a result this gate
+      # would flag a phantom regression on essentially every PR regardless of content
+      # (today's main scores stability 0/15 too). The real PR gate is now the
+      # deterministic, decoupled "Fixture corpus vs npm SUT" job. We keep this job
+      # for trend data but mark it continue-on-error so it never blocks a merge.
       - name: Run benchmark (PR — compare baseline)
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         working-directory: nf-benchmark
         run: |
           COMPARE_FLAG=""
