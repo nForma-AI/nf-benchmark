@@ -1,0 +1,5 @@
+{ "id": "FIX-proto-pollution-guard", "title": "Key-assign merge is prototype-pollutable",
+  "category": "code", "difficulty": "medium",
+  "defect": "assigns dst[key]=val for any key, so key='__proto__'/'constructor' pollutes Object.prototype",
+  "scoring": { "method": "fix_and_verify", "target_layer": "code" },
+  "verify": "node verify.cjs", "self_contained": true }

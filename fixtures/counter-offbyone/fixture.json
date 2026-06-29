@@ -1,0 +1,5 @@
+{ "id": "FIX-counter-offbyone", "title": "Even-count loop is off by one (excludes the upper bound)",
+  "category": "code", "difficulty": "easy",
+  "defect": "loop uses `i < n` so the inclusive upper bound n is never counted",
+  "scoring": { "method": "fix_and_verify", "target_layer": "code" },
+  "verify": "node verify.cjs", "self_contained": true }
