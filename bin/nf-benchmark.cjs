@@ -391,13 +391,23 @@ async function runBenchmark() {
       }
     }
   } else {
-    // Serial execution
+    // Serial execution — each challenge runs in its OWN ephemeral isolated root so
+    // the live project repo is NEVER mutated and challenges cannot contaminate each
+    // other. (Previously the serial path mutated projectRoot in place and relied on a
+    // partial snapshot/restore — unsafe, and at risk of being auto-committed by the
+    // project's Stop hook.)
     for (let i = 0; i < challenges.length; i++) {
       const challenge = challenges[i];
       const progress = `[${i + 1}/${challenges.length}]`;
       process.stdout.write(`${progress} ${challenge.id} ${challenge.title}... `);
 
-      const result = await runChallengeSerial(challenge, projectRoot, timeout);
+      const runRoot = createIsolatedRoot(projectRoot);
+      let result;
+      try {
+        result = await runChallengeSerial(challenge, runRoot, timeout);
+      } finally {
+        cleanupIsolatedRoot(runRoot);
+      }
       results.push(result);
       saveResult(challenge.id, result);
 
