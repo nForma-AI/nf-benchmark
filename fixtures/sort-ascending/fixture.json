@@ -1,0 +1,10 @@
+{
+  "id": "FIX-sort-ascending",
+  "title": "Array sort returns descending instead of ascending",
+  "category": "code",
+  "difficulty": "easy",
+  "defect": "comparator swaps on `<` (descending) instead of `>` (ascending)",
+  "scoring": { "method": "fix_and_verify", "target_layer": "code" },
+  "verify": "node verify.cjs",
+  "self_contained": true
+}

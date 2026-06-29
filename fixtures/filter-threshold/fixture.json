@@ -1,0 +1,10 @@
+{
+  "id": "FIX-filter-threshold",
+  "title": "Filter excludes the threshold value (> instead of >=)",
+  "category": "code",
+  "difficulty": "easy",
+  "defect": "uses `x > b` so the boundary element x==b is wrongly excluded",
+  "scoring": { "method": "fix_and_verify", "target_layer": "code" },
+  "verify": "node verify.cjs",
+  "self_contained": true
+}
