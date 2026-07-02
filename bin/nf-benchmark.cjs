@@ -14,7 +14,7 @@ if (!isMainThread) {
   const libDir = path.join(__dirname, '..', 'lib');
   const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
   const { scoreChallenge, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-  const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
+  const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, neutralizeCreateTarget, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
   function workerFocusLayer(challenge) {
     const layer = challenge.scoring && challenge.scoring.target_layer;
@@ -31,6 +31,9 @@ if (!isMainThread) {
       // be reverted or a file-create persists and pollutes the next challenge in
       // the chunk (false "not detected" + baseline drift).
       const mutCapture = captureMutationTarget(projectRoot, challenge);
+      // A file-create target must be absent in the baseline for the create to be
+      // a genuinely new file (some SUTs carry stray committed fixtures at the path).
+      neutralizeCreateTarget(projectRoot, challenge);
       const focus = workerFocusLayer(challenge);
       const solveOpts = { timeout, focus };
       let result;
@@ -125,7 +128,7 @@ const libDir = path.join(__dirname, '..', 'lib');
 const { loadAllChallenges, loadChallenge, loadByCategory, loadByDifficulty, validateAll, printSummary } = require(path.join(libDir, 'challenges.cjs'));
 const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
 const { scoreChallenge, computeReport, formatReport, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
+const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, neutralizeCreateTarget, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
 // Resolve a benchmark target_layer name to the canonical nf-solve key for --focus.
 // Falls back to the layer name itself if not in LAYER_ALIASES.
@@ -224,6 +227,9 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
   // challenge — otherwise a created file persists and a later file-create becomes
   // a no-op (post == pre → false "not detected"), polluting later baselines.
   const mutCapture = captureMutationTarget(projectRoot, challenge);
+  // A file-create target must be absent in the baseline for the create to be a
+  // genuinely new file (some SUTs carry stray committed fixtures at the path).
+  neutralizeCreateTarget(projectRoot, challenge);
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 

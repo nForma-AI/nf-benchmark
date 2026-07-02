@@ -13,7 +13,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { captureMutationTarget, revertMutationTarget } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
+const { captureMutationTarget, revertMutationTarget, neutralizeCreateTarget } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
 
 function tmpRoot() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'nf-bench-revert-'));
@@ -58,6 +58,41 @@ test('file-modify mutation is reverted to the original byte content', () => {
     revertMutationTarget(root, cap);
     assert.strictEqual(fs.readFileSync(target, 'utf8'), original,
       'a modified file must be restored to its exact pre-mutation content');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('neutralizeCreateTarget: removes a pre-existing file-create target (stray committed fixture)', () => {
+  const root = tmpRoot();
+  try {
+    fs.mkdirSync(path.join(root, 'bin'), { recursive: true });
+    const target = path.join(root, 'bin', 'bench-overlap.cjs');
+    fs.writeFileSync(target, 'module.exports = {}; // stray committed fixture');
+    const challenge = { mutation: { type: 'file-create', target_file: 'bin/bench-overlap.cjs' } };
+
+    // Capture first (so revert can restore), then neutralize for the baseline.
+    const cap = captureMutationTarget(root, challenge);
+    assert.strictEqual(cap.existed, true);
+    neutralizeCreateTarget(root, challenge);
+    assert.ok(!fs.existsSync(target), 'a pre-existing create target must be absent in the baseline');
+
+    // Revert restores the original committed file afterward (no permanent SUT change).
+    revertMutationTarget(root, cap);
+    assert.ok(fs.existsSync(target), 'revert must restore the original committed file');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('neutralizeCreateTarget: no-op for file-modify (must not delete a modified target)', () => {
+  const root = tmpRoot();
+  try {
+    fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+    const target = path.join(root, 'src', 'backup.js');
+    fs.writeFileSync(target, 'const X = 1;');
+    neutralizeCreateTarget(root, { mutation: { type: 'file-modify', target_file: 'src/backup.js' } });
+    assert.ok(fs.existsSync(target), 'file-modify target must NOT be neutralized');
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
