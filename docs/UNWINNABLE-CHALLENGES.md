@@ -67,3 +67,19 @@ Non-existent layers referenced & suggested remap:
 | BENCH-187 | formal-models | `f_to_f` | Model checking with state space explosion |
 | BENCH-189 | formal-models | `f_to_f` | Cross-formal model inconsistency |
 | BENCH-190 | formal-models | `f_to_f` | Formal model with undefined behavior |
+
+## Second defect class: real-but-WRONG expected layer
+
+Beyond the 54 non-existent-layer challenges, many `detection_only` challenges
+expect a REAL layer that does not match what the mutation affects. Example:
+BENCH-061 lowers `.planning/formal/evidence/wiring.json` entries[0].score
+(whose `layer` field is `l1_to_l3`) but expects `l1_to_l2` — so the residual
+that actually moves is not the one scored. These need per-challenge redesign
+(set expected layer to match the mutated evidence's own `layer`). Detecting
+these programmatically requires cross-checking each mutation's target field
+against the expected layer — a task for benchmark/redesign-broken-challenges.
+
+CONCLUSION: the corpus's low score is dominated by challenge-DESIGN defects
+(wrong/non-existent expected layers, file-modify-can't-create-orphan), not by
+nf-solve capability. Harness fixes on this branch flip only the mechanically-
+broken subset (file-create pollution): verified +5, no regression.
