@@ -14,7 +14,7 @@ if (!isMainThread) {
   const libDir = path.join(__dirname, '..', 'lib');
   const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
   const { scoreChallenge, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-  const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
+  const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, neutralizeCreateTarget, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
   function workerFocusLayer(challenge) {
     const layer = challenge.scoring && challenge.scoring.target_layer;
@@ -26,6 +26,14 @@ if (!isMainThread) {
     for (const challenge of challenges) {
       const challengeStart = Date.now();
       const snapshot = createSnapshot(projectRoot);
+      // Each worker reuses ONE isolated root across its whole chunk of
+      // challenges, so — exactly like the serial path — the mutation target must
+      // be reverted or a file-create persists and pollutes the next challenge in
+      // the chunk (false "not detected" + baseline drift).
+      const mutCapture = captureMutationTarget(projectRoot, challenge);
+      // A file-create target must be absent in the baseline for the create to be
+      // a genuinely new file (some SUTs carry stray committed fixtures at the path).
+      neutralizeCreateTarget(projectRoot, challenge);
       const focus = workerFocusLayer(challenge);
       const solveOpts = { timeout, focus };
       let result;
@@ -103,6 +111,7 @@ if (!isMainThread) {
         parentPort.postMessage({ type: 'progress', challengeId: challenge.id, status: 'ERROR', reason: e.message, timeMs: executionTimeMs });
       } finally {
         restoreSnapshot(snapshot, projectRoot);
+        revertMutationTarget(projectRoot, mutCapture);
       }
 
       parentPort.postMessage({ type: 'result', challengeId: challenge.id, result });
@@ -119,7 +128,7 @@ const libDir = path.join(__dirname, '..', 'lib');
 const { loadAllChallenges, loadChallenge, loadByCategory, loadByDifficulty, validateAll, printSummary } = require(path.join(libDir, 'challenges.cjs'));
 const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
 const { scoreChallenge, computeReport, formatReport, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
+const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, neutralizeCreateTarget, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
 // Resolve a benchmark target_layer name to the canonical nf-solve key for --focus.
 // Falls back to the layer name itself if not in LAYER_ALIASES.
@@ -213,6 +222,14 @@ function appendTrend(report, results) {
 async function runChallengeSerial(challenge, projectRoot, timeout) {
   const challengeStart = Date.now();
   const snapshot = createSnapshot(projectRoot);
+  // Capture the mutation target's pre-state so file-create/modify mutations to
+  // paths OUTSIDE the snapshot scope (bin/, src/, tests/) are reverted after the
+  // challenge — otherwise a created file persists and a later file-create becomes
+  // a no-op (post == pre → false "not detected"), polluting later baselines.
+  const mutCapture = captureMutationTarget(projectRoot, challenge);
+  // A file-create target must be absent in the baseline for the create to be a
+  // genuinely new file (some SUTs carry stray committed fixtures at the path).
+  neutralizeCreateTarget(projectRoot, challenge);
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 
@@ -281,6 +298,9 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
     };
   } finally {
     restoreSnapshot(snapshot, projectRoot);
+    // Revert the mutation target file (outside the snapshot scope) so each
+    // challenge starts from the same pristine tree — no cross-challenge pollution.
+    revertMutationTarget(projectRoot, mutCapture);
   }
 }
 
