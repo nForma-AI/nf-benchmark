@@ -119,7 +119,7 @@ const libDir = path.join(__dirname, '..', 'lib');
 const { loadAllChallenges, loadChallenge, loadByCategory, loadByDifficulty, validateAll, printSummary } = require(path.join(libDir, 'challenges.cjs'));
 const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
 const { scoreChallenge, computeReport, formatReport, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
+const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, runSolve, runSolveFull, createIsolatedRoot, cleanupIsolatedRoot, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
 // Resolve a benchmark target_layer name to the canonical nf-solve key for --focus.
 // Falls back to the layer name itself if not in LAYER_ALIASES.
@@ -214,21 +214,10 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
   const challengeStart = Date.now();
   const snapshot = createSnapshot(projectRoot);
   // Capture the mutation target's pre-state so file-create/modify mutations to
-  // paths OUTSIDE the snapshot scope (bin/, src/, tests/ — createSnapshot only
-  // covers .planning/formal + docs) are reverted after the challenge. Otherwise a
-  // created file persists, and a later run's file-create becomes a no-op
-  // (post == pre → false "not detected"), while the tree accumulates orphan
-  // files that pollute every subsequent challenge's baseline.
-  const _mutTarget = challenge.mutation && challenge.mutation.target_file;
-  let _mutTargetPre = null;
-  if (_mutTarget) {
-    const _tp = path.join(projectRoot, _mutTarget);
-    try {
-      _mutTargetPre = fs.existsSync(_tp)
-        ? { existed: true, content: fs.readFileSync(_tp) }
-        : { existed: false };
-    } catch { _mutTargetPre = null; }
-  }
+  // paths OUTSIDE the snapshot scope (bin/, src/, tests/) are reverted after the
+  // challenge — otherwise a created file persists and a later file-create becomes
+  // a no-op (post == pre → false "not detected"), polluting later baselines.
+  const mutCapture = captureMutationTarget(projectRoot, challenge);
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 
@@ -299,13 +288,7 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
     restoreSnapshot(snapshot, projectRoot);
     // Revert the mutation target file (outside the snapshot scope) so each
     // challenge starts from the same pristine tree — no cross-challenge pollution.
-    if (_mutTarget && _mutTargetPre) {
-      const _tp = path.join(projectRoot, _mutTarget);
-      try {
-        if (_mutTargetPre.existed) fs.writeFileSync(_tp, _mutTargetPre.content);
-        else if (fs.existsSync(_tp)) fs.unlinkSync(_tp);
-      } catch { /* best-effort revert */ }
-    }
+    revertMutationTarget(projectRoot, mutCapture);
   }
 }
 
