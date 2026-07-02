@@ -14,7 +14,7 @@ if (!isMainThread) {
   const libDir = path.join(__dirname, '..', 'lib');
   const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
   const { scoreChallenge, LAYER_ALIASES } = require(path.join(libDir, 'scorer.cjs'));
-  const { createSnapshot, restoreSnapshot, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
+  const { createSnapshot, restoreSnapshot, captureMutationTarget, revertMutationTarget, runSolve, runSolveFull, saveResult } = require(path.join(libDir, 'runner.cjs'));
 
   function workerFocusLayer(challenge) {
     const layer = challenge.scoring && challenge.scoring.target_layer;
@@ -26,6 +26,11 @@ if (!isMainThread) {
     for (const challenge of challenges) {
       const challengeStart = Date.now();
       const snapshot = createSnapshot(projectRoot);
+      // Each worker reuses ONE isolated root across its whole chunk of
+      // challenges, so — exactly like the serial path — the mutation target must
+      // be reverted or a file-create persists and pollutes the next challenge in
+      // the chunk (false "not detected" + baseline drift).
+      const mutCapture = captureMutationTarget(projectRoot, challenge);
       const focus = workerFocusLayer(challenge);
       const solveOpts = { timeout, focus };
       let result;
@@ -103,6 +108,7 @@ if (!isMainThread) {
         parentPort.postMessage({ type: 'progress', challengeId: challenge.id, status: 'ERROR', reason: e.message, timeMs: executionTimeMs });
       } finally {
         restoreSnapshot(snapshot, projectRoot);
+        revertMutationTarget(projectRoot, mutCapture);
       }
 
       parentPort.postMessage({ type: 'result', challengeId: challenge.id, result });
