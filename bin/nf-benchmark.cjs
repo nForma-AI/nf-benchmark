@@ -213,6 +213,22 @@ function appendTrend(report, results) {
 async function runChallengeSerial(challenge, projectRoot, timeout) {
   const challengeStart = Date.now();
   const snapshot = createSnapshot(projectRoot);
+  // Capture the mutation target's pre-state so file-create/modify mutations to
+  // paths OUTSIDE the snapshot scope (bin/, src/, tests/ — createSnapshot only
+  // covers .planning/formal + docs) are reverted after the challenge. Otherwise a
+  // created file persists, and a later run's file-create becomes a no-op
+  // (post == pre → false "not detected"), while the tree accumulates orphan
+  // files that pollute every subsequent challenge's baseline.
+  const _mutTarget = challenge.mutation && challenge.mutation.target_file;
+  let _mutTargetPre = null;
+  if (_mutTarget) {
+    const _tp = path.join(projectRoot, _mutTarget);
+    try {
+      _mutTargetPre = fs.existsSync(_tp)
+        ? { existed: true, content: fs.readFileSync(_tp) }
+        : { existed: false };
+    } catch { _mutTargetPre = null; }
+  }
   const focus = focusLayerFor(challenge);
   const solveOpts = { timeout, focus };
 
@@ -281,6 +297,15 @@ async function runChallengeSerial(challenge, projectRoot, timeout) {
     };
   } finally {
     restoreSnapshot(snapshot, projectRoot);
+    // Revert the mutation target file (outside the snapshot scope) so each
+    // challenge starts from the same pristine tree — no cross-challenge pollution.
+    if (_mutTarget && _mutTargetPre) {
+      const _tp = path.join(projectRoot, _mutTarget);
+      try {
+        if (_mutTargetPre.existed) fs.writeFileSync(_tp, _mutTargetPre.content);
+        else if (fs.existsSync(_tp)) fs.unlinkSync(_tp);
+      } catch { /* best-effort revert */ }
+    }
   }
 }
 
