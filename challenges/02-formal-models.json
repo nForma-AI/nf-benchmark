@@ -200,8 +200,10 @@
     ],
     "mutation": {
       "type": "file-modify",
-      "target_file": ".planning/formal/prism/circuit-breaker.pm",
-      "description": "Modify transition probabilities to sum > 1.0"
+      "target_file": ".planning/formal/prism/mcp-availability.pm",
+      "description": "Break a probability distribution: replace the (1 - openai_up) complement branch with a literal 1.5 so the command probabilities sum to > 1.0",
+      "find": "(1 - openai_up) : (openai_s'=0)",
+      "replace": "1.5 : (openai_s'=0)"
     },
     "expected_outcome": {
       "residual_change": "increase",
