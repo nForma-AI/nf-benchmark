@@ -20,7 +20,7 @@
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "contradiction", "axioms"]
+    "tags": ["formal", "contradiction", "axioms", "analyzer-dependent"]
   },
   {
     "id": "BENCH-187",
@@ -43,7 +43,7 @@
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "state-space", "explosion"]
+    "tags": ["formal", "state-space", "explosion", "analyzer-dependent"]
   },
   {
     "id": "BENCH-188",
@@ -66,7 +66,7 @@
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "invariant", "weak"]
+    "tags": ["formal", "invariant", "weak", "analyzer-dependent"]
   },
   {
     "id": "BENCH-189",
@@ -89,7 +89,7 @@
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "inconsistency", "cross-model"]
+    "tags": ["formal", "inconsistency", "cross-model", "analyzer-dependent"]
   },
   {
     "id": "BENCH-190",

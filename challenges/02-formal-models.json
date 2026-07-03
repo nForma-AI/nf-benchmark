@@ -157,7 +157,8 @@
     "tags": [
       "formal",
       "tla",
-      "f_to_f"
+      "f_to_f",
+      "analyzer-dependent"
     ]
   },
   {
@@ -360,7 +361,8 @@
       "formal",
       "tla",
       "alloy",
-      "consistency"
+      "consistency",
+      "analyzer-dependent"
     ]
   },
   {
