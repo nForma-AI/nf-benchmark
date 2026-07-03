@@ -9,7 +9,17 @@ const { workerData, parentPort, isMainThread, Worker } = require('worker_threads
 // ── Worker thread entry point ──────────────────────────────────────────────
 if (!isMainThread) {
   // Running as a worker: receive challenges + projectRoot, run serially, post results
-  const { challenges, projectRoot, timeout } = workerData;
+  const { challenges, projectRoot: basePR, timeout } = workerData;
+  const WORKER_FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
+  // Per-challenge project routing (mirrors the main thread): a challenge with a
+  // `project` field runs against fixtures/<project>/ instead of the global SUT.
+  function workerResolveProjectRoot(challenge, base) {
+    if (challenge && challenge.project) {
+      const fr = path.join(WORKER_FIXTURES_DIR, challenge.project);
+      if (fs.existsSync(fr)) return fr;
+    }
+    return base;
+  }
 
   const libDir = path.join(__dirname, '..', 'lib');
   const { applyMutation } = require(path.join(libDir, 'mutator.cjs'));
@@ -25,6 +35,7 @@ if (!isMainThread) {
   (async () => {
     for (const challenge of challenges) {
       const challengeStart = Date.now();
+      const projectRoot = workerResolveProjectRoot(challenge, basePR);
       const snapshot = createSnapshot(projectRoot);
       // Each worker reuses ONE isolated root across its whole chunk of
       // challenges, so — exactly like the serial path — the mutation target must
@@ -141,6 +152,21 @@ function focusLayerFor(challenge) {
 const RESULTS_DIR = path.join(__dirname, '..', 'results');
 const BASELINE_PATH = path.join(__dirname, '..', 'baseline.json');
 const TREND_PATH = path.join(RESULTS_DIR, 'trend.jsonl');
+const FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
+
+// Per-challenge project routing: a challenge may declare `project: "<name>"` to
+// run against a bundled fixture app (fixtures/<name>/) instead of the global
+// --project-root SUT. This lets web-app challenges (SQL injection, XSS, …) run
+// against a small vulnerable-app fixture that actually contains the src/ files
+// they mutate, while formal/code challenges keep running against the real repo.
+function resolveProjectRoot(challenge, base) {
+  if (challenge && challenge.project) {
+    const fixtureRoot = path.join(FIXTURES_DIR, challenge.project);
+    if (fs.existsSync(fixtureRoot)) return fixtureRoot;
+    console.error(`[nf-benchmark] warning: challenge ${challenge.id} declares project "${challenge.project}" but fixtures/${challenge.project} is missing — falling back to --project-root`);
+  }
+  return base;
+}
 
 const args = process.argv.slice(2);
 const command = args[0] || 'help';
@@ -221,6 +247,7 @@ function appendTrend(report, results) {
 
 async function runChallengeSerial(challenge, projectRoot, timeout) {
   const challengeStart = Date.now();
+  projectRoot = resolveProjectRoot(challenge, projectRoot);
   const snapshot = createSnapshot(projectRoot);
   // Capture the mutation target's pre-state so file-create/modify mutations to
   // paths OUTSIDE the snapshot scope (bin/, src/, tests/) are reverted after the

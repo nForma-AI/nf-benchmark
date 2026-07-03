@@ -145,6 +145,10 @@
       "type": "array",
       "items": { "type": "string" }
     },
+    "project": {
+      "type": "string",
+      "description": "Optional: run this challenge against fixtures/<project>/ instead of the global --project-root SUT. Used by web-app SAST challenges that mutate src/ files present only in a bundled vulnerable-app fixture."
+    },
     "disabled": {
       "type": "boolean",
       "default": false
