@@ -78,20 +78,22 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Introduce a typo in a module.exports key, breaking downstream consumers",
-    "target_layers": ["t_to_c"],
+    "target_layers": ["require_graph"],
     "mutation": {
       "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Rename appendTrendEntry export to appendTrendEntri (typo)"
+      "target_file": "bin/adapters/ir.cjs",
+      "description": "Typo the validateIR export key to validateIRR, so every adapter that destructures { validateIR } now imports a key the module no longer exports",
+      "find": "module.exports = { validateIR };",
+      "replace": "module.exports = { validateIRR };"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect downstream test failures",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve require_graph layer flags the export/import mismatch in downstream consumers",
+      "layers_affected": ["require_graph"]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
+      "target_layer": "require_graph",
       "timeout_seconds": 300
     },
     "tags": ["code", "export"]
