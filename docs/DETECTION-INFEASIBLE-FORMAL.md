@@ -47,6 +47,28 @@ requires **baseline-diffing** (which a stateless lint has no access to) or a rea
 source property — the same reason `lintTLAModels` delegates it to the precomputed
 report.
 
+**A source↔report drift detector was built and empirically disproven.** The one
+corpus-safe design is: flag a declared variable made `\in Nat` *only* in a model
+the report records as bounded (report-unbounded models use `\in Nat` legitimately
+and are gated out — verified **0 baseline false positives** across all 67 models,
+and it correctly detects the mutation on a bounded model like NFDeliberation).
+**But it cannot function in the benchmark**, for a concrete reason:
+
+- `.planning/formal/state-space-report.json` is **git-ignored** (`git check-ignore`
+  confirms) — it is a generated TLC artifact, absent in every fresh SUT checkout.
+  No committed artifact carries per-model boundedness (`model-registry.json` has
+  none), so there is **no bounded/unbounded baseline to gate against** in the SUT.
+- With the report absent, `lintTLAModels`'s report loop is empty and the gated
+  drift check never runs → the mutation is invisible.
+- Regenerating the report requires TLC (not `--fast`), and would regenerate it
+  *from the mutated source* → the model becomes report-unbounded → the gate skips
+  it → still no detection.
+
+So the capability is real on a developer tree (where the report exists) but is
+structurally unmeasurable by the benchmark. It was **not shipped** — a
+report-dependent `CORRUPTION_RULE` that silently no-ops in the regression gate
+adds risk without benchmark-validatable value.
+
 ## BENCH-021 / BENCH-189 — cross-model (TLA ↔ Alloy) conflicts
 
 **Infeasible without model-checking both formalisms.** "A property holds in TLA+
