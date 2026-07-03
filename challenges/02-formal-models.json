@@ -5,7 +5,9 @@
     "category": "formal-models",
     "difficulty": "easy",
     "description": "Add a TLA+ invariant to a formal model that has no corresponding test",
-    "target_layers": ["f_to_t"],
+    "target_layers": [
+      "f_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
@@ -14,14 +16,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect F->T gap for the new invariant",
-      "layers_affected": ["f_to_t"]
+      "layers_affected": [
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "f_to_t",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_t"]
+    "tags": [
+      "formal",
+      "f_to_t"
+    ]
   },
   {
     "id": "BENCH-012",
@@ -29,7 +36,9 @@
     "category": "formal-models",
     "difficulty": "easy",
     "description": "Clear the test backing reference from a formal model registry entry",
-    "target_layers": ["f_to_t"],
+    "target_layers": [
+      "f_to_t"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/formal-test-sync-report.json",
@@ -40,13 +49,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect missing test backing",
-      "layers_affected": ["f_to_t"]
+      "layers_affected": [
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_t"]
+    "tags": [
+      "formal",
+      "f_to_t"
+    ]
   },
   {
     "id": "BENCH-013",
@@ -54,22 +68,31 @@
     "category": "formal-models",
     "difficulty": "easy",
     "description": "Add an Alloy predicate that references a signature that doesn't exist",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/alloy/account-pool-structure.als",
-      "description": "Add predicate referencing NonexistentSignature"
+      "description": "Add predicate referencing NonexistentSignature",
+      "append": "\npred BenchCorruptDangling {\n  some x: NonexistentSignature | x in x\n}\nrun BenchCorruptDangling for 3\n"
     },
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect Alloy parse error or self-consistency issue",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "alloy", "f_to_f"]
+    "tags": [
+      "formal",
+      "alloy",
+      "f_to_f"
+    ]
   },
   {
     "id": "BENCH-014",
@@ -77,7 +100,9 @@
     "category": "formal-models",
     "difficulty": "easy",
     "description": "Change a formal model's gate_maturity to 0 (not yet promoted through gates)",
-    "target_layers": ["f_to_g"],
+    "target_layers": [
+      "f_to_g"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/model-registry.json",
@@ -88,13 +113,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect F->G gate maturity regression",
-      "layers_affected": ["f_to_g"]
+      "layers_affected": [
+        "f_to_g"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "f_to_g", "gate"]
+    "tags": [
+      "formal",
+      "f_to_g",
+      "gate"
+    ]
   },
   {
     "id": "BENCH-015",
@@ -102,7 +133,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Introduce an unbounded Nat range in a TLA+ spec, triggering F->F self-consistency lint",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
@@ -111,13 +144,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect unbounded model via F->F complexity lint",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "tla", "f_to_f"]
+    "tags": [
+      "formal",
+      "tla",
+      "f_to_f"
+    ]
   },
   {
     "id": "BENCH-016",
@@ -125,7 +164,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Create a new formal model file but don't register it in the model-registry.json",
-    "target_layers": ["f_to_g"],
+    "target_layers": [
+      "f_to_g"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": ".planning/formal/tla/BenchOrphan.tla",
@@ -135,13 +176,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect unregistered formal model",
-      "layers_affected": ["f_to_g"]
+      "layers_affected": [
+        "f_to_g"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "registry"]
+    "tags": [
+      "formal",
+      "registry"
+    ]
   },
   {
     "id": "BENCH-017",
@@ -149,7 +195,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Create a PRISM model where transition probabilities sum to more than 1.0",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/prism/circuit-breaker.pm",
@@ -158,13 +206,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect invalid PRISM probability distribution",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "prism", "f_to_f"]
+    "tags": [
+      "formal",
+      "prism",
+      "f_to_f"
+    ]
   },
   {
     "id": "BENCH-018",
@@ -172,7 +226,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Change a formal model invariant to contradict a code constant value",
-    "target_layers": ["c_to_f"],
+    "target_layers": [
+      "c_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/constants-mapping.json",
@@ -183,13 +239,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect C->F divergence between code and formal",
-      "layers_affected": ["c_to_f"]
+      "layers_affected": [
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "c_to_f", "constants"]
+    "tags": [
+      "formal",
+      "c_to_f",
+      "constants"
+    ]
   },
   {
     "id": "BENCH-019",
@@ -197,7 +259,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Add excessive state variables to trigger F->F complexity lint",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": ".planning/formal/tla/BenchComplex.tla",
@@ -207,13 +271,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should flag model as overly complex via F->F lint",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "complexity", "f_to_f"]
+    "tags": [
+      "formal",
+      "complexity",
+      "f_to_f"
+    ]
   },
   {
     "id": "BENCH-020",
@@ -221,7 +291,9 @@
     "category": "formal-models",
     "difficulty": "medium",
     "description": "Add a hazard FMEA entry with critical RPN score but no mitigation strategy",
-    "target_layers": ["f_to_h"],
+    "target_layers": [
+      "f_to_h"
+    ],
     "mutation": {
       "type": "json-field-add",
       "target_file": ".planning/formal/model-complexity-profile.json",
@@ -241,13 +313,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should flag unmitigated high-RPN hazard via F->H",
-      "layers_affected": ["f_to_h"]
+      "layers_affected": [
+        "f_to_h"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "fMEA", "f_to_h"]
+    "tags": [
+      "formal",
+      "fMEA",
+      "f_to_h"
+    ]
   },
   {
     "id": "BENCH-021",
@@ -255,7 +333,9 @@
     "category": "formal-models",
     "difficulty": "hard",
     "description": "Create an inconsistency where a property holds in TLA+ but is violated in Alloy",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/alloy/account-pool-structure.als",
@@ -264,13 +344,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect cross-formal specification inconsistency",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["formal", "tla", "alloy", "consistency"]
+    "tags": [
+      "formal",
+      "tla",
+      "alloy",
+      "consistency"
+    ]
   },
   {
     "id": "BENCH-022",
@@ -278,7 +365,9 @@
     "category": "formal-models",
     "difficulty": "hard",
     "description": "Create a Petri net with a place that has a valid initial marking but is unreachable",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": ".planning/formal/petri/bench-unreachable.pnml",
@@ -288,13 +377,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect unreachable marking in Petri net",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["formal", "petri", "f_to_f"]
+    "tags": [
+      "formal",
+      "petri",
+      "f_to_f"
+    ]
   },
   {
     "id": "BENCH-023",
@@ -302,7 +397,9 @@
     "category": "formal-models",
     "difficulty": "hard",
     "description": "Replace a meaningful invariant with one that is trivially true (e.g., x = x)",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
@@ -311,13 +408,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect weakened/trivial invariant",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["formal", "invariant", "quality"]
+    "tags": [
+      "formal",
+      "invariant",
+      "quality"
+    ]
   },
   {
     "id": "BENCH-024",
@@ -325,7 +428,9 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Create a TLA+ spec that is correct but exceeds default model checker bounds",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": ".planning/formal/tla/BenchTimeout.tla",
@@ -335,13 +440,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect model checker timeout and suggest bounds refinement",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["formal", "tla", "timeout", "performance"]
+    "tags": [
+      "formal",
+      "tla",
+      "timeout",
+      "performance"
+    ]
   },
   {
     "id": "BENCH-025",
@@ -349,7 +461,10 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Create a formal model where concurrent transitions can lead to deadlock",
-    "target_layers": ["f_to_h", "f_to_f"],
+    "target_layers": [
+      "f_to_h",
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": ".planning/formal/tla/BenchDeadlock.tla",
@@ -359,12 +474,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect deadlock potential via FMEA or model checking",
-      "layers_affected": ["f_to_h", "f_to_f"]
+      "layers_affected": [
+        "f_to_h",
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["formal", "deadlock", "f_to_h"]
+    "tags": [
+      "formal",
+      "deadlock",
+      "f_to_h"
+    ]
   }
 ]
