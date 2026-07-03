@@ -23,7 +23,7 @@
       ]
     },
     "scoring": {
-      "method": "residual_layer_zero",
+      "method": "detection_only",
       "target_layer": "f_to_t",
       "timeout_seconds": 300
     },
