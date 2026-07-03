@@ -11,7 +11,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
-      "description": "Add an extra invariant assertion with no test coverage"
+      "description": "Add an orphan TLA+ safety invariant tagged @requirement COCH-01 (an uncovered requirement) with no backing test, creating a formal→test coverage gap",
+      "find": "Spec ==",
+      "replace": "\\* @requirement COCH-01\nBenchOrphanInvariant ==\n    stepCount >= 0\n\nSpec =="
     },
     "expected_outcome": {
       "residual_change": "increase",
