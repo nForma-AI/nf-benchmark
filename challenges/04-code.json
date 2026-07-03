@@ -30,20 +30,21 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Add a require() for a module that doesn't exist — runtime import error",
-    "target_layers": ["t_to_c"],
+    "target_layers": ["require_graph"],
     "mutation": {
       "type": "file-modify",
-      "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Add require('./nonexistent-module.cjs') at top of file"
+      "target_file": "bin/dedup-changelog.cjs",
+      "description": "Append a require() of a nonexistent module — a dangling require the require-graph check flags",
+      "append": "\nconst _benchDangling = require('./nonexistent-bench-module.cjs');\n"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect failing tests due to broken import",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve require_graph layer flags the dangling require",
+      "layers_affected": ["require_graph"]
     },
     "scoring": {
-      "method": "residual_layer_zero",
-      "target_layer": "t_to_c",
+      "method": "detection_only",
+      "target_layer": "require_graph",
       "timeout_seconds": 300
     },
     "tags": ["code", "import"]
@@ -172,19 +173,21 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Create a circular require() dependency between two modules",
-    "target_layers": ["t_to_c"],
+    "target_layers": ["require_graph"],
     "mutation": {
       "type": "file-modify",
-      "target_file": "bin/solve-wave-dag.cjs",
-      "description": "Add circular require to solve-cycle-detector.cjs which already requires this"
+      "target_file": "bin/debt-ledger.cjs",
+      "description": "Append require('./solve-debt-bridge.cjs') — solve-debt-bridge already requires debt-ledger, so this closes a 2-node circular require",
+      "append": "\nrequire('./solve-debt-bridge.cjs');\n"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect circular dependency or resulting test failures",
-      "layers_affected": ["t_to_c"]
+      "description": "nf:solve require_graph layer flags the circular require cycle",
+      "layers_affected": ["require_graph"]
     },
     "scoring": {
       "method": "detection_only",
+      "target_layer": "require_graph",
       "timeout_seconds": 300
     },
     "tags": ["code", "circular"]
