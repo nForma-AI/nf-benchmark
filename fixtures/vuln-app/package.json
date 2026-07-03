@@ -1,0 +1,2 @@
+{ "name": "vuln-app-fixture", "version": "1.0.0", "private": true,
+  "description": "Minimal app fixture for SAST benchmark challenges; each src/ file is CLEAN by default — challenge mutations inject the vulnerability." }
