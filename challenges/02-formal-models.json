@@ -403,7 +403,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/QGSDActivityTracking.tla",
-      "description": "Replace meaningful invariant with trivially true expression"
+      "description": "Replace the RecoveryRequiresFile safety invariant with a trivially-true tautology (recovered = recovered)",
+      "find": "recovered = TRUE => fileExists = TRUE",
+      "replace": "recovered = recovered"
     },
     "expected_outcome": {
       "residual_change": "increase",
