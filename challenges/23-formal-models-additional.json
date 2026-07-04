@@ -5,7 +5,9 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Formal specification contains mutually contradictory axioms",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/Contradiction.tla",
@@ -14,13 +16,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect contradictory axioms in formal model",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "contradiction", "axioms", "analyzer-dependent"]
+    "tags": [
+      "formal",
+      "contradiction",
+      "axioms",
+      "analyzer-dependent"
+    ]
   },
   {
     "id": "BENCH-187",
@@ -28,7 +37,9 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Formal model has exponential state space causing timeout",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/Explosion.tla",
@@ -37,13 +48,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect state space explosion in model checking",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "state-space", "explosion", "analyzer-dependent"]
+    "tags": [
+      "formal",
+      "state-space",
+      "explosion",
+      "analyzer-dependent"
+    ]
   },
   {
     "id": "BENCH-188",
@@ -51,7 +69,10 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Invariant allows undesirable behaviors that should be forbidden",
-    "target_layers": ["f_to_f", "f_to_t"],
+    "target_layers": [
+      "f_to_f",
+      "f_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/tla/WeakInvariant.tla",
@@ -60,13 +81,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect overly weak formal invariant",
-      "layers_affected": ["f_to_f", "f_to_t"]
+      "layers_affected": [
+        "f_to_f",
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "invariant", "weak", "analyzer-dependent"]
+    "tags": [
+      "formal",
+      "invariant",
+      "weak",
+      "analyzer-dependent"
+    ]
   },
   {
     "id": "BENCH-189",
@@ -74,7 +103,9 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Different formal models (TLA+, Alloy) specify conflicting behaviors",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".planning/formal/alloy/Inconsistent.als",
@@ -83,13 +114,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect cross-formal model inconsistencies",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["formal", "inconsistency", "cross-model", "analyzer-dependent"]
+    "tags": [
+      "formal",
+      "inconsistency",
+      "cross-model",
+      "analyzer-dependent"
+    ]
   },
   {
     "id": "BENCH-190",
@@ -97,21 +135,34 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Model contains operations with undefined semantics",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "model_check",
+      "f_to_f"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Undefined.tla",
-      "description": "Add operation with undefined behavior"
+      "type": "file-create",
+      "target_file": ".planning/formal/tla/BenchUndefined.tla",
+      "content": "---- MODULE BenchUndefined ----\nEXTENDS Naturals\nVARIABLES state\nInit == state = \"ready\"\nProcess == state = \"ready\" /\\ state' = \"running\"\nFinish == state = \"running\" /\\ state' = \"corrupted\"\nNext == Process \\/ Finish\nTypeOK == state \\in {\"ready\", \"running\", \"done\"}\nvars == <<state>>\nSpec == Init /\\ [][Next]_vars\n====",
+      "description": "Model reaches state=\"corrupted\", a value its own TypeOK invariant (state in {ready,running,done}) forbids — undefined behavior TLC detects as a reachable invariant violation"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect undefined behavior in formal model",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "model_check",
+        "f_to_f"
+      ],
+      "description": "nf:solve model_check layer detects the reachable TypeOK violation (undefined state) via TLC."
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "target_layer": "model_check",
+      "timeout_seconds": 600
     },
-    "tags": ["formal", "undefined", "behavior"]
+    "tags": [
+      "formal",
+      "undefined",
+      "behavior",
+      "model_check"
+    ]
   }
 ]
