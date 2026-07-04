@@ -5,7 +5,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "External API with strict rate limits causing integration failures",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/api-client.js",
@@ -14,13 +17,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect rate limiting issues in integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "rate-limiting", "api"]
+    "tags": [
+      "integration",
+      "rate-limiting",
+      "api"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-167",
@@ -28,7 +40,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Integration fails due to incompatible library versions",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "package.json",
@@ -39,13 +53,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect version incompatibility in integration",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "version", "compatibility"]
+    "tags": [
+      "integration",
+      "version",
+      "compatibility"
+    ]
   },
   {
     "id": "BENCH-168",
@@ -53,7 +73,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Data encoding mismatch between modern and legacy systems",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/legacy-integration.js",
@@ -62,13 +85,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect encoding mismatch in integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "encoding", "legacy"]
+    "tags": [
+      "integration",
+      "encoding",
+      "legacy"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-169",
@@ -76,7 +108,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Webhook payloads fail signature verification",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/webhook-handler.js",
@@ -85,13 +120,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect webhook signature verification issues",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "webhook", "signature"]
+    "tags": [
+      "integration",
+      "webhook",
+      "signature"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-170",
@@ -99,7 +143,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Database connections exhausted during high load integration",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/db-integration.js",
@@ -108,13 +154,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect connection pool exhaustion",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "database", "connections"]
+    "tags": [
+      "integration",
+      "database",
+      "connections"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-171",
@@ -122,7 +176,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Message processing violates ordering requirements",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/message-queue.js",
@@ -131,13 +188,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect message ordering violations",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "message-queue", "ordering"]
+    "tags": [
+      "integration",
+      "message-queue",
+      "ordering"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-172",
@@ -145,7 +211,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Integration fails due to expired OAuth tokens",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/oauth-client.js",
@@ -154,13 +222,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect expired OAuth tokens",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "oauth", "tokens"]
+    "tags": [
+      "integration",
+      "oauth",
+      "tokens"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-173",
@@ -168,7 +244,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Integration fails due to insufficient file system permissions",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/file-integration.js",
@@ -177,13 +256,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect permission issues in file integration",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "permissions", "filesystem"]
+    "tags": [
+      "integration",
+      "permissions",
+      "filesystem"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-174",
@@ -191,7 +279,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Caching layer serves stale data causing inconsistencies",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/cache-integration.js",
@@ -200,13 +290,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect stale cache data issues",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "cache", "stale-data"]
+    "tags": [
+      "integration",
+      "cache",
+      "stale-data"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-175",
@@ -214,7 +312,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Monitoring system generates excessive false positive alerts",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/monitoring-integration.js",
@@ -223,12 +324,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect monitoring false positives",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["integration", "monitoring", "false-positives"]
+    "tags": [
+      "integration",
+      "monitoring",
+      "false-positives"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   }
 ]

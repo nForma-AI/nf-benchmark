@@ -5,7 +5,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Concurrent pipeline runs that overwrite each other's artifacts",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": ".github/workflows/deploy.yml",
@@ -14,13 +16,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect race condition in CI/CD pipeline",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "ci-cd", "race-condition"]
+    "tags": [
+      "devops",
+      "ci-cd",
+      "race-condition"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-137",
@@ -28,7 +38,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Docker image built from base image with known CVEs",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "Dockerfile",
@@ -37,13 +50,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect container security vulnerabilities",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "containers", "security"]
+    "tags": [
+      "devops",
+      "containers",
+      "security"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-138",
@@ -51,7 +73,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Terraform configuration with conflicting resource definitions",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "infrastructure/main.tf",
@@ -60,13 +84,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect IaC resource conflicts",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "iac", "terraform"]
+    "tags": [
+      "devops",
+      "iac",
+      "terraform"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-139",
@@ -74,7 +106,10 @@
     "category": "reverse-flow",
     "difficulty": "expert",
     "description": "Deployment process that cannot rollback gracefully on failure",
-    "target_layers": ["t_to_r", "d_to_r"],
+    "target_layers": [
+      "t_to_r",
+      "d_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "scripts/deploy.sh",
@@ -83,13 +118,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect lack of rollback capability",
-      "layers_affected": ["t_to_r", "d_to_r"]
+      "layers_affected": [
+        "t_to_r",
+        "d_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "rollback", "deployment"]
+    "tags": [
+      "devops",
+      "rollback",
+      "deployment"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-140",
@@ -97,7 +141,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Cloud infrastructure configured with excessive resources causing cost waste",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "infrastructure/cloud-config.json",
@@ -108,12 +154,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect resource over-provisioning",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["devops", "cloud", "cost-optimization"]
+    "tags": [
+      "devops",
+      "cloud",
+      "cost-optimization"
+    ]
   }
 ]

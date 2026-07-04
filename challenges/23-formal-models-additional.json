@@ -29,7 +29,9 @@
       "contradiction",
       "axioms",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-187",
@@ -61,7 +63,9 @@
       "state-space",
       "explosion",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-188",
@@ -95,7 +99,9 @@
       "invariant",
       "weak",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-189",

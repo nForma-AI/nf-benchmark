@@ -5,7 +5,10 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Tests that pass/fail randomly due to race conditions or timing",
-    "target_layers": ["t_to_c", "f_to_t"],
+    "target_layers": [
+      "t_to_c",
+      "f_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "test/nondeterministic.test.js",
@@ -14,13 +17,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect non-deterministic test behavior",
-      "layers_affected": ["t_to_c", "f_to_t"]
+      "layers_affected": [
+        "t_to_c",
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["tests", "nondeterministic", "race-condition"]
+    "tags": [
+      "tests",
+      "nondeterministic",
+      "race-condition"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-192",
@@ -28,7 +40,9 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Over-mocking in tests prevents detection of actual implementation issues",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "test/overmocked.test.js",
@@ -37,13 +51,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect inadequate test mocking",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["tests", "mocking", "overmocked"]
+    "tags": [
+      "tests",
+      "mocking",
+      "overmocked"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-193",
@@ -51,7 +73,9 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Tests that require specific environment setup fail in CI",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "test/environment-dependent.test.js",
@@ -60,13 +84,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect environment-dependent test failures",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["tests", "environment", "ci"]
+    "tags": [
+      "tests",
+      "environment",
+      "ci"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-194",
@@ -74,7 +106,10 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Test data is too clean compared to real-world production data",
-    "target_layers": ["t_to_c", "f_to_t"],
+    "target_layers": [
+      "t_to_c",
+      "f_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "test/clean-data.test.js",
@@ -83,13 +118,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect unrealistic test data",
-      "layers_affected": ["t_to_c", "f_to_t"]
+      "layers_affected": [
+        "t_to_c",
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["tests", "data", "production"]
+    "tags": [
+      "tests",
+      "data",
+      "production"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-195",
@@ -97,7 +141,9 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Performance tests use load patterns that don't match real usage",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "test/performance-unrealistic.test.js",
@@ -106,12 +152,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect unrealistic performance test scenarios",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["tests", "performance", "load"]
+    "tags": [
+      "tests",
+      "performance",
+      "load"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   }
 ]

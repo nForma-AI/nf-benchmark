@@ -30,7 +30,9 @@
       "distributed",
       "network-partition",
       "cap-theorem"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-122",
@@ -63,7 +65,9 @@
       "distributed",
       "race-condition",
       "locking"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-123",
@@ -94,7 +98,9 @@
       "distributed",
       "microservices",
       "coupling"
-    ]
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-124",

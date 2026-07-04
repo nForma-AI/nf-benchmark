@@ -5,7 +5,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "HTML images without alt attributes violating accessibility standards",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/components/Image.js",
@@ -14,13 +16,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect missing accessibility attributes",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["ui-ux", "accessibility", "images"]
+    "tags": [
+      "ui-ux",
+      "accessibility",
+      "images"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-142",
@@ -28,7 +38,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "UI elements with insufficient color contrast for readability",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/styles.css",
@@ -37,13 +49,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect WCAG contrast violations",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["ui-ux", "accessibility", "contrast"]
+    "tags": [
+      "ui-ux",
+      "accessibility",
+      "contrast"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-143",
@@ -51,7 +71,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Interactive elements that cannot be accessed via keyboard navigation",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/components/Button.js",
@@ -60,13 +82,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect lack of keyboard accessibility",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["ui-ux", "accessibility", "keyboard"]
+    "tags": [
+      "ui-ux",
+      "accessibility",
+      "keyboard"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-144",
@@ -74,7 +104,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Layout that breaks on mobile devices due to fixed widths",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/styles.css",
@@ -83,13 +115,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect responsive design issues",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["ui-ux", "responsive", "mobile"]
+    "tags": [
+      "ui-ux",
+      "responsive",
+      "mobile"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-145",
@@ -97,7 +137,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "UI without loading indicators causing poor perceived performance",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/components/DataTable.js",
@@ -106,12 +148,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect lack of loading state UX",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["ui-ux", "loading", "performance"]
+    "tags": [
+      "ui-ux",
+      "loading",
+      "performance"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   }
 ]

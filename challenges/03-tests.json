@@ -5,7 +5,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Break a passing test by changing an assertion value with an off-by-one error",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -14,14 +16,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect failing test via T->C sweep",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "t_to_c",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_c", "assertion"]
+    "tags": [
+      "tests",
+      "t_to_c",
+      "assertion"
+    ]
   },
   {
     "id": "BENCH-027",
@@ -29,7 +37,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Remove a @req annotation from a test file, breaking traceability",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -38,13 +48,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect T->R gap for untraced test",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_r", "annotation"]
+    "tags": [
+      "tests",
+      "t_to_r",
+      "annotation"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-028",
@@ -52,7 +70,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Create a test file with valid tests but no @req traceability",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-untraced.test.cjs",
@@ -62,13 +82,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect T->R gap for entire test file",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_r"]
+    "tags": [
+      "tests",
+      "t_to_r"
+    ]
   },
   {
     "id": "BENCH-029",
@@ -76,7 +101,9 @@
     "category": "tests",
     "difficulty": "easy",
     "description": "Change a test's expected output to an incorrect value",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-trend-helpers.test.cjs",
@@ -85,14 +112,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect failing test",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "t_to_c",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "t_to_c"]
+    "tags": [
+      "tests",
+      "t_to_c"
+    ]
   },
   {
     "id": "BENCH-030",
@@ -100,7 +132,9 @@
     "category": "tests",
     "difficulty": "medium",
     "description": "Duplicate a test with a slightly different name but identical logic — dead test detection",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -109,13 +143,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect duplicate/redundant test",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "duplicate"]
+    "tags": [
+      "tests",
+      "duplicate"
+    ]
   },
   {
     "id": "BENCH-031",
@@ -123,7 +162,9 @@
     "category": "tests",
     "difficulty": "medium",
     "description": "Introduce a missing await in an async test creating a race condition",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/quorum-slot-dispatch.test.cjs",
@@ -132,13 +173,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect flaky/failing test",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "async", "race"]
+    "tags": [
+      "tests",
+      "async",
+      "race"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-032",
@@ -146,7 +195,10 @@
     "category": "tests",
     "difficulty": "medium",
     "description": "Modify a test so it passes but tests incorrect behavior (false positive)",
-    "target_layers": ["f_to_t", "t_to_c"],
+    "target_layers": [
+      "f_to_t",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-cycle-detector.test.cjs",
@@ -155,13 +207,18 @@
     "expected_outcome": {
       "residual_change": "no_change",
       "description": "nf:solve may detect semantic drift between test intent and formal invariant",
-      "layers_affected": ["f_to_t"]
+      "layers_affected": [
+        "f_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "false-positive"]
+    "tags": [
+      "tests",
+      "false-positive"
+    ]
   },
   {
     "id": "BENCH-033",
@@ -169,7 +226,9 @@
     "category": "tests",
     "difficulty": "hard",
     "description": "Add a test that uses a hardcoded absolute path, making it machine-dependent",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
@@ -178,13 +237,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect portability issue or test failure",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "portability"]
+    "tags": [
+      "tests",
+      "portability"
+    ]
   },
   {
     "id": "BENCH-034",
@@ -192,7 +256,9 @@
     "category": "tests",
     "difficulty": "hard",
     "description": "Create a test that depends on side effects from another test in the same file",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-wave-dag.test.cjs",
@@ -201,13 +267,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect test isolation violation",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["tests", "isolation"]
+    "tags": [
+      "tests",
+      "isolation"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-035",
@@ -215,7 +288,10 @@
     "category": "tests",
     "difficulty": "expert",
     "description": "Create a test suite where removing any single test still passes — coverage hole",
-    "target_layers": ["f_to_t", "l3_to_tc"],
+    "target_layers": [
+      "f_to_t",
+      "l3_to_tc"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/oscillation-detector.test.cjs",
@@ -224,12 +300,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect that tests don't provide unique coverage",
-      "layers_affected": ["f_to_t", "l3_to_tc"]
+      "layers_affected": [
+        "f_to_t",
+        "l3_to_tc"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["tests", "coverage", "expert"]
+    "tags": [
+      "tests",
+      "coverage",
+      "expert"
+    ]
   }
 ]

@@ -5,7 +5,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Configuration hooks create circular dependency causing infinite loop",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/config-a.js",
@@ -14,13 +16,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect circular dependency in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "circular", "dependency"]
+    "tags": [
+      "config-hooks",
+      "circular",
+      "dependency"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-177",
@@ -28,7 +38,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Hooks execute in wrong order violating dependencies",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/order.js",
@@ -37,13 +49,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect incorrect hook execution order",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "order", "dependency"]
+    "tags": [
+      "config-hooks",
+      "order",
+      "dependency"
+    ]
   },
   {
     "id": "BENCH-178",
@@ -51,7 +69,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Multiple hooks accessing shared configuration state concurrently",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/shared-state.js",
@@ -60,13 +80,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect race condition in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "race-condition", "shared-state"]
+    "tags": [
+      "config-hooks",
+      "race-condition",
+      "shared-state"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-179",
@@ -74,7 +102,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Single hook failure propagates causing system-wide config issues",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/cascading.js",
@@ -83,13 +113,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect cascading config hook failures",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "cascading", "failure"]
+    "tags": [
+      "config-hooks",
+      "cascading",
+      "failure"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-180",
@@ -97,7 +135,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Configuration hook times out waiting for external service",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/external.js",
@@ -106,13 +146,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect timeout in config hook",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "timeout", "external"]
+    "tags": [
+      "config-hooks",
+      "timeout",
+      "external"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-181",
@@ -120,7 +168,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Configuration hooks have unintended side effects on global state",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/side-effects.js",
@@ -129,13 +179,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect side effects in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "side-effects", "global-state"]
+    "tags": [
+      "config-hooks",
+      "side-effects",
+      "global-state"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-182",
@@ -143,7 +201,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Hooks accumulate memory over time without cleanup",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/memory-leak.js",
@@ -152,13 +212,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect memory leak in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "memory-leak", "accumulation"]
+    "tags": [
+      "config-hooks",
+      "memory-leak",
+      "accumulation"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-183",
@@ -166,7 +234,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Configuration hooks bypass security validation",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/security-bypass.js",
@@ -175,13 +245,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect security bypass in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "security", "bypass"]
+    "tags": [
+      "config-hooks",
+      "security",
+      "bypass"
+    ]
   },
   {
     "id": "BENCH-184",
@@ -189,7 +265,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Hooks incompatible with current system version",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/version.js",
@@ -198,13 +276,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect version compatibility issues in hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "version", "compatibility"]
+    "tags": [
+      "config-hooks",
+      "version",
+      "compatibility"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-185",
@@ -212,7 +298,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Configuration hook triggers itself recursively",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/recursive.js",
@@ -221,12 +309,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect infinite recursion in config hooks",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["config-hooks", "recursion", "infinite"]
+    "tags": [
+      "config-hooks",
+      "recursion",
+      "infinite"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   }
 ]

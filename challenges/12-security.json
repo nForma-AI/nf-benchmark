@@ -100,7 +100,9 @@
       "security",
       "authentication",
       "session"
-    ]
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-114",

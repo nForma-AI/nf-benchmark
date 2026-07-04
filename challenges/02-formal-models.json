@@ -159,7 +159,9 @@
       "tla",
       "f_to_f",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-016",

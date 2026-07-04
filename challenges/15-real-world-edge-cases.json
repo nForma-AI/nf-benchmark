@@ -5,7 +5,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Use hardcoded Unix path separators that fail on Windows systems",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/file-ops.js",
@@ -14,13 +16,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect platform-specific path issues",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["edge-cases", "platform", "filesystem"]
+    "tags": [
+      "edge-cases",
+      "platform",
+      "filesystem"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-127",
@@ -28,7 +38,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Integrate with third-party API that has deprecated methods causing future breakage",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/api-integration.js",
@@ -37,13 +50,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect usage of deprecated APIs",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["edge-cases", "legacy", "api"]
+    "tags": [
+      "edge-cases",
+      "legacy",
+      "api"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-128",
@@ -51,7 +73,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Date arithmetic that doesn't account for daylight saving time transitions",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "target_layers": [
+      "c_to_t",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/date-utils.js",
@@ -60,13 +85,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect timezone-related date calculation errors",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "layers_affected": [
+        "c_to_t",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["edge-cases", "timezone", "datetime"]
+    "tags": [
+      "edge-cases",
+      "timezone",
+      "datetime"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-129",
@@ -74,7 +108,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "String operations that fail with multi-byte Unicode characters",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/string-utils.js",
@@ -83,13 +119,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect Unicode encoding issues",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["edge-cases", "unicode", "encoding"]
+    "tags": [
+      "edge-cases",
+      "unicode",
+      "encoding"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-130",
@@ -97,7 +141,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Use modern CSS features without fallbacks for older browsers",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/styles.css",
@@ -106,12 +152,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect browser compatibility issues",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["edge-cases", "browser", "compatibility"]
+    "tags": [
+      "edge-cases",
+      "browser",
+      "compatibility"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   }
 ]

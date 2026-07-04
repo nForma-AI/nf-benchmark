@@ -5,7 +5,10 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "System with cyclic dependencies that prevent convergence within timeout",
-    "target_layers": ["f_to_g", "c_to_e"],
+    "target_layers": [
+      "f_to_g",
+      "c_to_e"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/convergence-rules.json",
@@ -16,13 +19,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect convergence timeout from cycles",
-      "layers_affected": ["f_to_g", "c_to_e"]
+      "layers_affected": [
+        "f_to_g",
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "timeout", "cycles"]
+    "tags": [
+      "convergence",
+      "timeout",
+      "cycles"
+    ]
   },
   {
     "id": "BENCH-147",
@@ -30,7 +40,9 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "State that oscillates due to periodic external resets",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/state-manager.js",
@@ -39,13 +51,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect periodic oscillation preventing convergence",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "oscillation", "periodic"]
+    "tags": [
+      "convergence",
+      "oscillation",
+      "periodic"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-148",
@@ -53,7 +73,10 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Numerical convergence that fails due to floating point precision issues",
-    "target_layers": ["c_to_t", "f_to_c"],
+    "target_layers": [
+      "c_to_t",
+      "f_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/numerical.js",
@@ -62,13 +85,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect floating point precision convergence issues",
-      "layers_affected": ["c_to_t", "f_to_c"]
+      "layers_affected": [
+        "c_to_t",
+        "f_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "floating-point", "precision"]
+    "tags": [
+      "convergence",
+      "floating-point",
+      "precision"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-149",
@@ -76,7 +108,10 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Multiple agents waiting for each other causing deadlock",
-    "target_layers": ["f_to_g", "c_to_e"],
+    "target_layers": [
+      "f_to_g",
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/multi-agent.js",
@@ -85,13 +120,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect deadlock in multi-agent convergence",
-      "layers_affected": ["f_to_g", "c_to_e"]
+      "layers_affected": [
+        "f_to_g",
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "deadlock", "multi-agent"]
+    "tags": [
+      "convergence",
+      "deadlock",
+      "multi-agent"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-150",
@@ -99,7 +143,9 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "System that can't converge due to intermittent external service failures",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/external-deps.js",
@@ -108,13 +154,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect external dependency causing convergence failure",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "external", "failures"]
+    "tags": [
+      "convergence",
+      "external",
+      "failures"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-151",
@@ -122,7 +176,10 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Optimization algorithm stuck in local optima preventing global convergence",
-    "target_layers": ["f_to_c", "c_to_t"],
+    "target_layers": [
+      "f_to_c",
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/optimizer.js",
@@ -131,13 +188,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect local optima trap in convergence",
-      "layers_affected": ["f_to_c", "c_to_t"]
+      "layers_affected": [
+        "f_to_c",
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "optimization", "local-optima"]
+    "tags": [
+      "convergence",
+      "optimization",
+      "local-optima"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-152",
@@ -145,7 +211,9 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Parallel processing with race conditions preventing stable convergence",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/parallel.js",
@@ -154,13 +222,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect race condition in parallel convergence",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "race-condition", "parallel"]
+    "tags": [
+      "convergence",
+      "race-condition",
+      "parallel"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-153",
@@ -168,7 +244,10 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Algorithm that makes progress but occasionally regresses",
-    "target_layers": ["f_to_g", "c_to_e"],
+    "target_layers": [
+      "f_to_g",
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/algorithm.js",
@@ -177,13 +256,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect non-monotonic convergence behavior",
-      "layers_affected": ["f_to_g", "c_to_e"]
+      "layers_affected": [
+        "f_to_g",
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "non-monotonic", "progress"]
+    "tags": [
+      "convergence",
+      "non-monotonic",
+      "progress"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-154",
@@ -191,7 +279,9 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Algorithm that requires more memory than available for convergence",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/memory-intensive.js",
@@ -200,13 +290,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect memory constraint preventing convergence",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "memory", "constraints"]
+    "tags": [
+      "convergence",
+      "memory",
+      "constraints"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   },
   {
     "id": "BENCH-155",
@@ -214,7 +312,9 @@
     "category": "convergence",
     "difficulty": "expert",
     "description": "Convergence condition that never evaluates to true",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "c_to_e"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/convergence-check.js",
@@ -223,12 +323,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect infinite loop in convergence logic",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["convergence", "infinite-loop", "logic"]
+    "tags": [
+      "convergence",
+      "infinite-loop",
+      "logic"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   }
 ]
