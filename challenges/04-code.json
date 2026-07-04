@@ -93,7 +93,9 @@
       "code",
       "hooks",
       "fail-open"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "missing error-handling (removed try/catch) is a semantic/structural judgment, FP-prone"
   },
   {
     "id": "BENCH-039",
@@ -321,7 +323,9 @@
       "code",
       "docs",
       "cli"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "reverse code-flag → doc coverage — no FP-safe detector (would require flag-parsing + doc NLP)"
   },
   {
     "id": "BENCH-046",
@@ -352,7 +356,9 @@
       "code",
       "quorum",
       "logic"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "logic-correctness bug (off-by-one boundary) — undecidable (Rice theorem)"
   },
   {
     "id": "BENCH-047",

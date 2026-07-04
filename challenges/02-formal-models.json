@@ -365,7 +365,9 @@
       "alloy",
       "consistency",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "cross-formal (TLA+ vs Alloy) semantic comparison — needs running both analyzers, not a source lint (see docs/DETECTION-INFEASIBLE-FORMAL.md)"
   },
   {
     "id": "BENCH-022",

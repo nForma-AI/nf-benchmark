@@ -5,7 +5,9 @@
     "category": "config-hooks",
     "difficulty": "easy",
     "description": "Set quorum min_consensus to 0 or > number of agents",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "templates/nf.json",
@@ -16,13 +18,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect invalid config value",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "quorum"]
+    "tags": [
+      "config",
+      "quorum"
+    ]
   },
   {
     "id": "BENCH-072",
@@ -30,7 +37,9 @@
     "category": "config-hooks",
     "difficulty": "easy",
     "description": "Remove a required field from nf.json config — two-layer merge should still fail gracefully",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "json-field-delete",
       "target_file": "templates/nf.json",
@@ -46,7 +55,10 @@
       "method": "no_crash",
       "timeout_seconds": 300
     },
-    "tags": ["config", "fail-open"]
+    "tags": [
+      "config",
+      "fail-open"
+    ]
   },
   {
     "id": "BENCH-073",
@@ -54,12 +66,19 @@
     "category": "config-hooks",
     "difficulty": "easy",
     "description": "Add a hook with an invalid lifecycle event name",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "json-field-add",
       "target_file": "templates/nf.json",
       "json_path": "$.hooks",
-      "value": { "nf-bench-hook": { "event": "InvalidLifecycle", "command": "echo test" } },
+      "value": {
+        "nf-bench-hook": {
+          "event": "InvalidLifecycle",
+          "command": "echo test"
+        }
+      },
       "description": "Add hook with invalid lifecycle event name"
     },
     "expected_outcome": {
@@ -71,7 +90,10 @@
       "method": "no_crash",
       "timeout_seconds": 300
     },
-    "tags": ["config", "hooks"]
+    "tags": [
+      "config",
+      "hooks"
+    ]
   },
   {
     "id": "BENCH-074",
@@ -79,7 +101,9 @@
     "category": "config-hooks",
     "difficulty": "medium",
     "description": "Modify config loader to ignore the local config layer, using only global",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/config-loader.js",
@@ -88,13 +112,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect config loader regression via tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "merge"]
+    "tags": [
+      "config",
+      "merge"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "logic-correctness bug (config-merge control flow) — undecidable"
   },
   {
     "id": "BENCH-075",
@@ -102,7 +133,9 @@
     "category": "config-hooks",
     "difficulty": "medium",
     "description": "Set oscillation detection window to 1 — too small to detect real oscillation",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "templates/nf.json",
@@ -113,13 +146,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect that oscillation detection is effectively disabled",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "oscillation"]
+    "tags": [
+      "config",
+      "oscillation"
+    ]
   },
   {
     "id": "BENCH-076",
@@ -127,7 +165,9 @@
     "category": "config-hooks",
     "difficulty": "medium",
     "description": "Modify a hook to exit with non-zero on success, inverting the fail-open contract",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-session-start.js",
@@ -136,13 +176,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect inverted exit code via tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["hooks", "exit-code"]
+    "tags": [
+      "hooks",
+      "exit-code"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "logic-correctness bug (wrong exit code on success) — undecidable"
   },
   {
     "id": "BENCH-077",
@@ -150,12 +197,16 @@
     "category": "config-hooks",
     "difficulty": "medium",
     "description": "Create a circular config include chain (config A includes B includes A)",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "json-field-add",
       "target_file": "templates/nf.json",
       "json_path": "$.includes",
-      "value": ["nf-aux.json"],
+      "value": [
+        "nf-aux.json"
+      ],
       "description": "Add circular include reference"
     },
     "expected_outcome": {
@@ -167,7 +218,10 @@
       "method": "no_crash",
       "timeout_seconds": 300
     },
-    "tags": ["config", "circular"]
+    "tags": [
+      "config",
+      "circular"
+    ]
   },
   {
     "id": "BENCH-078",
@@ -175,7 +229,9 @@
     "category": "config-hooks",
     "difficulty": "hard",
     "description": "Set context monitor threshold to 0, triggering warnings on every tool use",
-    "target_layers": ["f_to_f"],
+    "target_layers": [
+      "f_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "templates/nf.json",
@@ -186,13 +242,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect degenerate threshold configuration",
-      "layers_affected": ["f_to_f"]
+      "layers_affected": [
+        "f_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "threshold"]
+    "tags": [
+      "config",
+      "threshold"
+    ]
   },
   {
     "id": "BENCH-079",
@@ -200,7 +261,9 @@
     "category": "config-hooks",
     "difficulty": "hard",
     "description": "Create a hook that writes to stderr in a format that breaks the JSON parser",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-precompact.js",
@@ -215,7 +278,11 @@
       "method": "no_crash",
       "timeout_seconds": 300
     },
-    "tags": ["hooks", "stderr", "parsing"]
+    "tags": [
+      "hooks",
+      "stderr",
+      "parsing"
+    ]
   },
   {
     "id": "BENCH-080",
@@ -223,7 +290,9 @@
     "category": "config-hooks",
     "difficulty": "expert",
     "description": "Introduce a config value that works in development but breaks in CI (path-dependent)",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/config-loader.js",
@@ -232,12 +301,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect path-dependent config issue",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["config", "ci", "paths"]
+    "tags": [
+      "config",
+      "ci",
+      "paths"
+    ]
   }
 ]
