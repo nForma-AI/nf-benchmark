@@ -18,7 +18,8 @@
     "recall": "node bin/recall-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "exactness": "node bin/exactness-report.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "coverage-audit": "node bin/coverage-audit.cjs",
-    "capability-map": "node bin/capability-map.cjs"
+    "capability-map": "node bin/capability-map.cjs",
+    "bug-history": "node bin/bug-history-miner.cjs"
   },
   "engines": {
     "node": ">=18.0.0"
