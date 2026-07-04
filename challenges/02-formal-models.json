@@ -470,6 +470,7 @@
     "difficulty": "expert",
     "description": "Create a formal model where concurrent transitions can lead to deadlock",
     "target_layers": [
+      "model_check",
       "f_to_h",
       "f_to_f"
     ],
@@ -481,20 +482,23 @@
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect deadlock potential via FMEA or model checking",
+      "description": "nf:solve detects the reachable deadlock state via TLC model checking (model_check layer): NoDeadlock invariant is violated.",
       "layers_affected": [
+        "model_check",
         "f_to_h",
         "f_to_f"
       ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 600
+      "timeout_seconds": 600,
+      "target_layer": "model_check"
     },
     "tags": [
       "formal",
       "deadlock",
-      "f_to_h"
+      "f_to_h",
+      "model_check"
     ]
   }
 ]
