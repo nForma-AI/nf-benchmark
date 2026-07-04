@@ -14,7 +14,9 @@
     "run:category": "node bin/nf-benchmark.cjs --category",
     "report": "node bin/nf-benchmark.cjs --report",
     "validate": "node bin/validate-challenges.cjs",
-    "precision": "node bin/precision-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\""
+    "precision": "node bin/precision-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
+    "recall": "node bin/recall-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
+    "exactness": "npm run precision && npm run recall"
   },
   "engines": {
     "node": ">=18.0.0"
