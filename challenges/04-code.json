@@ -5,7 +5,9 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Change a code constant to diverge from the formal specification value",
-    "target_layers": ["c_to_f"],
+    "target_layers": [
+      "c_to_f"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": ".planning/formal/constants-mapping.json",
@@ -16,13 +18,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect C->F constant divergence",
-      "layers_affected": ["c_to_f"]
+      "layers_affected": [
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "c_to_f", "constants"]
+    "tags": [
+      "code",
+      "c_to_f",
+      "constants"
+    ]
   },
   {
     "id": "BENCH-037",
@@ -30,7 +38,9 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Add a require() for a module that doesn't exist — runtime import error",
-    "target_layers": ["require_graph"],
+    "target_layers": [
+      "require_graph"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/dedup-changelog.cjs",
@@ -40,14 +50,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve require_graph layer flags the dangling require",
-      "layers_affected": ["require_graph"]
+      "layers_affected": [
+        "require_graph"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "target_layer": "require_graph",
       "timeout_seconds": 300
     },
-    "tags": ["code", "import"]
+    "tags": [
+      "code",
+      "import"
+    ]
   },
   {
     "id": "BENCH-038",
@@ -55,7 +70,9 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Remove error handling from a fail-open hook path, breaking the fail-open contract",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-context-monitor.js",
@@ -64,13 +81,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect broken fail-open contract via tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "hooks", "fail-open"]
+    "tags": [
+      "code",
+      "hooks",
+      "fail-open"
+    ]
   },
   {
     "id": "BENCH-039",
@@ -78,7 +101,9 @@
     "category": "code",
     "difficulty": "easy",
     "description": "Introduce a typo in a module.exports key, breaking downstream consumers",
-    "target_layers": ["require_graph"],
+    "target_layers": [
+      "require_graph"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/adapters/ir.cjs",
@@ -89,14 +114,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve require_graph layer flags the export/import mismatch in downstream consumers",
-      "layers_affected": ["require_graph"]
+      "layers_affected": [
+        "require_graph"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "target_layer": "require_graph",
       "timeout_seconds": 300
     },
-    "tags": ["code", "export"]
+    "tags": [
+      "code",
+      "export"
+    ]
   },
   {
     "id": "BENCH-040",
@@ -104,7 +134,10 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Change a function signature without updating callers — C->E churn",
-    "target_layers": ["c_to_e", "t_to_c"],
+    "target_layers": [
+      "c_to_e",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-focus-filter.cjs",
@@ -113,14 +146,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect test failures from signature change",
-      "layers_affected": ["t_to_c", "c_to_e"]
+      "layers_affected": [
+        "t_to_c",
+        "c_to_e"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "t_to_c",
       "timeout_seconds": 300
     },
-    "tags": ["code", "signature"]
+    "tags": [
+      "code",
+      "signature"
+    ]
   },
   {
     "id": "BENCH-041",
@@ -128,7 +167,9 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a new .cjs file in bin/ with no requirement traceability — C->R gap",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-utility.cjs",
@@ -138,13 +179,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect C->R gap for untraced module",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "c_to_r"]
+    "tags": [
+      "code",
+      "c_to_r"
+    ]
   },
   {
     "id": "BENCH-042",
@@ -152,22 +198,34 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a hardcoded API key or URL that should be in config",
-    "target_layers": ["c_to_e"],
+    "target_layers": [
+      "sast"
+    ],
     "mutation": {
       "type": "file-modify",
-      "target_file": "bin/quorum-slot-dispatch.cjs",
-      "description": "Add hardcoded API endpoint URL constant"
+      "target_file": "src/config.js",
+      "find": "process.env.AWS_ACCESS_KEY_ID",
+      "replace": "\"AKIAIOSFODNN7EXAMPLE\"",
+      "description": "Replace the env-based AWS key read with a hardcoded AWS access-key literal"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect hardcoded secret or security issue",
-      "layers_affected": ["c_to_e"]
+      "layers_affected": [
+        "sast"
+      ],
+      "description": "nf:solve sast layer detects the hardcoded AWS access key via the hardcoded-secret rule."
     },
     "scoring": {
       "method": "detection_only",
+      "target_layer": "sast",
       "timeout_seconds": 300
     },
-    "tags": ["code", "security"]
+    "tags": [
+      "code",
+      "security",
+      "sast"
+    ],
+    "project": "vuln-app"
   },
   {
     "id": "BENCH-043",
@@ -175,7 +233,9 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Create a circular require() dependency between two modules",
-    "target_layers": ["require_graph"],
+    "target_layers": [
+      "require_graph"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/debt-ledger.cjs",
@@ -185,14 +245,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve require_graph layer flags the circular require cycle",
-      "layers_affected": ["require_graph"]
+      "layers_affected": [
+        "require_graph"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "target_layer": "require_graph",
       "timeout_seconds": 300
     },
-    "tags": ["code", "circular"]
+    "tags": [
+      "code",
+      "circular"
+    ]
   },
   {
     "id": "BENCH-044",
@@ -200,7 +265,9 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Change a pure function's return type from object to array",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-trend-helpers.cjs",
@@ -209,14 +276,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect test failures from return type mismatch",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "residual_layer_zero",
       "target_layer": "t_to_c",
       "timeout_seconds": 300
     },
-    "tags": ["code", "type-change"]
+    "tags": [
+      "code",
+      "type-change"
+    ]
   },
   {
     "id": "BENCH-045",
@@ -224,7 +296,10 @@
     "category": "code",
     "difficulty": "medium",
     "description": "Add a new CLI flag to the solver without updating help text or docs",
-    "target_layers": ["r_to_d", "d_to_c"],
+    "target_layers": [
+      "r_to_d",
+      "d_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/nf-solve.cjs",
@@ -233,13 +308,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect R->D gap for undocumented feature",
-      "layers_affected": ["r_to_d", "d_to_c"]
+      "layers_affected": [
+        "r_to_d",
+        "d_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "docs", "cli"]
+    "tags": [
+      "code",
+      "docs",
+      "cli"
+    ]
   },
   {
     "id": "BENCH-046",
@@ -247,7 +329,9 @@
     "category": "code",
     "difficulty": "hard",
     "description": "Introduce an off-by-one error in the quorum fan-out calculation",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/quorum-slot-dispatch.cjs",
@@ -256,13 +340,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect behavioral regression via tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "quorum", "logic"]
+    "tags": [
+      "code",
+      "quorum",
+      "logic"
+    ]
   },
   {
     "id": "BENCH-047",
@@ -270,7 +360,10 @@
     "category": "code",
     "difficulty": "hard",
     "description": "Change circuit breaker threshold to an invalid value (negative or zero)",
-    "target_layers": ["t_to_c", "c_to_f"],
+    "target_layers": [
+      "t_to_c",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-circuit-breaker.js",
@@ -279,13 +372,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect invalid threshold via tests or C->F divergence",
-      "layers_affected": ["t_to_c", "c_to_f"]
+      "layers_affected": [
+        "t_to_c",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "circuit-breaker"]
+    "tags": [
+      "code",
+      "circuit-breaker"
+    ]
   },
   {
     "id": "BENCH-048",
@@ -293,7 +392,9 @@
     "category": "code",
     "difficulty": "hard",
     "description": "Modify rate-limit file semaphore logic to create a deadlock scenario",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-trend-helpers.cjs",
@@ -302,13 +403,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect deadlock via timeout in tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["code", "deadlock", "semaphore"]
+    "tags": [
+      "code",
+      "deadlock",
+      "semaphore"
+    ]
   },
   {
     "id": "BENCH-049",
@@ -316,7 +423,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Add a new adapter in bin/adapters/ that doesn't conform to the MachineIR schema",
-    "target_layers": ["t_to_c", "c_to_f"],
+    "target_layers": [
+      "t_to_c",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/adapters/bench-fsm.cjs",
@@ -326,13 +436,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect adapter schema violation via adapter tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["code", "adapter", "schema"]
+    "tags": [
+      "code",
+      "adapter",
+      "schema"
+    ]
   },
   {
     "id": "BENCH-050",
@@ -340,7 +456,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Introduce a subtle timing bug in the convergence loop's cycle detection algorithm",
-    "target_layers": ["t_to_c"],
+    "target_layers": [
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-cycle-detector.cjs",
@@ -349,12 +467,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect regression in cycle detection via tests",
-      "layers_affected": ["t_to_c"]
+      "layers_affected": [
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 600
     },
-    "tags": ["code", "convergence", "timing"]
+    "tags": [
+      "code",
+      "convergence",
+      "timing"
+    ]
   }
 ]
