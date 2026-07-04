@@ -32,7 +32,8 @@
       "scalability"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-117",
@@ -65,7 +66,8 @@
       "complexity"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "complexity-analysis"
   },
   {
     "id": "BENCH-118",
@@ -100,7 +102,8 @@
       "indexing"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "complexity-analysis"
   },
   {
     "id": "BENCH-119",
@@ -135,7 +138,8 @@
       "scalability"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-120",
@@ -168,6 +172,7 @@
       "network"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "llm-code-review"
   }
 ]

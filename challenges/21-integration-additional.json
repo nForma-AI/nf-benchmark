@@ -32,7 +32,8 @@
       "api"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-167",
@@ -100,7 +101,8 @@
       "legacy"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-169",
@@ -135,7 +137,8 @@
       "signature"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-170",
@@ -168,7 +171,8 @@
       "connections"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-171",
@@ -203,7 +207,8 @@
       "ordering"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-172",
@@ -236,7 +241,8 @@
       "tokens"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-173",
@@ -271,7 +277,8 @@
       "filesystem"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-174",
@@ -304,7 +311,8 @@
       "stale-data"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-175",
@@ -339,6 +347,7 @@
       "false-positives"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "llm-code-review"
   }
 ]

@@ -17,7 +17,8 @@
     "precision": "node bin/precision-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "recall": "node bin/recall-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "exactness": "node bin/exactness-report.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
-    "coverage-audit": "node bin/coverage-audit.cjs"
+    "coverage-audit": "node bin/coverage-audit.cjs",
+    "capability-map": "node bin/capability-map.cjs"
   },
   "engines": {
     "node": ">=18.0.0"

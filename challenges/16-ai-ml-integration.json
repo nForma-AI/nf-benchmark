@@ -32,7 +32,8 @@
       "training"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-132",
@@ -67,7 +68,8 @@
       "adversarial"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-133",
@@ -102,7 +104,8 @@
       "pipeline"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-134",
@@ -135,7 +138,8 @@
       "deployment"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "complexity-analysis"
   },
   {
     "id": "BENCH-135",

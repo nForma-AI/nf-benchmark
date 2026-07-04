@@ -161,7 +161,8 @@
       "analyzer-dependent"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "symbolic-model-check"
   },
   {
     "id": "BENCH-016",
@@ -367,7 +368,8 @@
       "analyzer-dependent"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "cross-formal (TLA+ vs Alloy) semantic comparison — needs running both analyzers, not a source lint (see docs/DETECTION-INFEASIBLE-FORMAL.md)"
+    "feasibility_reason": "cross-formal (TLA+ vs Alloy) semantic comparison — needs running both analyzers, not a source lint (see docs/DETECTION-INFEASIBLE-FORMAL.md)",
+    "requires_capability": "cross-formalism-check"
   },
   {
     "id": "BENCH-022",

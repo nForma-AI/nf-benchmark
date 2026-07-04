@@ -62,7 +62,8 @@
       "annotation"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-028",
@@ -156,7 +157,8 @@
       "duplicate"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "duplicate-test detection is a semantic similarity judgment, not a decidable consistency check"
+    "feasibility_reason": "duplicate-test detection is a semantic similarity judgment, not a decidable consistency check",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-031",
@@ -189,7 +191,8 @@
       "race"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-032",
@@ -222,7 +225,8 @@
       "false-positive"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "test-quality / semantic-correctness (assertion tests the wrong property) — undecidable, no FP-safe detector"
+    "feasibility_reason": "test-quality / semantic-correctness (assertion tests the wrong property) — undecidable, no FP-safe detector",
+    "requires_capability": "property-strengthening"
   },
   {
     "id": "BENCH-033",
@@ -289,7 +293,8 @@
       "isolation"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-035",
@@ -324,6 +329,7 @@
       "expert"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "test-quality (redundant coverage) — semantic, no FP-safe detector"
+    "feasibility_reason": "test-quality (redundant coverage) — semantic, no FP-safe detector",
+    "requires_capability": "llm-code-review"
   }
 ]
