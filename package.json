@@ -13,7 +13,8 @@
     "run:single": "node bin/nf-benchmark.cjs --single",
     "run:category": "node bin/nf-benchmark.cjs --category",
     "report": "node bin/nf-benchmark.cjs --report",
-    "validate": "node bin/validate-challenges.cjs"
+    "validate": "node bin/validate-challenges.cjs",
+    "precision": "node bin/precision-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\""
   },
   "engines": {
     "node": ">=18.0.0"
