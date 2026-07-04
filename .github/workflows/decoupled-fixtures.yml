@@ -31,5 +31,22 @@ jobs:
       - name: Deterministic unit tests (harness)
         run: node --test test/fixture-runner.test.cjs test/sut-resolution.test.cjs test/code-fixtures.test.cjs
 
+      - name: Precision/recall/exactness harness tests
+        run: node --test test/precision-harness.test.cjs test/recall-harness.test.cjs test/exactness-report.test.cjs test/coverage-audit.test.cjs test/capability-score.test.cjs
+
       - name: Run fixture corpus against the pinned npm SUT (zero QGSD)
         run: node bin/run-fixtures.cjs --sut "npm:@nforma.ai/nforma@${NF_VERSION}"
+
+      # Precision gate: the FP-safe deterministic detectors must produce ZERO findings
+      # on clean code (the 0-baseline invariant, now enforced in CI). Detectors absent
+      # from an older pinned SUT simply SKIP — the gate goes live automatically once a
+      # release ships them. Fails only on a real false positive.
+      - name: Precision gate — 0 false positives on clean code
+        run: |
+          npm install "@nforma.ai/nforma@${NF_VERSION}" --no-save --no-audit --no-fund || true
+          BIN="node_modules/@nforma.ai/nforma/bin"
+          if [ -d "$BIN" ]; then
+            node bin/precision-harness.cjs --sut-bin "$BIN" --clean-root fixtures/clean-corpus
+          else
+            echo "npm SUT bin/ not found — skipping precision gate (SUT layout differs)"
+          fi
