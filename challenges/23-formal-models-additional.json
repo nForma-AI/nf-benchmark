@@ -133,7 +133,9 @@
       "inconsistency",
       "cross-model",
       "analyzer-dependent"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "cross-formal (TLA+ vs Alloy) semantic comparison — needs running both analyzers, not a source lint"
   },
   {
     "id": "BENCH-190",

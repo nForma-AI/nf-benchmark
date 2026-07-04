@@ -61,7 +61,9 @@
       "config-hooks",
       "order",
       "dependency"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "semantic behavior (hook execution order) — undecidable, no FP-safe detector"
   },
   {
     "id": "BENCH-178",
@@ -257,7 +259,9 @@
       "config-hooks",
       "security",
       "bypass"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "semantic behavior (security-check bypass in a hook) — undecidable, no FP-safe detector"
   },
   {
     "id": "BENCH-184",
