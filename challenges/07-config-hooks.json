@@ -125,7 +125,8 @@
       "merge"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "logic-correctness bug (config-merge control flow) — undecidable"
+    "feasibility_reason": "logic-correctness bug (config-merge control flow) — undecidable",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-075",
@@ -189,7 +190,8 @@
       "exit-code"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "logic-correctness bug (wrong exit code on success) — undecidable"
+    "feasibility_reason": "logic-correctness bug (wrong exit code on success) — undecidable",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-077",
@@ -315,6 +317,7 @@
       "paths"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "environment-dependent path resolution (works in dev, breaks in CI) — a runtime/environment property, not statically decidable"
+    "feasibility_reason": "environment-dependent path resolution (works in dev, breaks in CI) — a runtime/environment property, not statically decidable",
+    "requires_capability": "llm-code-review"
   }
 ]

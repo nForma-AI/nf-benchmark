@@ -102,7 +102,8 @@
       "session"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-114",

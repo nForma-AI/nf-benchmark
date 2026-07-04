@@ -65,7 +65,8 @@
       "dependency"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "semantic behavior (hook execution order) — undecidable, no FP-safe detector"
+    "feasibility_reason": "semantic behavior (hook execution order) — undecidable, no FP-safe detector",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-178",
@@ -98,7 +99,8 @@
       "shared-state"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-179",
@@ -131,7 +133,8 @@
       "failure"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-180",
@@ -164,7 +167,8 @@
       "external"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-181",
@@ -197,7 +201,8 @@
       "global-state"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-182",
@@ -230,7 +235,8 @@
       "accumulation"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   },
   {
     "id": "BENCH-183",
@@ -263,7 +269,8 @@
       "bypass"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "semantic behavior (security-check bypass in a hook) — undecidable, no FP-safe detector"
+    "feasibility_reason": "semantic behavior (security-check bypass in a hook) — undecidable, no FP-safe detector",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-184",
@@ -296,7 +303,8 @@
       "compatibility"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-185",
@@ -329,6 +337,7 @@
       "infinite"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   }
 ]

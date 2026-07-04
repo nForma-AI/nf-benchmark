@@ -30,7 +30,8 @@
       "filesystem"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-127",
@@ -65,7 +66,8 @@
       "api"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-128",
@@ -100,7 +102,8 @@
       "datetime"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-129",
@@ -133,7 +136,8 @@
       "encoding"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-130",
@@ -166,6 +170,7 @@
       "compatibility"
     ],
     "feasibility": "fictional",
-    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists",
+    "requires_capability": "fixture-project"
   }
 ]

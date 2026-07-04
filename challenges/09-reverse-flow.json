@@ -122,7 +122,8 @@
       "false-positive"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-093",

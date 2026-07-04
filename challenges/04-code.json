@@ -95,7 +95,8 @@
       "fail-open"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "missing error-handling (removed try/catch) is a semantic/structural judgment, FP-prone"
+    "feasibility_reason": "missing error-handling (removed try/catch) is a semantic/structural judgment, FP-prone",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-039",
@@ -325,7 +326,8 @@
       "cli"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "reverse code-flag → doc coverage — no FP-safe detector (would require flag-parsing + doc NLP)"
+    "feasibility_reason": "reverse code-flag → doc coverage — no FP-safe detector (would require flag-parsing + doc NLP)",
+    "requires_capability": "fixture-project"
   },
   {
     "id": "BENCH-046",
@@ -358,7 +360,8 @@
       "logic"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "logic-correctness bug (off-by-one boundary) — undecidable (Rice theorem)"
+    "feasibility_reason": "logic-correctness bug (off-by-one boundary) — undecidable (Rice theorem)",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-047",
@@ -392,7 +395,8 @@
       "circuit-breaker"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "domain-specific value validation (a circuit-breaker threshold of 0/negative is invalid, but 0 is valid for other thresholds) — no FP-safe generic detector"
+    "feasibility_reason": "domain-specific value validation (a circuit-breaker threshold of 0/negative is invalid, but 0 is valid for other thresholds) — no FP-safe generic detector",
+    "requires_capability": "llm-code-review"
   },
   {
     "id": "BENCH-048",
@@ -425,7 +429,8 @@
       "semaphore"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "concurrency-modeling"
   },
   {
     "id": "BENCH-049",
@@ -491,6 +496,7 @@
       "timing"
     ],
     "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant",
+    "requires_capability": "resource-lifecycle-modeling"
   }
 ]
