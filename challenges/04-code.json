@@ -415,7 +415,9 @@
       "code",
       "deadlock",
       "semaphore"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-049",
@@ -479,6 +481,8 @@
       "code",
       "convergence",
       "timing"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   }
 ]

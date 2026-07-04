@@ -5,7 +5,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Introduce memory leak by not releasing event listeners or cached objects over time",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "target_layers": [
+      "c_to_t",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/cache.js",
@@ -14,13 +17,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect memory leak through heap analysis or profiling",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "layers_affected": [
+        "c_to_t",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["performance", "memory-leak", "scalability"]
+    "tags": [
+      "performance",
+      "memory-leak",
+      "scalability"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-117",
@@ -28,7 +40,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Replace efficient O(n) algorithm with nested loops causing quadratic time complexity",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/algorithm.js",
@@ -37,13 +51,21 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect algorithmic inefficiency through complexity analysis",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["performance", "algorithm", "complexity"]
+    "tags": [
+      "performance",
+      "algorithm",
+      "complexity"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-118",
@@ -51,7 +73,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Execute expensive database queries on unindexed columns causing slow performance",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "target_layers": [
+      "c_to_t",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/queries.js",
@@ -60,13 +85,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect missing database indexes",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "layers_affected": [
+        "c_to_t",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["performance", "database", "indexing"]
+    "tags": [
+      "performance",
+      "database",
+      "indexing"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-119",
@@ -74,7 +108,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Implement synchronous processing that blocks under high concurrency load",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/handler.js",
@@ -83,13 +120,22 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect concurrency bottleneck and recommend async processing",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["performance", "concurrency", "scalability"]
+    "tags": [
+      "performance",
+      "concurrency",
+      "scalability"
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
   },
   {
     "id": "BENCH-120",
@@ -97,7 +143,9 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Make redundant API calls within nested loops causing network overhead",
-    "target_layers": ["c_to_t"],
+    "target_layers": [
+      "c_to_t"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/api-client.js",
@@ -106,12 +154,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect excessive network calls and recommend caching/batching",
-      "layers_affected": ["c_to_t"]
+      "layers_affected": [
+        "c_to_t"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["performance", "api", "network"]
+    "tags": [
+      "performance",
+      "api",
+      "network"
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "mutation target file does not exist in the project under test and no backing fixture exists"
   }
 ]
