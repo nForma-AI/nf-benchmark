@@ -116,3 +116,43 @@ Do **not** add a source-level unbounded / conflict / satisfiability heuristic to
 (measured: unbounded → ≥4 FPs; the others have no syntactic signal at all),
 which breaks the zero-baseline-residual invariant the three shipped detectors
 rely on.
+
+---
+
+## The FP-safe formal-behavioral detector set is complete (three detectors)
+
+nf-solve's behavioral formal detection was built one behavior at a time, each
+decidable and false-positive-free (0-baseline on 197 real models, benchmark
+FAIL→PASS):
+
+| # | Behavior | Detector / layer | Benchmark |
+|---|---|---|---|
+| 1 | Reachable safety-invariant violation (incl. deadlock) | `model_check` — TLC `INVARIANT` (nForma #305) | BENCH-025 |
+| 2 | Petri unreachable marking (structural dead place) | `petri_check` — static dead-place (nForma #306) | BENCH-022 |
+| 3 | Unsatisfiable liveness under fairness | `model_check` — TLC `PROPERTY`, dual-gated on fairness (nForma #307) | BENCH-102 |
+
+These map onto the standard taxonomy of finite-state model-checkable properties
+(safety / structural-reachability / temporal). A 4-model quorum (2026-07-04,
+unanimous) confirmed there is **no fourth decidable, FP-safe behavioral class** in
+this corpus — every remaining candidate is either subsumed by #1, oracle-dependent,
+or already a separate lint pass (rejected: refinement/simulation checking,
+action-precondition reachability, init-predicate satisfiability, hyperproperties,
+SANY/operator errors).
+
+### Framework-limited (not shippable without breaking the 0-baseline invariant)
+
+- **BENCH-188 "weak invariant"** (above) — oracle-dependent: "too weak" is meaningful
+  only relative to an intended stronger property. Supply it and detector #1 already
+  catches the violation; omit it and the judgment needs an external oracle (LLM), not
+  a decidable check.
+- **Code-level concurrency** (BENCH-104 ABA, BENCH-048 semaphore-deadlock,
+  BENCH-122 distributed-lock race, BENCH-031/191 test races, BENCH-152/178
+  shared-state races) — sound static race/ABA/deadlock detection on arbitrary JS
+  reduces to aliasing + happens-before inference over a Turing-complete language
+  (Rice's theorem). Any sound approximation either explodes the false-positive rate
+  or requires user annotations (re-introducing the oracle). A heuristic detector here
+  would collapse the signal-vs-noise 0-baseline invariant that makes the formal
+  layers actionable without triage. These stay `detection_only` and are out of scope
+  for a source/TLC detector by construction — they are LLM/oracle territory.
+
+Quorum debate: `QGSD/.planning/quorum/debates/2026-07-04-behavior-4-formal-detection-boundary.md`.
