@@ -1,0 +1,55 @@
+name: Precision gate (deterministic detectors)
+
+# Enforces the 0-baseline invariant LIVE against the current nForma detectors: every
+# FP-safe deterministic detector must produce ZERO findings on clean code. This is the
+# hand-checked-all-session invariant, now automated. Detectors whose toolchain is
+# absent in CI (TLC for model_check/fsm_check/petri_check) fail-open and SKIP; sast and
+# require_graph run against the real nForma checkout, so a precision regression in
+# shipping code fails the build. (The SKIP-tolerant gate in decoupled-fixtures.yml
+# covers the pinned npm SUT; this one covers nForma HEAD.)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  precision:
+    name: Precision — 0 false positives on clean code
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout nf-benchmark
+        uses: actions/checkout@v4
+        with:
+          path: nf-benchmark
+
+      - name: Checkout nForma (QGSD)
+        uses: actions/checkout@v4
+        with:
+          repository: 'nForma-AI/nForma'
+          ref: main
+          path: nforma
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install nf-benchmark deps
+        working-directory: nf-benchmark
+        run: npm ci || npm install
+
+      - name: Harness unit tests
+        working-directory: nf-benchmark
+        run: node --test test/precision-harness.test.cjs test/recall-harness.test.cjs test/exactness-report.test.cjs
+
+      # Recall side (mutation operators) — the injected defects the sast rules must catch.
+      - name: Recall — mutation operators caught
+        working-directory: nf-benchmark
+        run: node bin/recall-harness.cjs --sut-bin ../nforma/bin
+
+      # Precision side — 0 false positives on the clean fixture AND real nForma code.
+      # TLC-based detectors SKIP (no jar in CI); sast + require_graph run live.
+      - name: Precision — 0 false positives (clean corpus + real nForma)
+        working-directory: nf-benchmark
+        run: node bin/precision-harness.cjs --sut-bin ../nforma/bin --clean-root fixtures/clean-corpus --clean-root ../nforma
