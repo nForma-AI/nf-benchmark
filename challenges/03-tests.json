@@ -231,28 +231,33 @@
     "difficulty": "hard",
     "description": "Add a test that uses a hardcoded absolute path, making it machine-dependent",
     "target_layers": [
-      "t_to_c"
+      "sast"
     ],
     "mutation": {
       "type": "file-modify",
-      "target_file": "bin/layer-constants.test.cjs",
-      "description": "Add test using hardcoded /Users/bench/ path"
+      "target_file": "src/file-ops.js",
+      "find": "path.join(baseDir, name)",
+      "replace": "path.join('/Users/ci/uploads', name)",
+      "description": "Replace the portable path.join(baseDir,...) with a hardcoded /Users absolute path"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect portability issue or test failure",
       "layers_affected": [
-        "t_to_c"
-      ]
+        "sast"
+      ],
+      "description": "nf:solve sast layer flags the hardcoded absolute path via the hardcoded-absolute-path rule."
     },
     "scoring": {
       "method": "detection_only",
+      "target_layer": "sast",
       "timeout_seconds": 300
     },
     "tags": [
       "tests",
-      "portability"
-    ]
+      "portability",
+      "sast"
+    ],
+    "project": "vuln-app"
   },
   {
     "id": "BENCH-034",
