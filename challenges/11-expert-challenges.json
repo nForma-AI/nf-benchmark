@@ -158,8 +158,9 @@
     ],
     "mutation": {
       "type": "file-modify",
-      "target_file": "docs/performance-spec.md",
-      "description": "Add requirements like 'response time < 1ns' or 'throughput > 10^12 ops/sec'"
+      "target_file": "docs/USER-GUIDE.md",
+      "description": "Add impossible performance claims with no backing requirement",
+      "append": "\n\nnForma guarantees sub-nanosecond response times (< 1ns) and throughput exceeding 10^12 operations per second.\n"
     },
     "expected_outcome": {
       "residual_change": "increase",
