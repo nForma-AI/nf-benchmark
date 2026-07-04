@@ -372,6 +372,7 @@
     "difficulty": "hard",
     "description": "Create a Petri net with a place that has a valid initial marking but is unreachable",
     "target_layers": [
+      "petri_check",
       "f_to_f"
     ],
     "mutation": {
@@ -382,19 +383,22 @@
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect unreachable marking in Petri net",
+      "description": "nf:solve detects the unreachable marking via structural Petri reachability (petri_check): place s3 has no initial marking and no incoming arc.",
       "layers_affected": [
+        "petri_check",
         "f_to_f"
       ]
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 300
+      "timeout_seconds": 300,
+      "target_layer": "petri_check"
     },
     "tags": [
       "formal",
       "petri",
-      "f_to_f"
+      "f_to_f",
+      "petri_check"
     ]
   },
   {
