@@ -1,0 +1,1 @@
+{ "name": "require-cycle-fixture", "version": "1.0.0", "private": true, "description": "Fixture: two config hooks with a require edge. The BENCH-176 mutation adds the closing edge to form a circular require." }

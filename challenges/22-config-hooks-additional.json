@@ -6,31 +6,33 @@
     "difficulty": "expert",
     "description": "Configuration hooks create circular dependency causing infinite loop",
     "target_layers": [
-      "c_to_e"
+      "require_graph"
     ],
     "mutation": {
       "type": "file-modify",
-      "target_file": "hooks/config-a.js",
-      "description": "Create circular dependency between config hooks"
+      "target_file": "hooks/config-b.js",
+      "append": "\nconst _cycle = require('./config-a.js');\n",
+      "description": "Add a back-edge require from config-b to config-a, closing a circular require between the two config hooks"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect circular dependency in config hooks",
       "layers_affected": [
-        "c_to_e"
-      ]
+        "require_graph"
+      ],
+      "description": "nf:solve require_graph layer detects the circular require via check-require-graph."
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "target_layer": "require_graph",
+      "timeout_seconds": 300
     },
     "tags": [
       "config-hooks",
       "circular",
-      "dependency"
+      "dependency",
+      "require_graph"
     ],
-    "feasibility": "infeasible",
-    "feasibility_reason": "undecidable defect type (Rice-theorem / oracle-dependent); a heuristic detector would break the 0-baseline invariant"
+    "project": "require-cycle"
   },
   {
     "id": "BENCH-177",
