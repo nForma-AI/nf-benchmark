@@ -313,6 +313,8 @@
       "config",
       "ci",
       "paths"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "environment-dependent path resolution (works in dev, breaks in CI) — a runtime/environment property, not statically decidable"
   }
 ]

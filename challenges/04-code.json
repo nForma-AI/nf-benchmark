@@ -390,7 +390,9 @@
     "tags": [
       "code",
       "circuit-breaker"
-    ]
+    ],
+    "feasibility": "infeasible",
+    "feasibility_reason": "domain-specific value validation (a circuit-breaker threshold of 0/negative is invalid, but 0 is valid for other thresholds) — no FP-safe generic detector"
   },
   {
     "id": "BENCH-048",
