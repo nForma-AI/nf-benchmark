@@ -5,7 +5,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Implement distributed system that doesn't handle network partitions gracefully, leading to split-brain",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/distributed.js",
@@ -14,13 +17,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect CAP theorem violation and recommend consensus protocols",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["distributed", "network-partition", "cap-theorem"]
+    "tags": [
+      "distributed",
+      "network-partition",
+      "cap-theorem"
+    ]
   },
   {
     "id": "BENCH-122",
@@ -28,7 +38,10 @@
     "category": "code",
     "difficulty": "expert",
     "description": "Flawed distributed lock that allows concurrent access to shared resources",
-    "target_layers": ["c_to_t", "c_to_f"],
+    "target_layers": [
+      "c_to_t",
+      "c_to_f"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/lock.js",
@@ -37,13 +50,20 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect race condition in distributed synchronization",
-      "layers_affected": ["c_to_t", "c_to_f"]
+      "layers_affected": [
+        "c_to_t",
+        "c_to_f"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["distributed", "race-condition", "locking"]
+    "tags": [
+      "distributed",
+      "race-condition",
+      "locking"
+    ]
   },
   {
     "id": "BENCH-123",
@@ -51,7 +71,9 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Implement microservices that violate loose coupling principles with direct dependencies",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "src/microservice-a.js",
@@ -60,13 +82,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect tight coupling and recommend event-driven architecture",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["distributed", "microservices", "coupling"]
+    "tags": [
+      "distributed",
+      "microservices",
+      "coupling"
+    ]
   },
   {
     "id": "BENCH-124",
@@ -74,22 +102,36 @@
     "category": "formal-models",
     "difficulty": "expert",
     "description": "Distributed database replication that doesn't guarantee eventual consistency",
-    "target_layers": ["f_to_c", "c_to_t"],
+    "target_layers": [
+      "model_check",
+      "f_to_c"
+    ],
     "mutation": {
-      "type": "file-modify",
-      "target_file": ".planning/formal/tla/Replication.tla",
-      "description": "Modify formal model to allow permanent inconsistencies"
+      "type": "file-create",
+      "target_file": ".planning/formal/tla/BenchReplication.tla",
+      "content": "---- MODULE BenchReplication ----\nEXTENDS Naturals\nVARIABLES primary, replica\nInit == primary = 0 /\\ replica = 0\nWrite == primary < 3 /\\ primary' = primary + 1 /\\ replica' = replica\nSync == replica' = primary /\\ primary' = primary\nNext == Write \\/ Sync\nConsistent == primary = replica\nvars == <<primary, replica>>\nSpec == Init /\\ [][Next]_vars\n====",
+      "description": "Async-replication model where a Write leaves primary ahead of replica — the Consistent invariant (primary = replica) is reachably violated before Sync"
     },
     "expected_outcome": {
       "residual_change": "increase",
-      "description": "nf:solve should detect eventual consistency violation through model checking",
-      "layers_affected": ["f_to_c", "c_to_t"]
+      "layers_affected": [
+        "model_check",
+        "f_to_c"
+      ],
+      "description": "nf:solve model_check layer detects the reachable Consistent-invariant violation via TLC."
     },
     "scoring": {
       "method": "detection_only",
-      "timeout_seconds": 900
+      "target_layer": "model_check",
+      "timeout_seconds": 600
     },
-    "tags": ["distributed", "consistency", "replication"]
+    "tags": [
+      "distributed",
+      "consistency",
+      "replication",
+      "model_check",
+      "formal"
+    ]
   },
   {
     "id": "BENCH-125",
@@ -97,7 +139,10 @@
     "category": "integration",
     "difficulty": "expert",
     "description": "Container orchestration without proper service discovery, causing connection failures",
-    "target_layers": ["c_to_r", "t_to_c"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_c"
+    ],
     "mutation": {
       "type": "json-field-modify",
       "target_file": "docker-compose.yml",
@@ -108,12 +153,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should detect service discovery issues in distributed deployment",
-      "layers_affected": ["c_to_r", "t_to_c"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_c"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 900
     },
-    "tags": ["distributed", "service-discovery", "containers"]
+    "tags": [
+      "distributed",
+      "service-discovery",
+      "containers"
+    ]
   }
 ]
