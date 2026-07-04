@@ -5,7 +5,9 @@
     "category": "reverse-flow",
     "difficulty": "medium",
     "description": "Add a module in bin/ with no @req traceability — solver discovers C->R candidate",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-feature-handler.cjs",
@@ -15,13 +17,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should discover C->R candidate for untraced module",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "c_to_r"]
+    "tags": [
+      "reverse-flow",
+      "c_to_r"
+    ]
   },
   {
     "id": "BENCH-090",
@@ -29,7 +36,9 @@
     "category": "reverse-flow",
     "difficulty": "medium",
     "description": "Create a test file with no formal-test-sync mapping — T->R discovery",
-    "target_layers": ["t_to_r"],
+    "target_layers": [
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-handler.test.cjs",
@@ -39,13 +48,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should discover T->R candidate for untraced test",
-      "layers_affected": ["t_to_r"]
+      "layers_affected": [
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "t_to_r"]
+    "tags": [
+      "reverse-flow",
+      "t_to_r"
+    ]
   },
   {
     "id": "BENCH-091",
@@ -53,22 +67,30 @@
     "category": "reverse-flow",
     "difficulty": "medium",
     "description": "Add a doc capability claim with no backing requirement — D->R discovery",
-    "target_layers": ["d_to_r"],
+    "target_layers": [
+      "d_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "docs/USER-GUIDE.md",
-      "description": "Add section claiming auto-scaling feature with no backing requirement"
+      "description": "Add self-healing capability claim with no backing requirement",
+      "append": "\n\nnForma provides fully autonomous self-healing infrastructure that requires zero human configuration.\n"
     },
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should discover D->R candidate for undocumented capability",
-      "layers_affected": ["d_to_r"]
+      "layers_affected": [
+        "d_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "d_to_r"]
+    "tags": [
+      "reverse-flow",
+      "d_to_r"
+    ]
   },
   {
     "id": "BENCH-092",
@@ -76,7 +98,9 @@
     "category": "reverse-flow",
     "difficulty": "hard",
     "description": "Create a C->R candidate that is actually covered by an existing requirement (false positive)",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-focus-filter.cjs",
@@ -85,13 +109,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should classify the candidate as false positive via quorum",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "false-positive"]
+    "tags": [
+      "reverse-flow",
+      "false-positive"
+    ]
   },
   {
     "id": "BENCH-093",
@@ -99,7 +128,9 @@
     "category": "reverse-flow",
     "difficulty": "hard",
     "description": "Add a utility/helper module that solver should shelve as not-needing-a-requirement",
-    "target_layers": ["c_to_r"],
+    "target_layers": [
+      "c_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-pure-util.cjs",
@@ -109,13 +140,18 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should discover then shelve as acknowledged-not-required",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "shelving"]
+    "tags": [
+      "reverse-flow",
+      "shelving"
+    ]
   },
   {
     "id": "BENCH-094",
@@ -123,7 +159,10 @@
     "category": "reverse-flow",
     "difficulty": "expert",
     "description": "Create overlapping C->R and T->R candidates for the same feature — deduplication test",
-    "target_layers": ["c_to_r", "t_to_r"],
+    "target_layers": [
+      "c_to_r",
+      "t_to_r"
+    ],
     "mutation": {
       "type": "file-create",
       "target_file": "bin/bench-overlap.cjs",
@@ -133,13 +172,19 @@
     "expected_outcome": {
       "residual_change": "increase",
       "description": "nf:solve should deduplicate overlapping reverse flow candidates",
-      "layers_affected": ["c_to_r", "t_to_r"]
+      "layers_affected": [
+        "c_to_r",
+        "t_to_r"
+      ]
     },
     "scoring": {
       "method": "detection_only",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "dedup"]
+    "tags": [
+      "reverse-flow",
+      "dedup"
+    ]
   },
   {
     "id": "BENCH-095",
@@ -147,7 +192,10 @@
     "category": "reverse-flow",
     "difficulty": "expert",
     "description": "Introduce a reverse flow candidate that would create a circular requirement dependency",
-    "target_layers": ["c_to_r", "d_to_r"],
+    "target_layers": [
+      "c_to_r",
+      "d_to_r"
+    ],
     "mutation": {
       "type": "json-entry-add",
       "target_file": ".planning/formal/candidates.json",
@@ -157,7 +205,9 @@
         "type": "C->R",
         "source": "bin/bench-circular.cjs",
         "proposed_requirement": "BENCH-CIRC-A",
-        "depends_on": ["BENCH-CIRC-B"],
+        "depends_on": [
+          "BENCH-CIRC-B"
+        ],
         "status": "pending"
       },
       "description": "Add candidate that creates circular dependency"
@@ -165,12 +215,17 @@
     "expected_outcome": {
       "residual_change": "no_change",
       "description": "nf:solve should detect circular dependency and reject candidate",
-      "layers_affected": ["c_to_r"]
+      "layers_affected": [
+        "c_to_r"
+      ]
     },
     "scoring": {
       "method": "no_crash",
       "timeout_seconds": 300
     },
-    "tags": ["reverse-flow", "circular"]
+    "tags": [
+      "reverse-flow",
+      "circular"
+    ]
   }
 ]
