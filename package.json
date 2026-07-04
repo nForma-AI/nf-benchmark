@@ -16,7 +16,7 @@
     "validate": "node bin/validate-challenges.cjs",
     "precision": "node bin/precision-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "recall": "node bin/recall-harness.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
-    "exactness": "npm run precision && npm run recall",
+    "exactness": "node bin/exactness-report.cjs --sut-bin \"${SUT_BIN:-$HOME/.claude/nf-bin}\"",
     "coverage-audit": "node bin/coverage-audit.cjs"
   },
   "engines": {
