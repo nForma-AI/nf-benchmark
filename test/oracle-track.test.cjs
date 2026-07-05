@@ -28,16 +28,21 @@ test('every mutant is BEHAVIORALLY real — defective differs from clean on some
     'swapped-comparison': [2, 5], 'dropped-guard': [6, 0], 'wrong-operator': [10, 3],
     'reversed-comparator': [[3, 1, 2]], 'wrong-accumulator-seed': [[1, 2, 3]], 'early-return-in-loop': [[1, 2, -1]],
     'and-or-confusion': [{ name: 'a', email: '' }], 'inclusive-exclusive-slice': [[1, 2, 3], 3], 'assignment-in-condition': [{ role: 'user' }],
+    'nullish-vs-or': [{ size: 0 }], 'negative-modulo': [-1, 3], 'float-rounding-order': [1.5],
+    'input-mutation': [{ id: 1 }], 'string-coercion': ['5'], 'boundary-inclusive': [5, 5, 10],
   };
   const compile = (code) => eval('(' + code.replace(/^function \w+/, 'function') + ')');
+  // Run on a fresh deep copy; capture BOTH the return value and the args AFTER the call
+  // so a hidden side effect (input mutation with an equal return) still registers.
+  const exec = (code, name) => {
+    const args = inputs[name].map(a => JSON.parse(JSON.stringify(a)));
+    let r, e = false; try { r = compile(code)(...args); } catch (_) { e = true; }
+    return JSON.stringify({ r, args, e });
+  };
   for (const m of SEMANTIC_MUTANTS) {
     assert.ok(inputs[m.name], 'test input defined for ' + m.name);
-    const args = () => inputs[m.name].map(a => JSON.parse(JSON.stringify(a)));
-    let rc, rd, ec = false, ed = false;
-    try { rc = compile(m.clean)(...args()); } catch (_) { ec = true; }
-    try { rd = compile(m.defective)(...args()); } catch (_) { ed = true; }
-    const differ = JSON.stringify(rc) !== JSON.stringify(rd) || ec !== ed;
-    assert.ok(differ, m.name + ': defective must behave differently from clean (real bug)');
+    assert.notStrictEqual(exec(m.clean, m.name), exec(m.defective, m.name),
+      m.name + ': defective must behave differently from clean (real bug), incl. side effects');
   }
 });
 

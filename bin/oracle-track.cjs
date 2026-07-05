@@ -89,6 +89,37 @@ const SEMANTIC_MUTANTS = [
     clean: 'function isAdmin(u){ if(u.role==="admin"){ return true; } return false; }',
     defective: 'function isAdmin(u){ if(u.role="admin"){ return true; } return false; }',
   },
+  // ── discriminating bugs — require JS semantics, not operator-spotting ────────
+  {
+    name: 'nullish-vs-or', defect: 'uses || so a valid size of 0 is wrongly replaced by the default 10',
+    clean: 'function pageSize(o){ return o.size ?? 10; }',
+    defective: 'function pageSize(o){ return o.size || 10; }',
+  },
+  {
+    name: 'negative-modulo', defect: 'naive % returns a negative index for negative i (JS modulo keeps the sign)',
+    clean: 'function wrap(i,n){ return ((i%n)+n)%n; }',
+    defective: 'function wrap(i,n){ return i%n; }',
+  },
+  {
+    name: 'float-rounding-order', defect: 'rounds dollars before scaling to cents, discarding the cents',
+    clean: 'function toCents(d){ return Math.round(d*100); }',
+    defective: 'function toCents(d){ return Math.round(d)*100; }',
+  },
+  {
+    name: 'input-mutation', defect: 'mutates the caller’s object instead of returning a copy (hidden side effect)',
+    clean: 'function withActive(o){ return Object.assign({},o,{active:true}); }',
+    defective: 'function withActive(o){ o.active=true; return o; }',
+  },
+  {
+    name: 'string-coercion', defect: 'concatenates instead of adding because id is a string ("5"+1 = "51")',
+    clean: 'function nextId(id){ return Number(id)+1; }',
+    defective: 'function nextId(id){ return id+1; }',
+  },
+  {
+    name: 'boundary-inclusive', defect: 'exclusive bounds reject the endpoints that should be in range',
+    clean: 'function inRange(x,lo,hi){ return x>=lo && x<=hi; }',
+    defective: 'function inRange(x,lo,hi){ return x>lo && x<hi; }',
+  },
 ];
 
 // A conservative default reviewer: never claims a defect. Precision 100% (no FP) but
