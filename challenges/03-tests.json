@@ -11,7 +11,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/layer-constants.test.cjs",
-      "description": "Change an expected array length by +1 in an assertion"
+      "find": "LAYER_KEYS.length, 19",
+      "replace": "LAYER_KEYS.length, 18",
+      "description": "Test asserts 18 LAYER_KEYS (drifted from the 19 the code exports) — a t_to_c failing test"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -125,7 +127,9 @@
     "tags": [
       "tests",
       "t_to_c"
-    ]
+    ],
+    "feasibility": "fictional",
+    "feasibility_reason": "target bin/solve-trend-helpers.test.cjs does not exist in nForma — no real defect can be seeded"
   },
   {
     "id": "BENCH-030",

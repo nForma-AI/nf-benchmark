@@ -144,7 +144,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-focus-filter.cjs",
-      "description": "Add required parameter to filterRequirementsByFocus function"
+      "find": "typeof focusPhrase !== 'string') return null",
+      "replace": "typeof focusPhrase !== 'string') return new Set()",
+      "description": "null/undefined/empty focus no longer returns null — breaks the null-input contract tests"
     },
     "expected_outcome": {
       "residual_change": "increase",
@@ -274,7 +276,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "bin/solve-trend-helpers.cjs",
-      "description": "Change appendTrendEntry to return array instead of object"
+      "find": "resolveGateScore(raw, 'a'), target_met: raw.target_met",
+      "replace": "resolveGateScore(raw, 'a'), target_met: !raw.target_met",
+      "description": "gate A target_met negated — solve-trend.test fails"
     },
     "expected_outcome": {
       "residual_change": "increase",
