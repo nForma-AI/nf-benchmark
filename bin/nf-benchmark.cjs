@@ -495,6 +495,26 @@ async function runBenchmark() {
   const report = computeReport(results);
   console.log('\n' + formatReport(report));
 
+  // ── Track A exactness (two-track scoreboard) ──────────────────────────────
+  // The detection numbers above are Track B-style coverage over the corpus. Track A is
+  // the deterministic FP-safe detectors measured by EXACTNESS (0 FP on clean + 100%
+  // recall on injected). Run it against the same SUT so the headline reflects both
+  // tracks, not detection alone. (Track B oracle needs an LLM reviewer → `npm run
+  // oracle-track` separately.) Deterministic, so it never destabilises the main run.
+  try {
+    const { compute } = require(path.join(__dirname, 'exactness-report.cjs'));
+    const { resolveSut } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
+    const sutBin = path.dirname(resolveSut(projectRoot, {}).bin);
+    const cleanRoots = [path.join(__dirname, '..', 'fixtures', 'clean-corpus')];
+    const exact = compute({ sutBin, cleanRoots });
+    const a = exact.track_a;
+    const pct = (x) => x === null ? 'n/a' : (x * 100).toFixed(1) + '%';
+    console.log(`\nTrack A (deterministic exactness): precision=${pct(a.precision)} recall=${pct(a.recall)} F1=${pct(a.f1)} — ${a.exact ? 'EXACT ✓' : 'NOT EXACT ✗'}`);
+    report.trackA = { precision: a.precision, recall: a.recall, f1: a.f1, exact: a.exact, TP: a.TP, FP: a.FP, FN: a.FN };
+  } catch (e) {
+    console.log(`\n(Track A exactness skipped: ${e.message})`);
+  }
+
   const reportPath = path.join(RESULTS_DIR, `report-${Date.now().toString(36)}.json`);
   if (!fs.existsSync(RESULTS_DIR)) fs.mkdirSync(RESULTS_DIR, { recursive: true });
   fs.writeFileSync(reportPath, JSON.stringify({ report, results: results.map(r => ({
