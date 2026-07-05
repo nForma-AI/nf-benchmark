@@ -17,10 +17,16 @@
 //   gemini -p' \
 //     node bin/oracle-track.cjs --reviewer-cmd 'node bin/reviewer-quorum.cjs'
 //
-// Vote rule: hasDefect iff a strict majority of the LIVE reviewers flag it (ties → no
-// defect, favoring precision). Dead/erroring reviewers are dropped from the denominator
-// (never counted as a "no" — that would silently erode recall). Fails open to
-// {"hasDefect":false} if the whole fleet is unreachable.
+// Vote rule ($NF_REVIEWER_VOTE, default 'majority'):
+//   majority — strict majority of LIVE reviewers (ties → no defect); favors precision.
+//   any      — ANY live reviewer flags it; favors recall (a diverse fleet's union).
+//   <0..1>   — flag if the flagged FRACTION of live reviewers >= this threshold.
+// Empirically it matters: on the discriminating corpus a 3-model panel scored
+// R=94.4% under 'majority' (a subtle bug 2/3 missed slipped through) but R=100% under
+// 'any' (the one model that caught it was enough) — with precision still 100%. For bug
+// detection, where a human triages false alarms, 'any' is usually the better rule.
+// Dead/erroring reviewers are dropped from the denominator (never a silent "no", which
+// would erode recall). Fails open to {"hasDefect":false} if the whole fleet is down.
 
 const fs = require('fs');
 const { spawnSync } = require('child_process');
@@ -42,13 +48,19 @@ function askOne(code, llmCmd) {
   return parseVerdict(out);
 }
 
-function quorumReview(code, fleet) {
+function decide(yes, live, rule) {
+  if (live === 0) return false;
+  if (rule === 'any') return yes >= 1;
+  const f = parseFloat(rule);
+  if (!Number.isNaN(f) && f > 0 && f <= 1) return yes / live >= f;
+  return yes * 2 > live; // 'majority' (default): strict majority, ties don't flag
+}
+
+function quorumReview(code, fleet, rule) {
   const votes = fleet.map(cmd => askOne(code, cmd)).filter(v => v !== null);
   const yes = votes.filter(Boolean).length;
   const live = votes.length;
-  // strict majority of live voters; ties do not flag (favor precision)
-  const hasDefect = live > 0 && yes * 2 > live;
-  return { hasDefect, yes, live, fleet_size: fleet.length };
+  return { hasDefect: decide(yes, live, rule || 'majority'), yes, live, fleet_size: fleet.length };
 }
 
 if (require.main === module) {
@@ -58,10 +70,10 @@ if (require.main === module) {
     process.stdout.write('{"hasDefect":false,"error":"empty fleet"}\n');
     process.exit(0);
   }
-  const v = quorumReview(readStdin(), fleet);
+  const v = quorumReview(readStdin(), fleet, process.env.NF_REVIEWER_VOTE);
   if (v.live === 0) process.stderr.write('[reviewer-quorum] no live reviewers (fleet of ' + v.fleet_size + ' all failed)\n');
   else process.stderr.write('[reviewer-quorum] ' + v.yes + '/' + v.live + ' flagged defect\n');
   process.stdout.write(JSON.stringify({ hasDefect: v.hasDefect }) + '\n');
 }
 
-module.exports = { parseFleet: parseFleet, quorumReview: quorumReview, askOne: askOne };
+module.exports = { parseFleet: parseFleet, quorumReview: quorumReview, askOne: askOne, decide: decide };
