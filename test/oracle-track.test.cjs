@@ -19,6 +19,28 @@ test('every mutant is a real (clean, defective) pair with a named defect', () =>
   }
 });
 
+test('every mutant is BEHAVIORALLY real — defective differs from clean on some input', () => {
+  // An input per mutant that exercises the injected defect. If clean and defective
+  // agree on this input (or both throw), the "bug" is cosmetic and the ground truth is
+  // invalid — this guards the corpus against that.
+  const inputs = {
+    'off-by-one-boundary': [[1, 2, 3]], 'negated-condition': [{ id: 1 }, { owner: 1 }], 'wrong-return': [''],
+    'swapped-comparison': [2, 5], 'dropped-guard': [6, 0], 'wrong-operator': [10, 3],
+    'reversed-comparator': [[3, 1, 2]], 'wrong-accumulator-seed': [[1, 2, 3]], 'early-return-in-loop': [[1, 2, -1]],
+    'and-or-confusion': [{ name: 'a', email: '' }], 'inclusive-exclusive-slice': [[1, 2, 3], 3], 'assignment-in-condition': [{ role: 'user' }],
+  };
+  const compile = (code) => eval('(' + code.replace(/^function \w+/, 'function') + ')');
+  for (const m of SEMANTIC_MUTANTS) {
+    assert.ok(inputs[m.name], 'test input defined for ' + m.name);
+    const args = () => inputs[m.name].map(a => JSON.parse(JSON.stringify(a)));
+    let rc, rd, ec = false, ed = false;
+    try { rc = compile(m.clean)(...args()); } catch (_) { ec = true; }
+    try { rd = compile(m.defective)(...args()); } catch (_) { ed = true; }
+    const differ = JSON.stringify(rc) !== JSON.stringify(rd) || ec !== ed;
+    assert.ok(differ, m.name + ': defective must behave differently from clean (real bug)');
+  }
+});
+
 test('a perfect reviewer scores precision=recall=F1=100%', () => {
   const r = run(perfect);
   assert.strictEqual(r.FP, 0);
