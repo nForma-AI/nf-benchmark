@@ -50,7 +50,7 @@ test('vote rules: majority (default), any, and fraction thresholds', () => {
   // 1 of 3 flags — the case where the strict-majority quorum missed dropped-guard
   assert.strictEqual(decide(1, 3, 'majority'), false, 'majority: 1/3 does not flag');
   assert.strictEqual(decide(1, 3, 'any'), true, 'any: 1/3 flags (recovers the minority catch)');
-  assert.strictEqual(decide(1, 3, '0.34'), true, 'fraction: 1/3 >= 0.34');
+  assert.strictEqual(decide(1, 3, '0.33'), true, 'fraction: 1/3 (0.333) >= 0.33');
   assert.strictEqual(decide(1, 3, '0.5'), false, 'fraction: 1/3 < 0.5');
   assert.strictEqual(decide(2, 3, 'majority'), true, 'majority: 2/3 flags');
   assert.strictEqual(decide(0, 0, 'any'), false, 'no live voters never flags');
