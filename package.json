@@ -20,7 +20,8 @@
     "coverage-audit": "node bin/coverage-audit.cjs",
     "capability-map": "node bin/capability-map.cjs",
     "bug-history": "node bin/bug-history-miner.cjs",
-    "oracle-track": "node bin/oracle-track.cjs"
+    "oracle-track": "node bin/oracle-track.cjs",
+    "mutation-validity": "node bin/mutation-validity.cjs"
   },
   "engines": {
     "node": ">=18.0.0"
