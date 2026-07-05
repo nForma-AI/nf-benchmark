@@ -269,7 +269,9 @@
     "mutation": {
       "type": "file-modify",
       "target_file": "hooks/nf-precompact.js",
-      "description": "Add stderr output that looks like partial JSON before real output"
+      "find": ".search(/\\n## /)",
+      "replace": ".search(/\\nZZZ /)",
+      "description": "section-boundary regex broken so extractCurrentPosition bleeds into the next section — nf-precompact.test fails"
     },
     "expected_outcome": {
       "residual_change": "no_change",
