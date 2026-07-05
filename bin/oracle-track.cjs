@@ -58,6 +58,37 @@ const SEMANTIC_MUTANTS = [
     clean: 'function addTo(total,item){ return total+item; }',
     defective: 'function addTo(total,item){ return total-item; }',
   },
+  // ── harder / subtler semantic bugs ──────────────────────────────────────────
+  {
+    name: 'reversed-comparator', defect: 'sort comparator is reversed — sorts descending when ascending is intended',
+    clean: 'function ascending(a){ return a.slice().sort((x,y)=>x-y); }',
+    defective: 'function ascending(a){ return a.slice().sort((x,y)=>y-x); }',
+  },
+  {
+    name: 'wrong-accumulator-seed', defect: 'sum seeds the reduce with 1 instead of 0, inflating every total by one',
+    clean: 'function sum(xs){ return xs.reduce((s,x)=>s+x,0); }',
+    defective: 'function sum(xs){ return xs.reduce((s,x)=>s+x,1); }',
+  },
+  {
+    name: 'early-return-in-loop', defect: 'returns inside the loop on the first element instead of scanning all',
+    clean: 'function anyNeg(xs){ for(const x of xs){ if(x<0) return true; } return false; }',
+    defective: 'function anyNeg(xs){ for(const x of xs){ if(x<0) return true; return false; } return false; }',
+  },
+  {
+    name: 'and-or-confusion', defect: 'validation uses || so it passes when only one field is present',
+    clean: 'function valid(f){ return f.name!=="" && f.email!==""; }',
+    defective: 'function valid(f){ return f.name!=="" || f.email!==""; }',
+  },
+  {
+    name: 'inclusive-exclusive-slice', defect: 'firstN drops the last element by slicing to n-1',
+    clean: 'function firstN(a,n){ return a.slice(0,n); }',
+    defective: 'function firstN(a,n){ return a.slice(0,n-1); }',
+  },
+  {
+    name: 'assignment-in-condition', defect: 'guard uses = (assignment) instead of ===, so it is always truthy — everyone is admin',
+    clean: 'function isAdmin(u){ if(u.role==="admin"){ return true; } return false; }',
+    defective: 'function isAdmin(u){ if(u.role="admin"){ return true; } return false; }',
+  },
 ];
 
 // A conservative default reviewer: never claims a defect. Precision 100% (no FP) but
