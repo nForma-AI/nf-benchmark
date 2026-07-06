@@ -1,0 +1,9 @@
+{
+  "id": "FIX-sql-injection",
+  "title": "SQL injection via string-concatenated query in an external project (sast residual)",
+  "category": "security",
+  "difficulty": "easy",
+  "defect": "src/users.js builds a query with string concatenation of user input — nf-solve's sast layer flags a sql-injection residual",
+  "scoring": { "method": "residual_reduction", "target_layer": "sast" },
+  "self_contained": true
+}
