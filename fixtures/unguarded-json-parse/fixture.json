@@ -1,0 +1,5 @@
+{ "id": "FIX-unguarded-json-parse", "title": "Config loader crashes on malformed JSON",
+  "category": "code", "difficulty": "easy",
+  "defect": "JSON.parse with no try/catch — throws on malformed or empty input instead of falling back",
+  "scoring": { "method": "fix_and_verify", "target_layer": "code" },
+  "verify": "node verify.cjs", "self_contained": true }

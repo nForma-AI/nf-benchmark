@@ -1,0 +1,9 @@
+{
+  "id": "FIX-dangling-require",
+  "title": "Module requires a file that does not exist (require_graph residual)",
+  "category": "code",
+  "difficulty": "easy",
+  "defect": "index.js requires ./helpers/missing which is not on disk — nf-solve's require_graph should flag a broken edge",
+  "scoring": { "method": "residual_reduction", "target_layer": "require_graph" },
+  "self_contained": true
+}
