@@ -252,13 +252,10 @@ describe('EXTREME BUG 11: loadAllChallenges with filesystem corruption', () => {
     fs.writeFileSync(path.join(challengesDir, '03-empty.json'), '');
     fs.writeFileSync(path.join(challengesDir, '04-binary.json'), Buffer.from([0x00, 0x01, 0x02]));
 
-    const origChallengesDir = path.join(__dirname, '..', 'challenges');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origChallengesDir)) {
-      fs.cpSync(origChallengesDir, backupDir, { recursive: true });
-      fs.rmSync(origChallengesDir, { recursive: true });
-    }
-    fs.cpSync(challengesDir, origChallengesDir, { recursive: true });
+    // Hermetic, same as the results/ sites: redirect via NF_BENCH_CHALLENGES_DIR
+    // instead of backing up, deleting and repopulating the real challenges/ dir.
+    const prevChallengesEnv = process.env.NF_BENCH_CHALLENGES_DIR;
+    process.env.NF_BENCH_CHALLENGES_DIR = challengesDir;
 
     try {
       assert.doesNotThrow(() => {
@@ -267,11 +264,8 @@ describe('EXTREME BUG 11: loadAllChallenges with filesystem corruption', () => {
         assert.ok(challenges.length >= 1);
       });
     } finally {
-      fs.rmSync(origChallengesDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origChallengesDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevChallengesEnv === undefined) delete process.env.NF_BENCH_CHALLENGES_DIR;
+      else process.env.NF_BENCH_CHALLENGES_DIR = prevChallengesEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
