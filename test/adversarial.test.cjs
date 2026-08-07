@@ -210,11 +210,10 @@ describe('BUG 9: loadResults crashes on malformed JSON', () => {
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-    fs.mkdirSync(tmpResultsDir, { recursive: true });
-    fs.writeFileSync(path.join(tmpResultsDir, 'bad.json'), 'not valid json {{{');
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.mkdirSync(tmpResultsDir, { recursive: true });
+      fs.writeFileSync(path.join(tmpResultsDir, 'bad.json'), 'not valid json {{{');
       assert.doesNotThrow(() => loadResults(),
         'loadResults should not throw on malformed JSON');
     } finally {

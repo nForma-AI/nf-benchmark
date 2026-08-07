@@ -149,9 +149,11 @@ function focusLayerFor(challenge) {
   return LAYER_ALIASES[layer] || layer;
 }
 
-const RESULTS_DIR = path.join(__dirname, '..', 'results');
+// Single source of truth for the results directory (honors NF_BENCH_RESULTS_DIR);
+// duplicating the literal here meant a redirected write and a non-redirected read.
+const { resultsDir } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
 const BASELINE_PATH = path.join(__dirname, '..', 'baseline.json');
-const TREND_PATH = path.join(RESULTS_DIR, 'trend.jsonl');
+const TREND_PATH = path.join(resultsDir(), 'trend.jsonl');
 const FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
 
 // Per-challenge project routing: a challenge may declare `project: "<name>"` to
@@ -203,7 +205,7 @@ function getFilterOptions() {
 }
 
 function appendTrend(report, results) {
-  if (!fs.existsSync(RESULTS_DIR)) fs.mkdirSync(RESULTS_DIR, { recursive: true });
+  if (!fs.existsSync(resultsDir())) fs.mkdirSync(resultsDir(), { recursive: true });
 
   const avgReductionScore = results
     .filter(r => r.score && r.score.reduction_score !== undefined)
@@ -515,8 +517,8 @@ async function runBenchmark() {
     console.log(`\n(Track A exactness skipped: ${e.message})`);
   }
 
-  const reportPath = path.join(RESULTS_DIR, `report-${Date.now().toString(36)}.json`);
-  if (!fs.existsSync(RESULTS_DIR)) fs.mkdirSync(RESULTS_DIR, { recursive: true });
+  const reportPath = path.join(resultsDir(), `report-${Date.now().toString(36)}.json`);
+  if (!fs.existsSync(resultsDir())) fs.mkdirSync(resultsDir(), { recursive: true });
   fs.writeFileSync(reportPath, JSON.stringify({ report, results: results.map(r => ({
     id: r.challenge.id,
     title: r.challenge.title,
@@ -624,12 +626,12 @@ function validate() {
 }
 
 function calibrate() {
-  if (!fs.existsSync(RESULTS_DIR)) {
+  if (!fs.existsSync(resultsDir())) {
     console.log('No results directory found. Run benchmarks first.');
     return;
   }
 
-  const reportFiles = fs.readdirSync(RESULTS_DIR)
+  const reportFiles = fs.readdirSync(resultsDir())
     .filter(f => f.startsWith('report-') && f.endsWith('.json'))
     .sort();
 
@@ -643,7 +645,7 @@ function calibrate() {
 
   for (const f of reportFiles) {
     try {
-      const data = JSON.parse(fs.readFileSync(path.join(RESULTS_DIR, f), 'utf8'));
+      const data = JSON.parse(fs.readFileSync(path.join(resultsDir(), f), 'utf8'));
       const challengeResults = data.results || [];
       for (const r of challengeResults) {
         if (!r.id) continue;

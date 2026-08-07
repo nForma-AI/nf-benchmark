@@ -45,12 +45,12 @@ describe('ADV BUG 2: parseJsonPath with deeply nested paths', () => {
 describe('ADV BUG 3: loadResults with many result files', () => {
   test('handles directory with thousands of result files', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Create 1000 result files
     for (let i = 0; i < 1000; i++) {
-      fs.writeFileSync(path.join(resultsDir, `result-${i}.json`), JSON.stringify({ challenge: { id: `BENCH-${i}` }, score: { passed: true } }));
+      fs.writeFileSync(path.join(fixtureResultsDir, `result-${i}.json`), JSON.stringify({ challenge: { id: `BENCH-${i}` }, score: { passed: true } }));
     }
 
     // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
@@ -59,10 +59,9 @@ describe('ADV BUG 3: loadResults with many result files', () => {
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-    fs.cpSync(resultsDir, tmpResultsDir, { recursive: true });
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.cpSync(fixtureResultsDir, tmpResultsDir, { recursive: true });
       assert.doesNotThrow(() => {
         const results = loadResults();
         assert.strictEqual(results.length, 1000);
@@ -124,8 +123,8 @@ describe('ADV BUG 6: runSolve with very long timeout', () => {
 describe('ADV BUG 7: saveResult with special characters in challenge ID', () => {
   test('handles special characters in result filenames', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
     // backing up, deleting and symlinking the real results/ — six sites did that, and
@@ -133,9 +132,8 @@ describe('ADV BUG 7: saveResult with special characters in challenge ID', () => 
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
       assert.doesNotThrow(() => {
         saveResult('BENCH-001!@#$%^&*()', { test: 'data' });
       });

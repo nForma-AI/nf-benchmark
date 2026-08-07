@@ -60,12 +60,12 @@ describe('EXTREME BUG 2: parseJsonPath with Unicode characters', () => {
 describe('EXTREME BUG 3: loadResults with corrupted binary data', () => {
   test('handles result files containing binary data', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Create files with binary data
-    fs.writeFileSync(path.join(resultsDir, 'binary1.json'), Buffer.from([0x00, 0x01, 0x02, 0xFF]));
-    fs.writeFileSync(path.join(resultsDir, 'binary2.json'), Buffer.from('not json at all \x00\x01\x02'));
+    fs.writeFileSync(path.join(fixtureResultsDir, 'binary1.json'), Buffer.from([0x00, 0x01, 0x02, 0xFF]));
+    fs.writeFileSync(path.join(fixtureResultsDir, 'binary2.json'), Buffer.from('not json at all \x00\x01\x02'));
 
     // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
     // backing up, deleting and symlinking the real results/ — six sites did that, and
@@ -73,10 +73,9 @@ describe('EXTREME BUG 3: loadResults with corrupted binary data', () => {
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-    fs.cpSync(resultsDir, tmpResultsDir, { recursive: true });
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.cpSync(fixtureResultsDir, tmpResultsDir, { recursive: true });
       assert.doesNotThrow(() => {
         loadResults();
       });
@@ -211,8 +210,8 @@ describe('EXTREME BUG 9: runSolve with malformed environment', () => {
 describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
   test('handles concurrent saveResult calls', async () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
     // backing up, deleting and symlinking the real results/ — six sites did that, and
@@ -220,9 +219,8 @@ describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
       const saves = [];
       for (let i = 0; i < 100; i++) {
         saves.push(saveResult(`BENCH-${i}`, { test: `data${i}` }));

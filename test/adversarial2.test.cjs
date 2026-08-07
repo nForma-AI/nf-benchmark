@@ -75,11 +75,10 @@ describe('NEW BUG 4: loadResults with empty result files', () => {
     const tmpResultsDir = path.join(tmp, 'results-under-test');
     fs.mkdirSync(tmpResultsDir, { recursive: true });
     const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
-    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
-    fs.mkdirSync(tmpResultsDir, { recursive: true });
-    fs.writeFileSync(path.join(tmpResultsDir, 'empty.json'), '');
-
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.mkdirSync(tmpResultsDir, { recursive: true });
+      fs.writeFileSync(path.join(tmpResultsDir, 'empty.json'), '');
       assert.doesNotThrow(() => loadResults());
     } finally {
       if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
