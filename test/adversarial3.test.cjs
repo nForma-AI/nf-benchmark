@@ -45,33 +45,30 @@ describe('ADV BUG 2: parseJsonPath with deeply nested paths', () => {
 describe('ADV BUG 3: loadResults with many result files', () => {
   test('handles directory with thousands of result files', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Create 1000 result files
     for (let i = 0; i < 1000; i++) {
-      fs.writeFileSync(path.join(resultsDir, `result-${i}.json`), JSON.stringify({ challenge: { id: `BENCH-${i}` }, score: { passed: true } }));
+      fs.writeFileSync(path.join(fixtureResultsDir, `result-${i}.json`), JSON.stringify({ challenge: { id: `BENCH-${i}` }, score: { passed: true } }));
     }
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.cpSync(resultsDir, origResultsDir, { recursive: true });
-
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.cpSync(fixtureResultsDir, tmpResultsDir, { recursive: true });
       assert.doesNotThrow(() => {
         const results = loadResults();
         assert.strictEqual(results.length, 1000);
       });
     } finally {
-      fs.rmSync(origResultsDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
@@ -126,27 +123,23 @@ describe('ADV BUG 6: runSolve with very long timeout', () => {
 describe('ADV BUG 7: saveResult with special characters in challenge ID', () => {
   test('handles special characters in result filenames', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.symlinkSync(resultsDir, origResultsDir);
-
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
       assert.doesNotThrow(() => {
         saveResult('BENCH-001!@#$%^&*()', { test: 'data' });
       });
     } finally {
-      fs.rmSync(origResultsDir);
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });

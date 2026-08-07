@@ -69,24 +69,20 @@ describe('NEW BUG 3: computeReport with negative scores', () => {
 describe('NEW BUG 4: loadResults with empty result files', () => {
   test('loadResults handles empty JSON files', () => {
     const tmp = makeTmpDir();
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'results_backup');
-
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.mkdirSync(origResultsDir, { recursive: true });
-    fs.writeFileSync(path.join(origResultsDir, 'empty.json'), '');
-
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.mkdirSync(tmpResultsDir, { recursive: true });
+      fs.writeFileSync(path.join(tmpResultsDir, 'empty.json'), '');
       assert.doesNotThrow(() => loadResults());
     } finally {
-      fs.rmSync(origResultsDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
     }
     fs.rmSync(tmp, { recursive: true });
   });

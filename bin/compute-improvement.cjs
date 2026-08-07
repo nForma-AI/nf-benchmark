@@ -4,14 +4,16 @@
 const fs = require('fs');
 const path = require('path');
 
-const RESULTS_DIR = path.join(__dirname, '..', 'results');
+// Single source of truth for the results directory (honors NF_BENCH_RESULTS_DIR);
+// duplicating the literal here meant a redirected write and a non-redirected read.
+const { resultsDir } = require(path.join(__dirname, '..', 'lib', 'runner.cjs'));
 
 function loadResults() {
-  if (!fs.existsSync(RESULTS_DIR)) return [];
-  const files = fs.readdirSync(RESULTS_DIR)
+  if (!fs.existsSync(resultsDir())) return [];
+  const files = fs.readdirSync(resultsDir())
     .filter(f => f.endsWith('.json') && !f.startsWith('report-'))
     .sort();
-  return files.map(f => JSON.parse(fs.readFileSync(path.join(RESULTS_DIR, f), 'utf8')));
+  return files.map(f => JSON.parse(fs.readFileSync(path.join(resultsDir(), f), 'utf8')));
 }
 
 function computeImprovementScore() {
@@ -90,7 +92,7 @@ function computeImprovementScore() {
     trends: allTrends
   };
 
-  const reportPath = path.join(RESULTS_DIR, `improvement-${Date.now().toString(36)}.json`);
+  const reportPath = path.join(resultsDir(), `improvement-${Date.now().toString(36)}.json`);
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
   console.log(`\nSaved to ${reportPath}`);
 

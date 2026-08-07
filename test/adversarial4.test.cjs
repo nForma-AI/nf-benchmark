@@ -60,31 +60,28 @@ describe('EXTREME BUG 2: parseJsonPath with Unicode characters', () => {
 describe('EXTREME BUG 3: loadResults with corrupted binary data', () => {
   test('handles result files containing binary data', () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
     // Create files with binary data
-    fs.writeFileSync(path.join(resultsDir, 'binary1.json'), Buffer.from([0x00, 0x01, 0x02, 0xFF]));
-    fs.writeFileSync(path.join(resultsDir, 'binary2.json'), Buffer.from('not json at all \x00\x01\x02'));
+    fs.writeFileSync(path.join(fixtureResultsDir, 'binary1.json'), Buffer.from([0x00, 0x01, 0x02, 0xFF]));
+    fs.writeFileSync(path.join(fixtureResultsDir, 'binary2.json'), Buffer.from('not json at all \x00\x01\x02'));
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.cpSync(resultsDir, origResultsDir, { recursive: true });
-
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+      fs.cpSync(fixtureResultsDir, tmpResultsDir, { recursive: true });
       assert.doesNotThrow(() => {
         loadResults();
       });
     } finally {
-      fs.rmSync(origResultsDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
@@ -213,18 +210,17 @@ describe('EXTREME BUG 9: runSolve with malformed environment', () => {
 describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
   test('handles concurrent saveResult calls', async () => {
     const tmp = makeTmpDir();
-    const resultsDir = path.join(tmp, 'results');
-    fs.mkdirSync(resultsDir);
+    const fixtureResultsDir = path.join(tmp, 'results');
+    fs.mkdirSync(fixtureResultsDir);
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.symlinkSync(resultsDir, origResultsDir);
-
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
     try {
+      process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
       const saves = [];
       for (let i = 0; i < 100; i++) {
         saves.push(saveResult(`BENCH-${i}`, { test: `data${i}` }));
@@ -233,11 +229,8 @@ describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
         // All saves should complete without issues
       });
     } finally {
-      fs.rmSync(origResultsDir);
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
@@ -257,13 +250,10 @@ describe('EXTREME BUG 11: loadAllChallenges with filesystem corruption', () => {
     fs.writeFileSync(path.join(challengesDir, '03-empty.json'), '');
     fs.writeFileSync(path.join(challengesDir, '04-binary.json'), Buffer.from([0x00, 0x01, 0x02]));
 
-    const origChallengesDir = path.join(__dirname, '..', 'challenges');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origChallengesDir)) {
-      fs.cpSync(origChallengesDir, backupDir, { recursive: true });
-      fs.rmSync(origChallengesDir, { recursive: true });
-    }
-    fs.cpSync(challengesDir, origChallengesDir, { recursive: true });
+    // Hermetic, same as the results/ sites: redirect via NF_BENCH_CHALLENGES_DIR
+    // instead of backing up, deleting and repopulating the real challenges/ dir.
+    const prevChallengesEnv = process.env.NF_BENCH_CHALLENGES_DIR;
+    process.env.NF_BENCH_CHALLENGES_DIR = challengesDir;
 
     try {
       assert.doesNotThrow(() => {
@@ -272,11 +262,8 @@ describe('EXTREME BUG 11: loadAllChallenges with filesystem corruption', () => {
         assert.ok(challenges.length >= 1);
       });
     } finally {
-      fs.rmSync(origChallengesDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origChallengesDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevChallengesEnv === undefined) delete process.env.NF_BENCH_CHALLENGES_DIR;
+      else process.env.NF_BENCH_CHALLENGES_DIR = prevChallengesEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
