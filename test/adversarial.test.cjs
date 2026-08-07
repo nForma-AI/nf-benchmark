@@ -204,25 +204,22 @@ test('--focus argument should not contain literal quote characters', () => {
 describe('BUG 9: loadResults crashes on malformed JSON', () => {
   test('loadResults should handle malformed JSON files gracefully', () => {
     const tmp = makeTmpDir();
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'results_backup');
-
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.mkdirSync(origResultsDir, { recursive: true });
-    fs.writeFileSync(path.join(origResultsDir, 'bad.json'), 'not valid json {{{');
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
+    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    fs.writeFileSync(path.join(tmpResultsDir, 'bad.json'), 'not valid json {{{');
 
     try {
       assert.doesNotThrow(() => loadResults(),
         'loadResults should not throw on malformed JSON');
     } finally {
-      fs.rmSync(origResultsDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
     }
     fs.rmSync(tmp, { recursive: true });
   });

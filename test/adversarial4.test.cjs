@@ -67,24 +67,22 @@ describe('EXTREME BUG 3: loadResults with corrupted binary data', () => {
     fs.writeFileSync(path.join(resultsDir, 'binary1.json'), Buffer.from([0x00, 0x01, 0x02, 0xFF]));
     fs.writeFileSync(path.join(resultsDir, 'binary2.json'), Buffer.from('not json at all \x00\x01\x02'));
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.cpSync(resultsDir, origResultsDir, { recursive: true });
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
+    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
+    fs.cpSync(resultsDir, tmpResultsDir, { recursive: true });
 
     try {
       assert.doesNotThrow(() => {
         loadResults();
       });
     } finally {
-      fs.rmSync(origResultsDir, { recursive: true });
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
@@ -216,13 +214,13 @@ describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
     const resultsDir = path.join(tmp, 'results');
     fs.mkdirSync(resultsDir);
 
-    const origResultsDir = path.join(__dirname, '..', 'results');
-    const backupDir = path.join(tmp, 'backup');
-    if (fs.existsSync(origResultsDir)) {
-      fs.cpSync(origResultsDir, backupDir, { recursive: true });
-      fs.rmSync(origResultsDir, { recursive: true });
-    }
-    fs.symlinkSync(resultsDir, origResultsDir);
+    // Hermetic: point the library at a temp dir via NF_BENCH_RESULTS_DIR instead of
+    // backing up, deleting and symlinking the real results/ — six sites did that, and
+    // the parallel test runner raced them into ENOENT/ENOTEMPTY.
+    const tmpResultsDir = path.join(tmp, 'results-under-test');
+    fs.mkdirSync(tmpResultsDir, { recursive: true });
+    const prevResultsEnv = process.env.NF_BENCH_RESULTS_DIR;
+    process.env.NF_BENCH_RESULTS_DIR = tmpResultsDir;
 
     try {
       const saves = [];
@@ -233,11 +231,8 @@ describe('EXTREME BUG 10: saveResult with concurrent writes', () => {
         // All saves should complete without issues
       });
     } finally {
-      fs.rmSync(origResultsDir);
-      if (fs.existsSync(backupDir)) {
-        fs.cpSync(backupDir, origResultsDir, { recursive: true });
-        fs.rmSync(backupDir, { recursive: true });
-      }
+      if (prevResultsEnv === undefined) delete process.env.NF_BENCH_RESULTS_DIR;
+      else process.env.NF_BENCH_RESULTS_DIR = prevResultsEnv;
       fs.rmSync(tmp, { recursive: true });
     }
   });
