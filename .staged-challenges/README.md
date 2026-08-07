@@ -13,7 +13,7 @@ non-`file-create` type, so all six would now error rather than score.
 
 They should not be restored as-is. Even before the deletion they could not detect
 anything: `templates/nf.json` was an **orphan** — no code path in nForma loaded it, so
-zeroing `context_metrics.warning_threshold` or deleting `$.quorum` inside it changed no
+zeroing `context_monitor.warning_threshold` or deleting `$.quorum` inside it changed no
 behavior an analyzer could observe. Two of them documented that indirectly: BENCH-072 and
 BENCH-077 are scored `no_crash`, i.e. they only assert nothing blew up.
 
