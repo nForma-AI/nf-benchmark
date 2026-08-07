@@ -1,15 +1,20 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert');
 const path = require('path');
+const fs = require('fs');
 
 const { loadAllChallenges, validateAll, getCategories, getDifficulties } = require(path.join(__dirname, '..', 'lib', 'challenges.cjs'));
 const { parseJsonPath } = require(path.join(__dirname, '..', 'lib', 'mutator.cjs'));
 const { scoreChallenge } = require(path.join(__dirname, '..', 'lib', 'scorer.cjs'));
 
 describe('Challenge Loading', () => {
-  test('loads all 230 challenges', () => {
+  test('loads all 230 challenges (minus any staged out of the runner)', () => {
     const all = loadAllChallenges();
-    assert.strictEqual(all.length, 230, `Expected 230 challenges, got ${all.length}`);
+    const staged = loadStagedChallenges().length;
+    assert.strictEqual(
+      all.length + staged, 230,
+      `Expected 230 challenges total, got ${all.length} loaded + ${staged} staged`,
+    );
   });
 
   test('all challenges have unique IDs', () => {
@@ -26,14 +31,35 @@ describe('Challenge Loading', () => {
     }
   });
 
-  test('IDs are sequential BENCH-001 through BENCH-230', () => {
-    const all = loadAllChallenges();
-    const ids = all.map(c => parseInt(c.id.replace('BENCH-', ''), 10)).sort((a, b) => a - b);
-    for (let i = 0; i < 230; i++) {
-      assert.strictEqual(ids[i], i + 1, `Missing BENCH-${String(i + 1).padStart(3, '0')}`);
+  // The ID space must stay complete: a challenge that silently vanishes is a
+  // corpus regression. A challenge deliberately STAGED out of the runner
+  // (.staged-challenges/, same convention as .staged-fixtures/) still holds its ID,
+  // so the union of loaded + staged must cover 1..230 with no gaps and no reuse.
+  test('IDs cover BENCH-001 through BENCH-230 (loaded + staged, no gaps)', () => {
+    const num = c => parseInt(c.id.replace('BENCH-', ''), 10);
+    const loaded = loadAllChallenges().map(num);
+    const staged = loadStagedChallenges().map(num);
+    const overlap = loaded.filter(n => staged.includes(n));
+    assert.deepStrictEqual(overlap, [], `IDs are both loaded and staged: ${overlap.join(', ')}`);
+    const seen = new Set([...loaded, ...staged]);
+    for (let i = 1; i <= 230; i++) {
+      assert.ok(
+        seen.has(i),
+        `Missing BENCH-${String(i).padStart(3, '0')} — not in challenges/ and not staged in .staged-challenges/`,
+      );
     }
+    assert.strictEqual(seen.size, 230, `expected 230 distinct IDs, saw ${seen.size}`);
   });
 });
+
+// Staged challenges live outside challenges/ so lib/challenges.cjs never loads them,
+// but they keep their IDs reserved — see .staged-challenges/README.md.
+function loadStagedChallenges() {
+  const dir = path.join(__dirname, '..', '.staged-challenges');
+  let files;
+  try { files = fs.readdirSync(dir).filter(f => f.endsWith('.json')); } catch { return []; }
+  return files.flatMap(f => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')));
+}
 
 describe('Challenge Validation', () => {
   test('all challenges pass validation', () => {
